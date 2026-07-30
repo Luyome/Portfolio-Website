@@ -79,6 +79,7 @@ export default function Sidebar({ settings }: { settings: SiteSettings }) {
           {settings.instagramUrl && (
             <a href={settings.instagramUrl} target="_blank" rel="noreferrer">Instagram</a>
           )}
+          <Link href="/admin">Admin Login</Link>
         </div>
       </div>
     </aside>
