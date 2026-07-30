@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import GalleryModal, { GalleryItem } from "./GalleryModal";
 
 export type WorldbuildingEntry = {
   id: number;
@@ -17,7 +18,20 @@ const CATS = ["all", "Characters", "Cities", "Lore", "Events"];
 
 export default function WorldbuildingBrowser({ items }: { items: WorldbuildingEntry[] }) {
   const [cat, setCat] = useState("all");
+  const [modalIndex, setModalIndex] = useState<number | null>(null);
   const filtered = cat === "all" ? items : items.filter((w) => w.cat === cat);
+
+  const galleryItems: GalleryItem[] = filtered.map((w) => ({
+    img: w.img,
+    title: w.title,
+    catLabel: w.cat,
+    metaRows: [
+      { label: "Year", value: String(w.year) },
+      { label: "Date", value: w.date },
+    ],
+    desc: w.excerpt,
+    tags: w.chips,
+  }));
 
   return (
     <>
@@ -29,8 +43,8 @@ export default function WorldbuildingBrowser({ items }: { items: WorldbuildingEn
         ))}
       </div>
       <div className="wb-grid">
-        {filtered.map((w) => (
-          <div className="wb-card" key={w.id}>
+        {filtered.map((w, i) => (
+          <div className="wb-card" key={w.id} onClick={() => setModalIndex(i)}>
             <div className="wb-card-img">
               <img src={w.img} alt={w.title} loading="lazy" />
               <div className="wb-card-date">{w.date}</div>
@@ -62,6 +76,12 @@ export default function WorldbuildingBrowser({ items }: { items: WorldbuildingEn
           </div>
         ))}
       </div>
+      <GalleryModal
+        items={galleryItems}
+        index={modalIndex}
+        onClose={() => setModalIndex(null)}
+        onNavigate={setModalIndex}
+      />
     </>
   );
 }
