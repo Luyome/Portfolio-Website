@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TETSUNARU — Ege Demir Ünal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Serif+JP:wght@200;300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0a0808;
+  --bg2:     #111010;
+  --bg3:     #181414;
+  --text:    #e8dfd6;
+  --text2:   #b8aca3;
+  --muted:   #706560;
+  --red:     #d44040;
+  --red2:    #e05555;
+  --red-dim: rgba(212,64,64,0.14);
+  --border:  rgba(212,64,64,0.16);
+  --sw:      270px;
+  --T: 'Playfair Display', Georgia, serif;
+  --B: 'Lora', Georgia, serif;
+  --M: 'Space Mono', monospace;
+  --J: 'Noto Serif JP', serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--B);font-size:16px;line-height:1.8;overflow-x:hidden}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--red)}
+a{color:inherit;text-decoration:none}img{display:block;max-width:100%}
+button{cursor:pointer;background:none;border:none;font-family:inherit;color:inherit}
+
+/* ══ SIDEBAR ══════════════════════════════ */
+.sb{
+  position:fixed;top:0;left:0;width:var(--sw);height:100vh;
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;z-index:100;
+}
+.sb-brand{padding:36px 28px 28px;border-bottom:1px solid var(--border)}
+.sb-label{
+  font-family:var(--M);font-size:0.78rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--red);margin-bottom:10px;
+  font-weight:700;
+}
+.sb-name{font-family:var(--T);font-size:1.55rem;font-weight:600;line-height:1.15;color:var(--text)}
+.sb-handle{font-family:var(--M);font-size:0.82rem;color:var(--muted);margin-top:6px;letter-spacing:.12em}
+.sb-jp{font-family:var(--J);font-size:0.72rem;font-weight:200;color:var(--muted);margin-top:7px;letter-spacing:.22em}
+
+.sb-nav{padding:22px 0;flex:1}
+.sb-grp{margin-bottom:20px}
+.sb-grp-lbl{
+  font-family:var(--M);font-size:0.72rem;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--red);padding:0 28px 10px;
+  font-weight:700;
+}
+.sb-btn{
+  display:block;width:100%;text-align:left;padding:9px 28px;
+  font-family:var(--B);font-size:1.05rem;color:var(--muted);
+  border-left:2px solid transparent;transition:all .18s;
+}
+.sb-btn:hover{color:var(--text);background:var(--red-dim)}
+.sb-btn.on{color:var(--text);border-left-color:var(--red);background:rgba(212,64,64,.07)}
+
+.sb-archive-wrap{padding:0 28px 20px}
+.sb-archive-btn{
+  width:100%;padding:10px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  border:1px solid var(--border);font-family:var(--M);
+  font-size:0.78rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);transition:all .18s;
+}
+.sb-archive-btn:hover{color:var(--text);border-color:rgba(212,64,64,.5)}
+.sb-archive-btn .arr{font-family:var(--T);font-size:1rem;color:var(--red)}
+
+.sb-foot{padding:20px 28px;border-top:1px solid var(--border)}
+.sb-foot p{font-family:var(--M);font-size:0.78rem;color:var(--muted);line-height:1.9;margin-bottom:14px}
+.sb-links{display:flex;flex-direction:column;gap:8px}
+.sb-links a{font-family:var(--M);font-size:0.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .18s}
+.sb-links a:hover{color:var(--red)}
+
+/* ══ MAIN ══════════════════════════════ */
+.main{margin-left:var(--sw);min-height:100vh;width:calc(100% - var(--sw))}
+.page{display:none}
+.page.active{display:block;animation:fi .35s ease}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ══ PAGE HEADER ══════════════════════════ */
+.ph{padding:68px 64px 48px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.ph-wm{position:absolute;right:44px;top:50%;transform:translateY(-50%);font-family:var(--J);font-size:108px;font-weight:200;color:rgba(212,64,64,.045);letter-spacing:.3em;pointer-events:none;white-space:nowrap;line-height:1}
+.ph-eyebrow{font-family:var(--M);font-size:0.88rem;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:14px}
+.ph-title{font-family:var(--T);font-size:clamp(2.6rem,5.5vw,4.5rem);font-weight:900;line-height:.95;letter-spacing:-.01em;color:var(--text)}
+.ph-sub{margin-top:14px;font-family:var(--B);font-size:1.05rem;font-style:italic;color:var(--text2);max-width:500px}
+
+/* ══ HOME — full centered ══════════════════ */
+#pg-home.active{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+.home-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 40%,rgba(212,64,64,.06) 0%,transparent 70%);pointer-events:none}
+
+.home-hero{
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;width:100%;max-width:900px;
+  padding:80px 64px 56px;position:relative;z-index:2;
+}
+.h-eyebrow{font-family:var(--M);font-size:0.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--red);margin-bottom:24px}
+/* SINGLE LINE NAME */
+.h-name{
+  font-family:var(--T);
+  font-size:clamp(2.8rem,7vw,6.5rem);
+  font-weight:900;line-height:1;letter-spacing:-.02em;
+  white-space:nowrap;color:var(--text);
+}
+.h-name .d1{color:inherit}
+.h-name .d2{color:inherit;margin:0 0.15em}
+.h-name .d3{color:inherit;font-style:normal}
+.h-jp{font-family:var(--J);font-size:1.05rem;font-weight:200;color:var(--text2);letter-spacing:.4em;margin-top:18px}
+.h-rule{width:52px;height:1px;background:var(--red);opacity:.45;margin:30px auto}
+.h-bio{font-family:var(--B);font-size:1.08rem;color:var(--text2);line-height:1.9;max-width:460px}
+.h-bio strong{color:var(--text);font-weight:500}
+.h-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px;justify-content:center}
+.hbtn{font-family:var(--M);font-size:0.65rem;letter-spacing:.2em;text-transform:uppercase;padding:12px 28px;transition:all .18s}
+.hbtn-p{background:var(--red);color:var(--text)}
+.hbtn-p:hover{background:var(--red2)}
+.hbtn-g{border:1px solid var(--border);color:var(--muted)}
+.hbtn-g:hover{border-color:rgba(212,64,64,.55);color:var(--text)}
+
+/* HOME SERVICES */
+.home-services{width:100%;padding:56px 64px;border-top:1px solid var(--border)}
+.hs-title{font-family:var(--T);font-size:2.2rem;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px}
+.hs-sub{font-family:var(--B);font-size:1rem;color:var(--text2);text-align:center;font-style:italic;margin-bottom:44px}
+.hs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.hs-card{
+  background:var(--bg2);padding:28px 24px;
+  border:1px solid var(--border);
+  transition:border-color .2s,background .2s;
+}
+.hs-card:hover{background:var(--bg3);border-color:rgba(212,64,64,.4)}
+.hs-icon{
+  width:48px;height:48px;background:var(--red);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;font-size:1.3rem;
+}
+.hs-card-title{font-family:var(--T);font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:10px}
+.hs-card-desc{font-family:var(--B);font-size:0.9rem;color:var(--text2);line-height:1.7}
+
+/* HOME CONTACT */
+.home-contact{
+  width:100%;padding:60px 64px;
+  border-top:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;
+}
+.hc-title{font-family:var(--T);font-size:2.6rem;font-weight:900;color:var(--red);margin-bottom:14px}
+.hc-sub{font-family:var(--B);font-size:1.05rem;color:var(--text2);max-width:520px;line-height:1.8;margin-bottom:28px}
+.hc-btn{
+  font-family:var(--M);font-size:0.72rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:14px 40px;
+  background:var(--red);color:var(--text);transition:background .18s;
+}
+.hc-btn:hover{background:var(--red2)}
+
+/* ══ ARCHIVE ══════════════════════════════ */
+.archive-wrap{padding:56px 64px 80px}
+.archive-intro{font-family:var(--B);font-size:1.05rem;color:var(--text2);margin-bottom:44px;font-style:italic;max-width:520px}
+.arc-list{display:flex;flex-direction:column;gap:2px}
+.arc-card{
+  background:var(--bg2);display:flex;align-items:center;
+  padding:28px 36px;gap:32px;
+  border-left:3px solid transparent;transition:all .2s;cursor:pointer;
+}
+.arc-card:hover{background:var(--bg3);border-left-color:var(--red)}
+.arc-y{font-family:var(--T);font-size:3.8rem;font-weight:900;color:var(--red);line-height:1;min-width:110px;opacity:.35;transition:opacity .2s}
+.arc-card:hover .arc-y{opacity:.7}
+.arc-info{flex:1}
+.arc-cnt{font-family:var(--M);font-size:0.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.arc-cats{display:flex;gap:8px;flex-wrap:wrap}
+.arc-cat{font-family:var(--M);font-size:0.58rem;padding:3px 10px;border:1px solid var(--border);color:var(--muted);letter-spacing:.1em}
+.arc-btn{font-family:var(--M);font-size:0.6rem;letter-spacing:.2em;text-transform:uppercase;padding:10px 22px;border:1px solid var(--border);color:var(--muted);transition:all .18s}
+.arc-card:hover .arc-btn{background:var(--red);border-color:var(--red);color:var(--text)}
+
+/* ══ PORTFOLIO ══════════════════════════════ */
+.port-ctrl{padding:24px 64px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:14px}
+.year-row{display:flex;gap:0}
+.yr-btn{font-family:var(--T);font-size:1.35rem;font-weight:500;padding:8px 26px 8px 0;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .18s}
+.yr-btn:hover{color:var(--text2)}
+.yr-btn.on{color:var(--text);border-bottom-color:var(--red)}
+.cat-row{display:flex;gap:6px;flex-wrap:wrap}
+.cat-btn{font-family:var(--M);font-size:0.6rem;letter-spacing:.18em;text-transform:uppercase;padding:6px 14px;border:1px solid var(--border);color:var(--muted);transition:all .18s}
+.cat-btn:hover{color:var(--text2)}
+.cat-btn.on{background:var(--red-dim);border-color:rgba(212,64,64,.45);color:var(--text)}
+
+.port-list{padding:40px 64px 80px;display:flex;flex-direction:column;gap:3px}
+.port-card{display:grid;grid-template-columns:320px 1fr;background:var(--bg2);overflow:hidden;transition:background .2s}
+.port-card:hover{background:var(--bg3)}
+.port-img-wrap{position:relative;overflow:hidden;cursor:pointer;aspect-ratio:3/4;max-height:400px}
+.port-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .55s ease,filter .3s;filter:brightness(.75) saturate(.85)}
+.port-card:hover .port-img-wrap img{transform:scale(1.03);filter:brightness(.88) saturate(1)}
+.port-img-open{position:absolute;bottom:12px;right:12px;font-family:var(--M);font-size:0.55rem;letter-spacing:.18em;text-transform:uppercase;padding:6px 12px;background:rgba(10,8,8,.8);color:var(--text2);border:1px solid var(--border);opacity:0;transition:opacity .25s}
+.port-card:hover .port-img-open{opacity:1}
+.port-yr-badge{position:absolute;top:12px;left:12px;font-family:var(--M);font-size:0.58rem;background:rgba(10,8,8,.8);color:var(--muted);padding:3px 9px;letter-spacing:.1em}
+.port-info{padding:36px 42px;display:flex;flex-direction:column;justify-content:center}
+.pi-cat{font-family:var(--M);font-size:0.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.pi-title{font-family:var(--T);font-size:1.9rem;font-weight:700;line-height:1.1;color:var(--text);margin-bottom:14px}
+.pi-desc{font-family:var(--B);font-size:0.95rem;color:var(--text2);line-height:1.85;margin-bottom:22px}
+.pi-tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:26px}
+.pi-tag{font-family:var(--M);font-size:0.58rem;padding:4px 12px;border:1px solid var(--border);color:var(--muted);letter-spacing:.08em}
+.pi-link{display:inline-flex;align-items:center;gap:8px;font-family:var(--M);font-size:0.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--red);border-bottom:1px solid rgba(212,64,64,.3);padding-bottom:2px;width:fit-content;transition:color .18s}
+.pi-link:hover{color:var(--red2)}
+
+/* ══ SKETCHES — grid ══════════════════════ */
+.sk-ctrl{padding:24px 64px;border-bottom:1px solid var(--border)}
+.sk-grid{
+  padding:20px 20px 80px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:4px;
+  align-items:start;
+}
+.sk-item{cursor:pointer;overflow:hidden;position:relative;background:var(--bg3)}
+.sk-item img{
+  width:100%;height:auto;display:block;
+  transition:filter .3s,transform .4s;filter:saturate(.8) brightness(.85);
+}
+.sk-item:hover img{filter:saturate(1.05) brightness(1);transform:scale(1.04)}
+.sk-lbl{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:28px 12px 9px;
+  background:linear-gradient(to top,rgba(10,8,8,.88),transparent);
+  font-family:var(--M);font-size:0.6rem;color:var(--text2);
+  letter-spacing:.08em;opacity:0;transition:opacity .25s;
+}
+.sk-item:hover .sk-lbl{opacity:1}
+
+/* ══ WORLDBUILDING — card grid ══════════════════ */
+.wb-ctrl{padding:24px 64px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
+.wb-pill{font-family:var(--M);font-size:0.6rem;letter-spacing:.18em;text-transform:uppercase;padding:7px 18px;border:1px solid var(--border);color:var(--muted);border-radius:999px;transition:all .18s}
+.wb-pill:hover{color:var(--text);border-color:rgba(212,64,64,.4)}
+.wb-pill.on{background:var(--red);color:var(--text);border-color:var(--red)}
+
+.wb-grid{padding:40px 64px 80px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.wb-card{background:var(--bg2);overflow:hidden;transition:background .2s;cursor:pointer;display:flex;flex-direction:column}
+.wb-card:hover{background:var(--bg3)}
+.wb-card-img{position:relative;height:200px;overflow:hidden;background:var(--bg3)}
+.wb-card-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.7) saturate(.8);transition:transform .5s,filter .3s}
+.wb-card:hover .wb-card-img img{transform:scale(1.04);filter:brightness(.85) saturate(1)}
+.wb-card-date{position:absolute;top:12px;right:12px;font-family:var(--M);font-size:0.58rem;background:rgba(10,8,8,.82);color:var(--text2);padding:4px 10px;letter-spacing:.08em}
+.wb-card-body{padding:22px 24px;flex:1;display:flex;flex-direction:column}
+.wb-card-cat{display:inline-block;font-family:var(--M);font-size:0.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);padding:3px 10px;border:1px solid rgba(212,64,64,.25);margin-bottom:12px;width:fit-content}
+.wb-card-title{font-family:var(--T);font-size:1.1rem;font-weight:700;font-style:italic;line-height:1.35;color:var(--text);margin-bottom:10px}
+.wb-card-excerpt{font-family:var(--B);font-size:0.88rem;color:var(--text2);line-height:1.75;flex:1}
+.wb-card-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:14px}
+.wb-chip{font-family:var(--M);font-size:0.56rem;padding:2px 8px;color:var(--muted);background:rgba(255,255,255,.025);letter-spacing:.06em}
+.wb-card-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.wb-card-more{font-family:var(--M);font-size:0.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--red);display:flex;align-items:center;gap:6px;transition:color .18s}
+.wb-card:hover .wb-card-more{color:var(--red2)}
+
+/* ══ GAMES ══════════════════════════════ */
+.games-wrap{padding:52px 64px 80px}
+.game-card{margin-bottom:4px;background:var(--bg2);overflow:hidden}
+.game-cover{position:relative;height:272px;overflow:hidden}
+.game-cover img{width:100%;height:100%;object-fit:cover;filter:brightness(.28) saturate(.5);transition:filter .45s}
+.game-card:hover .game-cover img{filter:brightness(.38) saturate(.7)}
+.game-cover-over{position:absolute;inset:0;padding:38px 48px;display:flex;flex-direction:column;justify-content:flex-end}
+.gco-st{font-family:var(--M);font-size:0.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--red);margin-bottom:9px}
+.gco-t{font-family:var(--T);font-size:clamp(2rem,4vw,3.2rem);font-weight:900;line-height:.95;letter-spacing:-.01em}
+.game-body{padding:38px 48px;display:grid;grid-template-columns:1fr 210px;gap:42px}
+.gb-desc{font-family:var(--B);font-size:1rem;color:var(--text2);line-height:1.9;margin-bottom:20px}
+.gb-tags{display:flex;flex-wrap:wrap;gap:7px}
+.gb-tag{font-family:var(--M);font-size:0.6rem;padding:5px 14px;border:1px solid var(--border);color:var(--text2);letter-spacing:.1em}
+.g-aside{border-left:1px solid var(--border);padding-left:28px}
+.ga-lbl{font-family:var(--M);font-size:0.58rem;letter-spacing:.28em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.ga-feat{font-family:var(--B);font-size:0.88rem;color:var(--text2);padding:6px 0;border-bottom:1px solid rgba(212,64,64,.07)}
+.ga-feat::before{content:'→ ';color:var(--red);font-family:var(--M)}
+.ga-tgt{margin-top:20px}
+.ga-tgt strong{display:block;font-family:var(--M);font-size:0.55rem;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:5px}
+.ga-tgt span{font-family:var(--B);font-size:0.9rem;color:var(--text2)}
+
+/* ══ ABOUT ══════════════════════════════ */
+.about-wrap{padding:52px 64px 80px}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.ab-full{grid-column:1/-1}
+.ab-block{background:var(--bg2);padding:34px}
+.ab-t{font-family:var(--T);font-size:1.45rem;font-weight:700;color:var(--red);margin-bottom:16px;line-height:1}
+.ab-p{font-family:var(--B);font-size:1rem;color:var(--text2);line-height:1.9}
+.ab-p+.ab-p{margin-top:11px}
+.ab-p strong{color:var(--text);font-weight:500}
+.ab-tools{display:flex;flex-wrap:wrap;gap:7px;margin-top:15px}
+.ab-tool{font-family:var(--M);font-size:0.62rem;padding:5px 12px;border:1px solid var(--border);color:var(--text2);letter-spacing:.1em}
+.tl{margin-top:4px}
+.tl-row{display:flex;gap:16px;padding:10px 0;border-bottom:1px solid rgba(212,64,64,.07)}
+.tl-yr{font-family:var(--T);font-size:1rem;font-weight:600;color:var(--red);min-width:44px}
+.tl-t{font-family:var(--B);font-size:0.92rem;color:var(--text2);line-height:1.65;padding-top:1px}
+
+/* ══ GALLERY MODAL ══════════════════════ */
+.gm-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(6,4,4,.78);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:40px;
+}
+.gm-overlay.open{display:flex;animation:fi .25s ease}
+.gm-panel{
+  display:grid;grid-template-columns:1fr 380px;
+  width:100%;max-width:1100px;max-height:88vh;
+  background:var(--bg2);overflow:hidden;border:1px solid var(--border);
+}
+.gm-img-side{position:relative;overflow:hidden;background:var(--bg3);min-height:500px}
+.gm-img-side img{width:100%;height:100%;object-fit:contain;padding:24px}
+.gm-nav{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:10px}
+.gm-nav-btn{font-family:var(--M);font-size:0.6rem;letter-spacing:.15em;padding:7px 18px;border:1px solid var(--border);color:var(--text2);transition:all .18s;background:rgba(10,8,8,.75)}
+.gm-nav-btn:hover{border-color:var(--red);color:var(--text)}
+.gm-info{padding:40px 38px;display:flex;flex-direction:column;border-left:1px solid var(--border);overflow-y:auto}
+.gm-bar{display:flex;align-items:center;gap:10px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+.gm-cat-lbl{font-family:var(--M);font-size:0.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--red)}
+.gm-close{margin-left:auto;font-family:var(--M);font-size:0.6rem;letter-spacing:.18em;text-transform:uppercase;padding:8px 20px;border:1px solid var(--border);color:var(--muted);transition:all .18s;display:flex;align-items:center;gap:8px}
+.gm-close:hover{border-color:var(--red);color:var(--text)}
+.gm-title{font-family:var(--T);font-size:1.75rem;font-weight:700;line-height:1.15;color:var(--text);margin-bottom:18px}
+.gm-row{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid rgba(212,64,64,.08);font-family:var(--B);font-size:0.92rem}
+.gm-lbl{color:var(--muted);min-width:88px;font-weight:500}
+.gm-val{color:var(--text2)}
+.gm-desc-wrap{margin-top:18px;margin-bottom:22px}
+.gm-desc{font-family:var(--B);font-size:0.95rem;color:var(--text2);line-height:1.85}
+.gm-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:14px}
+.gm-tag{font-family:var(--M);font-size:0.58rem;padding:3px 10px;border:1px solid var(--border);color:var(--muted)}
+.gm-link-area{margin-top:auto;padding-top:22px;border-top:1px solid var(--border)}
+.gm-link-lbl{font-family:var(--M);font-size:0.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.gm-link-row{display:flex;gap:8px}
+.gm-link-in{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--M);font-size:0.72rem;padding:9px 14px;outline:none;letter-spacing:.04em}
+.gm-link-in:focus{border-color:rgba(212,64,64,.5)}
+.gm-link-in::placeholder{color:var(--muted)}
+.gm-link-btn{padding:9px 18px;background:var(--red);color:var(--text);font-family:var(--M);font-size:0.6rem;letter-spacing:.15em;text-transform:uppercase;transition:background .18s}
+.gm-link-btn:hover{background:var(--red2)}
+
+/* ══ RESPONSIVE ════════════════════════ */
+@media(max-width:1060px){
+  :root{--sw:220px}
+  .ph,.port-list,.port-ctrl,.sk-ctrl,.sk-grid,.wb-ctrl,.wb-grid,
+  .games-wrap,.about-wrap,.archive-wrap,.home-hero,.home-services,.home-contact{padding-left:36px;padding-right:36px}
+  .hs-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:820px){
+  :root{--sw:0px}
+  .sb{display:none}
+  .main{margin-left:0;width:100%}
+  .port-card{grid-template-columns:1fr}
+  .port-img-wrap{max-height:300px;aspect-ratio:16/9}
+  .game-body{grid-template-columns:1fr}
+  .g-aside{border-left:none;padding-left:0;border-top:1px solid var(--border);padding-top:22px}
+  .about-grid{grid-template-columns:1fr}
+  .hs-grid{grid-template-columns:1fr}
+  .gm-panel{grid-template-columns:1fr;max-height:90vh}
+  .gm-img-side{min-height:240px;max-height:300px}
+  .h-name{font-size:clamp(2rem,8vw,4rem);white-space:normal}
+}
+</style>
+</head>
+<body>
+
+<!-- ════ GALLERY MODAL ════ -->
+<div class="gm-overlay" id="gModal">
+  <div class="gm-panel">
+    <div class="gm-img-side">
+      <img id="gm-img" src="" alt="">
+      <div class="gm-nav">
+        <button class="gm-nav-btn" onclick="gmPrev()">← Prev</button>
+        <button class="gm-nav-btn" onclick="gmNext()">Next →</button>
+      </div>
+    </div>
+    <div class="gm-info">
+      <div class="gm-bar">
+        <span class="gm-cat-lbl" id="gm-cat"></span>
+        <button class="gm-close" onclick="closeGM()">✕ &nbsp; Close</button>
+      </div>
+      <div class="gm-title" id="gm-title"></div>
+      <div id="gm-meta"></div>
+      <div class="gm-desc-wrap">
+        <div class="gm-desc" id="gm-desc"></div>
+        <div class="gm-tags" id="gm-tags"></div>
+      </div>
+      <div class="gm-link-area">
+        <div class="gm-link-lbl">External Link</div>
+        <div class="gm-link-row">
+          <input class="gm-link-in" id="gm-link-in" placeholder="artstation.com/..." readonly>
+          <button class="gm-link-btn" onclick="openGMLink()">Open →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ SIDEBAR ════ -->
+<aside class="sb">
+  <div class="sb-brand">
+    <div class="sb-label">Personal Archive</div>
+    <div class="sb-name">Ege Demir Ünal</div>
+    <div class="sb-handle">/ TETSUNARU</div>
+    <div class="sb-jp">鉄なる — 創造者</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-grp">
+      <div class="sb-grp-lbl">Index</div>
+      <button class="sb-btn on" data-p="home" onclick="go('home')">Home</button>
+    </div>
+    <div class="sb-grp">
+      <div class="sb-grp-lbl">Work</div>
+      <button class="sb-btn" data-p="portfolio" onclick="go('portfolio')">Portfolio</button>
+      <button class="sb-btn" data-p="sketches" onclick="go('sketches')">Sketches</button>
+      <button class="sb-btn" data-p="worldbuilding" onclick="go('worldbuilding')">Worldbuilding</button>
+      <button class="sb-btn" data-p="games" onclick="go('games')">Games</button>
+    </div>
+    <div class="sb-grp">
+      <div class="sb-grp-lbl">Info</div>
+      <button class="sb-btn" data-p="about" onclick="go('about')">About</button>
+    </div>
+  </nav>
+  <div class="sb-archive-wrap">
+    <button class="sb-archive-btn" onclick="go('archive')">
+      <span>Archive by Year</span>
+      <span class="arr">→</span>
+    </button>
+  </div>
+  <div class="sb-foot">
+    <p>Game Designer<br>Unreal Engine 5<br>Istanbul, TR — 2026</p>
+    <div class="sb-links">
+      <a href="https://x.com/TetsuUnaru" target="_blank">Twitter / X</a>
+      <a href="https://www.artstation.com/demirunal" target="_blank">ArtStation</a>
+      <a href="https://www.linkedin.com/in/egedemirunal/" target="_blank">LinkedIn</a>
+      <a href="https://www.instagram.com/demirunal3d/" target="_blank">Instagram</a>
+    </div>
+  </div>
+</aside>
+
+<!-- ════ MAIN ════ -->
+<div class="main">
+
+  <!-- HOME -->
+  <div class="page active" id="pg-home">
+    <div class="home-glow"></div>
+
+    <!-- HERO -->
+    <div class="home-hero">
+      <div class="h-eyebrow">Istanbul, Turkey — 2026</div>
+      <h1 class="h-name">
+        <span class="d1">EGE</span><span class="d2">DEMİR</span><span class="d3">ÜNAL</span>
+      </h1>
+      <div class="h-jp">ゲームデザイナー　物語　世界</div>
+      <div class="h-rule"></div>
+      <p class="h-bio">
+        Game Designer &amp; worldbuilder. Building <strong>visceral, narrative-driven</strong>
+        games with Unreal Engine 5. Currently developing <strong>The Abyss</strong> —
+        a psychological horror anomaly game for Steam.
+      </p>
+      <div class="h-btns">
+        <button class="hbtn hbtn-p" onclick="go('portfolio')">View Portfolio</button>
+        <button class="hbtn hbtn-g" onclick="go('games')">Game Projects</button>
+        <button class="hbtn hbtn-g" onclick="go('worldbuilding')">Worldbuilding</button>
+      </div>
+    </div>
+
+    <!-- SERVICES -->
+    <div class="home-services">
+      <div class="hs-title">Services</div>
+      <div class="hs-sub">Professional 3D character creation &amp; game design services</div>
+      <div class="hs-grid" id="servicesGrid"></div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="home-contact">
+      <div class="hc-title">Let's Work Together</div>
+      <p class="hc-sub">Interested in collaborating on your next project? Let's create something together.</p>
+      <a href="/cdn-cgi/l/email-protection#7a1f1d1f1e1f1713080f141b163a1d171b131654191517" class="hbtn hbtn-p">Get in Touch</a>
+    </div>
+  </div>
+
+  <!-- ARCHIVE -->
+  <div class="page" id="pg-archive">
+    <div class="ph">
+      <div class="ph-wm">記録</div>
+      <div class="ph-eyebrow">Year by Year</div>
+      <h2 class="ph-title">Archive</h2>
+      <p class="ph-sub">Browse all work by year.</p>
+    </div>
+    <div class="archive-wrap" id="archiveContent"></div>
+  </div>
+
+  <!-- PORTFOLIO -->
+  <div class="page" id="pg-portfolio">
+    <div class="ph">
+      <div class="ph-wm">作品</div>
+      <div class="ph-eyebrow">Works</div>
+      <h2 class="ph-title">Portfolio</h2>
+      <p class="ph-sub">3D characters and concept art.</p>
+    </div>
+    <div class="port-ctrl">
+      <div class="year-row" id="portYears"></div>
+      <div class="cat-row" id="portCats"></div>
+    </div>
+    <div class="port-list" id="portList"></div>
+  </div>
+
+  <!-- SKETCHES -->
+  <div class="page" id="pg-sketches">
+    <div class="ph">
+      <div class="ph-wm">落書き</div>
+      <div class="ph-eyebrow">Raw Drawings</div>
+      <h2 class="ph-title">Sketches</h2>
+      <p class="ph-sub">Personal sketches and studies — unfiltered.</p>
+    </div>
+    <div class="sk-ctrl">
+      <div class="year-row" id="skYears"></div>
+    </div>
+    <div class="sk-grid" id="skGrid"></div>
+  </div>
+
+  <!-- WORLDBUILDING -->
+  <div class="page" id="pg-worldbuilding">
+    <div class="ph">
+      <div class="ph-wm">世界観</div>
+      <div class="ph-eyebrow">Lore &amp; Stories</div>
+      <h2 class="ph-title">Worldbuilding Chronicles</h2>
+      <p class="ph-sub">Explore stories, lore and characters from created worlds.</p>
+    </div>
+    <div class="wb-ctrl" id="wbPills"></div>
+    <div class="wb-grid" id="wbGrid"></div>
+  </div>
+
+  <!-- GAMES -->
+  <div class="page" id="pg-games">
+    <div class="ph">
+      <div class="ph-wm">ゲーム</div>
+      <div class="ph-eyebrow">Game Development</div>
+      <h2 class="ph-title">Games</h2>
+      <p class="ph-sub">Solo and group projects. Unreal Engine 5.</p>
+    </div>
+    <div class="games-wrap" id="gContent"></div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="page" id="pg-about">
+    <div class="ph">
+      <div class="ph-wm">自己</div>
+      <div class="ph-eyebrow">Profile</div>
+      <h2 class="ph-title">About</h2>
+      <p class="ph-sub">Designer, storyteller, worldbuilder.</p>
+    </div>
+    <div class="about-wrap">
+      <div class="about-grid">
+        <div class="ab-block ab-full">
+          <div class="ab-t">Who I Am</div>
+          <p class="ab-p">I'm <strong>Ege Demir Ünal</strong>, known online as <strong>Tetsunaru</strong>. Game Design student based in Istanbul, graduating June 2026.</p>
+          <p class="ab-p">I work at the intersection of storytelling and gameplay. My goal is to make games that feel alive — worlds with weight, mechanics that serve the narrative, experiences that linger long after the screen goes dark.</p>
+          <p class="ab-p">Currently building <strong>The Abyss</strong>, a horror anomaly game in Unreal Engine 5. This site is my personal archive — game projects, 3D work, sketches, and the worlds I build for no one but myself.</p>
+        </div>
+        <div class="ab-block">
+          <div class="ab-t">Tools</div>
+          <div class="ab-tools">
+            <span class="ab-tool">Unreal Engine 5</span><span class="ab-tool">Blueprint</span>
+            <span class="ab-tool">Blender</span><span class="ab-tool">ZBrush</span>
+            <span class="ab-tool">Maya</span><span class="ab-tool">Substance Painter</span>
+            <span class="ab-tool">Obsidian</span><span class="ab-tool">HacknPlan</span>
+          </div>
+        </div>
+        <div class="ab-block">
+          <div class="ab-t">Timeline</div>
+          <div class="tl">
+            <div class="tl-row"><div class="tl-yr">2024</div><div class="tl-t">Built Exit 8 clone in Unreal Engine. First complete Blueprint project, self-taught.</div></div>
+            <div class="tl-row"><div class="tl-yr">2025</div><div class="tl-t">Pivoted from pure 3D art to Game Design. Started The Abyss.</div></div>
+            <div class="tl-row"><div class="tl-yr">2026</div><div class="tl-t">Final year. Shipping The Abyss on Steam. Targeting Gameplay Designer roles.</div></div>
+            <div class="tl-row"><div class="tl-yr">→</div><div class="tl-t">Post-grad: indie studio, shipped titles, CDPR long-term goal.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ══ DATA ══════════════════════════════════ */
+
+const services = [
+  { icon:'&#9670;', title:'Character Modeling', desc:'High-quality 3D character models optimized for games and animation.' },
+  { icon:'&#9672;', title:'Texturing &amp; Shading', desc:'Detailed texturing and material creation for realistic or stylized looks.' },
+  { icon:'&#9676;', title:'Character Rigging', desc:'Professional rigging for animation-ready game characters.' },
+  { icon:'&#9654;', title:'Animation', desc:'Dynamic character animations for games and cinematics.' },
+  { icon:'&#9651;', title:'Concept to 3D', desc:'Transforming 2D concept art into fully realized 3D characters.' },
+  { icon:'&#9632;', title:'Game-Ready Assets', desc:'Optimized characters ready for integration into Unreal Engine 5.' },
+];
+
+const portData = [
+  { id:1, title:'Crimson Warrior', cat:'Gameplay Design', year:2026,
+    desc:'Full game-ready character. High-poly sculpt in ZBrush (68k), baked to 4k maps. Substance Painter textures. Rigged and exported for Unreal Engine 5.',
+    tags:['ZBrush','Substance','Game Ready','UE5 Ready'],
+    medium:'3D Character', software:'ZBrush, Blender, Substance Painter',
+    link:'https://www.artstation.com/demirunal',
+    img:'https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=700&h=900&fit=crop'},
+  { id:2, title:'Azure Mage', cat:'Character Design', year:2026,
+    desc:'Character design from concept sketch to final 3D. Focus on cloth simulation and layered material design for the robe system.',
+    tags:['Modeling','Rigging','Cloth Sim'],
+    medium:'3D Character', software:'Maya, ZBrush, Marvelous Designer',
+    link:'https://www.artstation.com/demirunal',
+    img:'https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=700&h=900&fit=crop'},
+  { id:3, title:'Shadow Assassin', cat:'Gameplay Design', year:2025,
+    desc:'Stealth-archetype character. Modular armor system designed for in-game customization. Custom skin shader in Unreal 5.',
+    tags:['Modeling','Animation','Modular','Game Ready'],
+    medium:'3D Character', software:'ZBrush, Maya, Unreal Engine 5',
+    link:'https://www.artstation.com/demirunal',
+    img:'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=700&h=900&fit=crop'},
+  { id:4, title:'Sakura Knight', cat:'Character Design', year:2025,
+    desc:'Fantasy warrior combining Japanese armor aesthetics with a stylized Western silhouette.',
+    tags:['3D Modeling','Concept Art','Fantasy'],
+    medium:'Concept + 3D', software:'Procreate, ZBrush, Blender',
+    link:'https://www.artstation.com/demirunal',
+    img:'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=700&h=900&fit=crop'},
+  { id:5, title:'Neon Hero', cat:'Level Design', year:2025,
+    desc:'Cyberpunk environment layout study. Level flow, pacing and landmark design for a vertical city district in Unreal Engine 5.',
+    tags:['Level Design','UE5','Environment','Layout'],
+    medium:'Level Design', software:'Unreal Engine 5, Blender',
+    link:'https://www.artstation.com/demirunal',
+    img:'https://images.unsplash.com/photo-1536329583941-14287ec6fc4e?w=700&h=900&fit=crop'},
+];
+
+// Sketch placeholder tiles — solid colour + label
+const sketchColors = [
+  '#1a1010','#0e1218','#101a10','#18100e','#10100e','#0e1210',
+  '#1a150e','#0e0e1a','#15181a','#1a1018','#0e1a18','#181510'
+];
+const skData = [
+  {year:2026,lbl:'2026.02 — figure study',desc:'Anatomy and proportion study. Morning session.',img:'',col:'#151010'},
+  {year:2026,lbl:'2026.02 — loose form',desc:'Gestural lines, no reference.',img:'',col:'#0e1218'},
+  {year:2026,lbl:'2026.01 — environment',desc:'Quick environment thumbnail.',img:'',col:'#10140e'},
+  {year:2026,lbl:'2026.03 — quick sketch',desc:'Quick warm-up sketch.',img:'',col:'#151518'},
+  {year:2025,lbl:'2025.11 — anatomy',desc:'30-day anatomy challenge, day 11.',img:'',col:'#181010'},
+  {year:2025,lbl:'2025.04 — gesture',desc:'5-minute gesture session.',img:'',col:'#0e0e18'},
+  {year:2025,lbl:'2025.03 — doodle',desc:'Random doodle between classes.',img:'',col:'#14100e'},
+  {year:2025,lbl:'2025.08 — creature',desc:'Creature concept, no ref.',img:'',col:'#0e1818'},
+];
+
+const wbData = [
+  { year:2025, date:'Jan 15, 2025', cat:'Cities', title:'The Chronicles of Aethermoor — Chapter 1: The Awakening',
+    excerpt:'In the realm where magic and technology intertwine, a young warrior discovers their destiny among the floating islands of Aethermoor...',
+    chips:['Aethermoor','Lore','Cities'],
+    img:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&h=380&fit=crop' },
+  { year:2025, date:'Jan 10, 2025', cat:'Characters', title:'Character Spotlight: Crimson Warrior — Origins',
+    excerpt:'Exploring the backstory and design process of the Crimson Warrior, from concept sketches to final 3D model...',
+    chips:['Character Design','Process'],
+    img:'https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=600&h=380&fit=crop' },
+  { year:2024, date:'Dec 20, 2024', cat:'Lore', title:'The Azure Kingdom: A Place Between Worlds',
+    excerpt:'A kingdom that floats in the lower Drift, permanently overcast. The Azure comes from bioluminescent moss covering every surface...',
+    chips:['World Lore','Geography','Magic'],
+    img:'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=600&h=380&fit=crop' },
+  { year:2024, date:'Nov 15, 2024', cat:'Lore', title:'The Shadow Guild — Secrets and Betrayal',
+    excerpt:'We do not trade in secrets. We trade in the space between what is known and what must never be found...',
+    chips:['Factions','Story'],
+    img:'https://images.unsplash.com/photo-1536329583941-14287ec6fc4e?w=600&h=380&fit=crop' },
+  { year:2024, date:'Oct 08, 2024', cat:'Events', title:'Sakura Festival: Cultural Traditions of the East',
+    excerpt:'The annual Sakura Festival celebrates the harmony between warriors and nature — a tradition spanning millennia...',
+    chips:['Culture','Festivals'],
+    img:'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&h=380&fit=crop' },
+  { year:2024, date:'Aug 14, 2024', cat:'Characters', title:'Moonlight Archer — The Last of Her Order',
+    excerpt:'Under the full moon, ancient pacts are renewed. She carries the last seal of the Moonlight Covenant...',
+    chips:['Character','Mythology'],
+    img:'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&h=380&fit=crop' },
+];
+
+const gamesData = [
+  { title:'The Abyss', status:'In Development — Solo', engine:'Unreal Engine 5',
+    desc:'A first-person psychological horror anomaly game. You are trapped in a looping abandoned facility — each iteration is subtly wrong. Find what changed.',
+    tags:['Horror','First-Person','Anomaly','Solo Dev','Steam'],
+    feats:['Sprint + slide system','Flashlight mechanic','Door interaction','Object examination','Persistent fear state','Volumetric atmospheric fog'],
+    target:'Steam — June 2026',
+    img:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=900&h=500&fit=crop'},
+  { title:'Group Project — Game 2', status:'In Development — Team', engine:'Unreal Engine 5',
+    desc:'4-person school project. All Unreal Engine work and gameplay programming handled solo.',
+    tags:['School','Group','UE5'],
+    feats:['TBD'],
+    target:'June 2026',
+    img:'https://images.unsplash.com/photo-1536329583941-14287ec6fc4e?w=900&h=500&fit=crop'},
+];
+
+/* ══ SERVICES RENDER ════════════════════ */
+function renderServices() {
+  document.getElementById('servicesGrid').innerHTML = services.map(s => `
+    <div class="hs-card">
+      <div class="hs-icon">${s.icon}</div>
+      <div class="hs-card-title">${s.title}</div>
+      <div class="hs-card-desc">${s.desc}</div>
+    </div>`).join('');
+}
+
+/* ══ NAV ════════════════════════════════ */
+function go(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('on'));
+  const pg = document.getElementById('pg-' + name);
+  if (pg) pg.classList.add('active');
+  const btn = document.querySelector(`[data-p="${name}"]`);
+  if (btn) btn.classList.add('on');
+  window.scrollTo(0, 0);
+}
+
+/* ══ ARCHIVE ════════════════════════════ */
+function renderArchive() {
+  const all = [...portData, ...skData, ...wbData];
+  const years = [...new Set(all.map(d => d.year))].sort((a, b) => b - a);
+  document.getElementById('archiveContent').innerHTML = `
+    <p class="archive-intro">Select a year to browse all work from that period.</p>
+    <div class="arc-list">
+      ${years.map(y => {
+        const cnt = all.filter(d => d.year === y).length;
+        const cats = [...new Set([
+          ...portData.filter(d => d.year === y).map(d => d.cat),
+          skData.filter(d => d.year === y).length ? 'Sketch' : null,
+          wbData.filter(d => d.year === y).length ? 'Worldbuilding' : null
+        ].filter(Boolean))];
+        return `<div class="arc-card" onclick="goYear(${y})">
+          <div class="arc-y">${y}</div>
+          <div class="arc-info">
+            <div class="arc-cnt">${cnt} pieces</div>
+            <div class="arc-cats">${cats.map(c => `<span class="arc-cat">${c}</span>`).join('')}</div>
+          </div>
+          <button class="arc-btn">Browse ${y} →</button>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function goYear(y) {
+  pY = String(y); pC = 'all';
+  go('portfolio');
+  renderPort();
+}
+
+/* ══ PORTFOLIO ══════════════════════════ */
+let pY = 'all', pC = 'all';
+function renderPort() {
+  const yrs = ['all', ...new Set(portData.map(p => p.year).sort((a, b) => b - a))];
+  const cats = ['all', ...new Set(portData.map(p => p.cat))];
+  document.getElementById('portYears').innerHTML = yrs.map(y =>
+    `<button class="yr-btn ${pY == y ? 'on' : ''}" onclick="pSetY('${y}')">${y === 'all' ? 'All' : y}</button>`).join('');
+  document.getElementById('portCats').innerHTML = cats.map(c =>
+    `<button class="cat-btn ${pC == c ? 'on' : ''}" onclick="pSetC('${c}')">${c === 'all' ? 'All' : c}</button>`).join('');
+  const f = portData.filter(p => (pY === 'all' || p.year == pY) && (pC === 'all' || p.cat === pC));
+  // Store filtered for modal
+  currentPortFiltered = f;
+  document.getElementById('portList').innerHTML = f.map((p, i) => `
+    <div class="port-card">
+      <div class="port-img-wrap" onclick="openGM('port',${i})">
+        <img src="${p.img}" alt="${p.title}" loading="lazy">
+        <div class="port-yr-badge">${p.year}</div>
+        <div class="port-img-open">View Full →</div>
+      </div>
+      <div class="port-info">
+        <div class="pi-cat">${p.cat}</div>
+        <div class="pi-title">${p.title}</div>
+        <p class="pi-desc">${p.desc}</p>
+        <div class="pi-tags">${p.tags.map(t => `<span class="pi-tag">${t}</span>`).join('')}</div>
+        <a class="pi-link" href="${p.link}" target="_blank">View on ArtStation ↗</a>
+      </div>
+    </div>`).join('');
+}
+function pSetY(y) { pY = y; renderPort(); }
+function pSetC(c) { pC = c; renderPort(); }
+let currentPortFiltered = portData;
+
+/* ══ SKETCHES ═══════════════════════════ */
+let sY = 'all';
+function renderSk() {
+  const yrs = ['all', ...new Set(skData.map(s => s.year).sort((a, b) => b - a))];
+  document.getElementById('skYears').innerHTML = yrs.map(y =>
+    `<button class="yr-btn ${sY == y ? 'on' : ''}" onclick="sSetY('${y}')">${y === 'all' ? 'All' : y}</button>`).join('');
+  const f = skData.filter(s => sY === 'all' || s.year == sY);
+  currentSkFiltered = f;
+  document.getElementById('skGrid').innerHTML = f.map((s, i) => {
+    if (s.img) {
+      return `<div class="sk-item" onclick="openGM('sk',${i})">
+        <img src="${s.img}" alt="${s.lbl}" loading="lazy">
+        <div class="sk-lbl">${s.lbl}</div>
+      </div>`;
+    }
+    // Placeholder tile
+    return `<div class="sk-item" onclick="openGM('sk',${i})" style="background:${s.col};min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px">
+      <div style="font-family:var(--M);font-size:0.55rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;text-align:center;line-height:1.6">${s.lbl}</div>
+      <div style="margin-top:12px;font-size:2rem;opacity:.1">&#9998;</div>
+    </div>`;
+  }).join('');
+}
+function sSetY(y) { sY = y; renderSk(); }
+let currentSkFiltered = skData;
+
+/* ══ WORLDBUILDING ══════════════════════ */
+let wbCat = 'all';
+const wbCats = ['all', 'Characters', 'Cities', 'Lore', 'Events'];
+
+function renderWBPills() {
+  document.getElementById('wbPills').innerHTML = wbCats.map(c =>
+    `<button class="wb-pill ${wbCat === c ? 'on' : ''}" onclick="setWbCat('${c}')">${c === 'all' ? 'All' : c}</button>`
+  ).join('');
+}
+
+function setWbCat(c) { wbCat = c; renderWBPills(); renderWBGrid(); }
+
+function renderWBGrid() {
+  const f = wbCat === 'all' ? wbData : wbData.filter(w => w.cat === wbCat);
+  document.getElementById('wbGrid').innerHTML = f.map(w => `
+    <div class="wb-card">
+      <div class="wb-card-img">
+        <img src="${w.img}" alt="${w.title}" loading="lazy">
+        <div class="wb-card-date">${w.date}</div>
+      </div>
+      <div class="wb-card-body">
+        <span class="wb-card-cat">${w.cat}</span>
+        <div class="wb-card-title">${w.title}</div>
+        <div class="wb-card-excerpt">${w.excerpt}</div>
+        <div class="wb-card-chips">${w.chips.map(c => `<span class="wb-chip">${c}</span>`).join('')}</div>
+      </div>
+      <div class="wb-card-footer">
+        <div class="wb-card-chips">${w.chips.slice(0,2).map(c => `<span class="wb-chip" style="background:rgba(212,64,64,.1);color:var(--red);border-color:rgba(212,64,64,.2)">${c}</span>`).join('')}</div>
+        <span class="wb-card-more">Read More →</span>
+      </div>
+    </div>`).join('');
+}
+
+/* ══ GAMES ══════════════════════════════ */
+function renderGames() {
+  document.getElementById('gContent').innerHTML = gamesData.map(g => `
+    <div class="game-card">
+      <div class="game-cover">
+        <img src="${g.img}" alt="${g.title}">
+        <div class="game-cover-over">
+          <div class="gco-st">${g.status} — ${g.engine}</div>
+          <div class="gco-t">${g.title}</div>
+        </div>
+      </div>
+      <div class="game-body">
+        <div>
+          <p class="gb-desc">${g.desc}</p>
+          <div class="gb-tags">${g.tags.map(t => `<span class="gb-tag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="g-aside">
+          <div class="ga-lbl">Features</div>
+          ${g.feats.map(f => `<div class="ga-feat">${f}</div>`).join('')}
+          <div class="ga-tgt"><strong>Target</strong><span>${g.target}</span></div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* ══ GALLERY MODAL ══════════════════════ */
+let gmSrc = '', gmIdx = 0, gmData = [];
+
+function openGM(src, idx) {
+  gmSrc = src;
+  gmData = src === 'port' ? currentPortFiltered : currentSkFiltered;
+  gmIdx = idx;
+  showGM();
+  document.getElementById('gModal').classList.add('open');
+}
+
+function showGM() {
+  const d = gmData[gmIdx];
+  if (!d) return;
+  const imgSrc = d.img || '';
+  document.getElementById('gm-img').src = imgSrc || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="%23151010"/><text fill="%23555" x="50%" y="50%" font-size="18" text-anchor="middle" dy=".35em">No Image</text></svg>';
+
+  if (gmSrc === 'port') {
+    document.getElementById('gm-cat').textContent = d.cat;
+    document.getElementById('gm-title').textContent = d.title;
+    document.getElementById('gm-meta').innerHTML = `
+      <div class="gm-row"><span class="gm-lbl">Year</span><span class="gm-val">${d.year}</span></div>
+      <div class="gm-row"><span class="gm-lbl">Medium</span><span class="gm-val">${d.medium}</span></div>
+      <div class="gm-row"><span class="gm-lbl">Software</span><span class="gm-val">${d.software}</span></div>`;
+    document.getElementById('gm-desc').textContent = d.desc;
+    document.getElementById('gm-tags').innerHTML = d.tags.map(t => `<span class="gm-tag">${t}</span>`).join('');
+    document.getElementById('gm-link-in').value = d.link || '';
+  } else {
+    document.getElementById('gm-cat').textContent = 'Sketch';
+    document.getElementById('gm-title').textContent = d.lbl;
+    document.getElementById('gm-meta').innerHTML = `
+      <div class="gm-row"><span class="gm-lbl">Year</span><span class="gm-val">${d.year}</span></div>`;
+    document.getElementById('gm-desc').textContent = d.desc || '';
+    document.getElementById('gm-tags').innerHTML = '';
+    document.getElementById('gm-link-in').value = '';
+  }
+}
+
+function gmPrev() { if (gmIdx > 0) { gmIdx--; showGM(); } }
+function gmNext() { if (gmIdx < gmData.length - 1) { gmIdx++; showGM(); } }
+function closeGM() { document.getElementById('gModal').classList.remove('open'); }
+function openGMLink() { const v = document.getElementById('gm-link-in').value; if (v) window.open(v, '_blank'); }
+document.getElementById('gModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeGM(); });
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('gModal').classList.contains('open')) return;
+  if (e.key === 'Escape') closeGM();
+  if (e.key === 'ArrowLeft') gmPrev();
+  if (e.key === 'ArrowRight') gmNext();
+});
+
+
+/* INIT */
+renderServices();
+renderArchive();
+renderPort();
+renderSk();
+renderWBPills();
+renderWBGrid();
+renderGames();
+</script>
+</body>
+</html>
