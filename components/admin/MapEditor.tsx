@@ -21,7 +21,7 @@ export default function MapEditor({
   const canvasRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const dragState = useRef<{ id: number; moved: boolean } | null>(null);
-  const { zoom, setZoom, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(viewportRef);
+  const { zoom, setZoom, minZoom, maxZoom, fitSize, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(viewportRef);
 
   function coordsFromEvent(e: { clientX: number; clientY: number }) {
     const rect = canvasRef.current!.getBoundingClientRect();
@@ -95,9 +95,9 @@ export default function MapEditor({
           </button>
         )}
         <div className="map-controls">
-          <button type="button" onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.25).toFixed(2)))}>−</button>
+          <button type="button" onClick={() => setZoom((z) => Math.max(minZoom, +(z - 0.25).toFixed(2)))}>−</button>
           <span className="map-zoom-label">{Math.round(zoom * 100)}%</span>
-          <button type="button" onClick={() => setZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)))}>+</button>
+          <button type="button" onClick={() => setZoom((z) => Math.min(maxZoom, +(z + 0.25).toFixed(2)))}>+</button>
         </div>
       </div>
 
@@ -116,7 +116,13 @@ export default function MapEditor({
           onClick={handleCanvasClick}
         >
           {imageUrl ? (
-            <img src={imageUrl} alt="Map" className="map-image" draggable={false} />
+            <img
+              src={imageUrl}
+              alt="Map"
+              className="map-image"
+              draggable={false}
+              style={fitSize ? { width: fitSize.width, height: fitSize.height } : undefined}
+            />
           ) : (
             <div className="map-empty">Upload a map image above to get started.</div>
           )}

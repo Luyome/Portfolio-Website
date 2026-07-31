@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb, boolean } from "drizzle-orm/pg-core";
 
 export type ThemedColor = { dark?: string; light?: string };
 export type FieldStyle = { color?: ThemedColor; fontSize?: string };
@@ -135,6 +135,7 @@ export const siteSettings = pgTable("site_settings", {
   homeBgHeight: integer("home_bg_height"),
   contactBgImage: text("contact_bg_image").notNull().default(""),
   contactBgOpacity: integer("contact_bg_opacity").notNull().default(30),
+  forceDarkMode: boolean("force_dark_mode").notNull().default(false),
   styles: stylesColumn(),
 });
 

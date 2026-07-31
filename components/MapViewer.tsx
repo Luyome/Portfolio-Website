@@ -8,7 +8,7 @@ import type { MapLocation } from "@/lib/map-types";
 export default function MapViewer({ imageUrl, locations }: { imageUrl: string; locations: MapLocation[] }) {
   const [modalIndex, setModalIndex] = useState<number | null>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
-  const { zoom, setZoom, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(viewportRef);
+  const { zoom, setZoom, minZoom, maxZoom, fitSize, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(viewportRef);
 
   const galleryItems: GalleryItem[] = locations.map((l) => ({
     img: l.img,
@@ -20,10 +20,10 @@ export default function MapViewer({ imageUrl, locations }: { imageUrl: string; l
   return (
     <div className="map-wrap">
       <div className="map-controls">
-        <button type="button" onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.25).toFixed(2)))}>−</button>
+        <button type="button" onClick={() => setZoom((z) => Math.max(minZoom, +(z - 0.25).toFixed(2)))}>−</button>
         <span className="map-zoom-label">{Math.round(zoom * 100)}%</span>
-        <button type="button" onClick={() => setZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)))}>+</button>
-        <button type="button" onClick={() => setZoom(1)}>Reset</button>
+        <button type="button" onClick={() => setZoom((z) => Math.min(maxZoom, +(z + 0.25).toFixed(2)))}>+</button>
+        <button type="button" onClick={() => setZoom(minZoom)}>Reset</button>
       </div>
       <div
         className="map-viewport"
@@ -35,7 +35,13 @@ export default function MapViewer({ imageUrl, locations }: { imageUrl: string; l
       >
         <div className="map-canvas" style={{ transform: `scale(${zoom})` }}>
           {imageUrl ? (
-            <img src={imageUrl} alt="Map" className="map-image" />
+            <img
+              src={imageUrl}
+              alt="Map"
+              className="map-image"
+              draggable={false}
+              style={fitSize ? { width: fitSize.width, height: fitSize.height } : undefined}
+            />
           ) : (
             <div className="map-empty">No map yet.</div>
           )}

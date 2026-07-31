@@ -22,6 +22,7 @@ export const DEFAULT_SITE_SETTINGS = {
   homeBgHeight: null as number | null,
   contactBgImage: "",
   contactBgOpacity: 30,
+  forceDarkMode: false,
   styles: {} as StylesMap,
 };
 

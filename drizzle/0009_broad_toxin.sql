@@ -1,0 +1,1 @@
+ALTER TABLE "site_settings" ADD COLUMN "force_dark_mode" boolean DEFAULT false NOT NULL;

@@ -1,14 +1,19 @@
 import Link from "next/link";
 import { getDashboardData } from "@/lib/dashboard-analytics";
 import DashboardChart from "@/components/admin/DashboardChart";
+import ForceDarkModeToggle from "@/components/admin/ForceDarkModeToggle";
+import { getSiteSettings } from "@/lib/site-settings";
 
 export default async function AdminDashboardPage() {
   const { events, sections, totalPages, totalWords, totalImages, addedThisMonth } = await getDashboardData();
+  const settings = await getSiteSettings();
 
   return (
     <div className="adm-dashboard">
       <div className="adm-title">Dashboard</div>
       <p className="adm-sub">Content overview, generated from everything you&apos;ve added to the site.</p>
+
+      <ForceDarkModeToggle initial={settings.forceDarkMode} />
 
       <div className="adm-stat-grid">
         <div className="adm-stat-card">
