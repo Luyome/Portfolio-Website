@@ -1,4 +1,6 @@
 import ImageUploadField from "./ImageUploadField";
+import YearPicker from "./YearPicker";
+import DatePicker from "./DatePicker";
 import type { worldbuildingEntries } from "@/db/schema";
 
 type WorldbuildingRow = typeof worldbuildingEntries.$inferSelect;
@@ -22,11 +24,11 @@ export default function WorldbuildingForm({
       </div>
       <div className="adm-field">
         <label htmlFor="year">Year</label>
-        <input id="year" name="year" type="number" defaultValue={item?.year} required />
+        <YearPicker id="year" name="year" defaultValue={item?.year} required />
       </div>
       <div className="adm-field">
         <label htmlFor="date">Display Date</label>
-        <input id="date" name="date" defaultValue={item?.date} required placeholder="Jan 15, 2025" />
+        <DatePicker id="date" name="date" defaultValue={item?.date} required />
       </div>
       <div className="adm-field">
         <label htmlFor="excerpt">Excerpt</label>

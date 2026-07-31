@@ -1,4 +1,5 @@
 import ImageUploadField from "./ImageUploadField";
+import YearPicker from "./YearPicker";
 import type { sketches } from "@/db/schema";
 
 type SketchRow = typeof sketches.$inferSelect;
@@ -18,7 +19,7 @@ export default function SketchForm({
       </div>
       <div className="adm-field">
         <label htmlFor="year">Year</label>
-        <input id="year" name="year" type="number" defaultValue={item?.year} required />
+        <YearPicker id="year" name="year" defaultValue={item?.year} required />
       </div>
       <div className="adm-field">
         <label htmlFor="desc">Description</label>
