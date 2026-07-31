@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { TwitterIcon, ArtStationIcon, LinkedInIcon, InstagramIcon } from "./SocialIcons";
 
 type SiteSettings = {
   name: string;
@@ -22,6 +23,7 @@ const NAV_GROUPS: { label: string; items: { href: string; label: string }[] }[] 
       { href: "/portfolio", label: "Portfolio" },
       { href: "/sketches", label: "Sketches" },
       { href: "/worldbuilding", label: "Worldbuilding" },
+      { href: "/map", label: "Map" },
       { href: "/games", label: "Games" },
     ],
   },
@@ -66,21 +68,21 @@ export default function Sidebar({ settings }: { settings: SiteSettings }) {
       </div>
       <div className="sb-foot">
         <p>{settings.footerLine}</p>
-        <div className="sb-links">
+        <div className="sb-social-row">
           {settings.twitterUrl && (
-            <a href={settings.twitterUrl} target="_blank" rel="noreferrer">Twitter / X</a>
+            <a href={settings.twitterUrl} target="_blank" rel="noreferrer" aria-label="Twitter / X"><TwitterIcon /></a>
           )}
           {settings.artstationUrl && (
-            <a href={settings.artstationUrl} target="_blank" rel="noreferrer">ArtStation</a>
+            <a href={settings.artstationUrl} target="_blank" rel="noreferrer" aria-label="ArtStation"><ArtStationIcon /></a>
           )}
           {settings.linkedinUrl && (
-            <a href={settings.linkedinUrl} target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href={settings.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn"><LinkedInIcon /></a>
           )}
           {settings.instagramUrl && (
-            <a href={settings.instagramUrl} target="_blank" rel="noreferrer">Instagram</a>
+            <a href={settings.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram"><InstagramIcon /></a>
           )}
-          <Link href="/admin">Admin Login</Link>
         </div>
+        <Link href="/admin" className="sb-admin-link">Admin Login</Link>
       </div>
     </aside>
   );

@@ -2,8 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const MIN_YEAR = 2000;
-const MAX_YEAR = 2199;
+export const MIN_YEAR = 2000;
+export const MAX_YEAR = 2199;
+
+export function clampYear(n: number) {
+  return Math.min(MAX_YEAR, Math.max(MIN_YEAR, n));
+}
 
 export default function YearPicker({
   id,
@@ -17,9 +21,10 @@ export default function YearPicker({
   required?: boolean;
 }) {
   const [value, setValue] = useState<number | undefined>(defaultValue ?? undefined);
+  const [draft, setDraft] = useState(defaultValue ? String(defaultValue) : "");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -30,13 +35,18 @@ export default function YearPicker({
   }, []);
 
   useEffect(() => {
-    if (open) {
-      panelRef.current?.querySelector<HTMLElement>(".yp-opt.on")?.scrollIntoView({ block: "center" });
-    }
+    if (open) inputRef.current?.focus();
   }, [open]);
 
-  const years: number[] = [];
-  for (let y = MAX_YEAR; y >= MIN_YEAR; y--) years.push(y);
+  function commit() {
+    const n = Number(draft);
+    if (Number.isFinite(n) && draft.trim() !== "") {
+      const clamped = clampYear(Math.round(n));
+      setValue(clamped);
+      setDraft(String(clamped));
+    }
+    setOpen(false);
+  }
 
   return (
     <div className="yp" ref={ref}>
@@ -45,20 +55,24 @@ export default function YearPicker({
         {value ?? "Select year"}
       </button>
       {open && (
-        <div className="yp-panel" ref={panelRef}>
-          {years.map((y) => (
-            <button
-              type="button"
-              key={y}
-              className={`yp-opt ${y === value ? "on" : ""}`}
-              onClick={() => {
-                setValue(y);
-                setOpen(false);
-              }}
-            >
-              {y}
-            </button>
-          ))}
+        <div className="yp-panel">
+          <input
+            ref={inputRef}
+            type="number"
+            className="yp-input"
+            min={MIN_YEAR}
+            max={MAX_YEAR}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commit();
+              }
+            }}
+          />
+          <div className="yp-hint">{MIN_YEAR}–{MAX_YEAR}</div>
+          <button type="button" className="yp-confirm" onClick={commit}>Set Year</button>
         </div>
       )}
     </div>

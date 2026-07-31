@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, text } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, text, timestamp, doublePrecision } from "drizzle-orm/pg-core";
 
 export const services = pgTable("services", {
   id: serial("id").primaryKey(),
@@ -6,6 +6,7 @@ export const services = pgTable("services", {
   title: text("title").notNull(),
   desc: text("desc").notNull(),
   sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const portfolioItems = pgTable("portfolio_items", {
@@ -20,6 +21,7 @@ export const portfolioItems = pgTable("portfolio_items", {
   link: text("link").notNull(),
   img: text("img").notNull(),
   sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const sketches = pgTable("sketches", {
@@ -30,6 +32,7 @@ export const sketches = pgTable("sketches", {
   img: text("img"),
   colorHex: text("color_hex"),
   sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const worldbuildingEntries = pgTable("worldbuilding_entries", {
@@ -42,6 +45,7 @@ export const worldbuildingEntries = pgTable("worldbuilding_entries", {
   chips: text("chips").array().notNull().default([]),
   img: text("img").notNull(),
   sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const games = pgTable("games", {
@@ -54,6 +58,22 @@ export const games = pgTable("games", {
   feats: text("feats").array().notNull().default([]),
   target: text("target").notNull(),
   img: text("img").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const mapSettings = pgTable("map_settings", {
+  id: serial("id").primaryKey(),
+  imageUrl: text("image_url").notNull().default(""),
+});
+
+export const mapLocations = pgTable("map_locations", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  x: doublePrecision("x").notNull().default(50),
+  y: doublePrecision("y").notNull().default(50),
+  info: text("info").notNull().default(""),
+  img: text("img"),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 

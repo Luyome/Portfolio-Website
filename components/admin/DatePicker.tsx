@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { MIN_YEAR, MAX_YEAR, clampYear } from "./YearPicker";
 
-const MIN_YEAR = 2000;
-const MAX_YEAR = 2199;
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const ALL_YEARS = Array.from({ length: MAX_YEAR - MIN_YEAR + 1 }, (_, i) => MIN_YEAR + i);
 
 function parseDisplayDate(s?: string): { y: number; m: number; d: number } | null {
   if (!s) return null;
@@ -66,9 +64,14 @@ export default function DatePicker({
       m = 0;
       y += 1;
     }
-    y = Math.min(MAX_YEAR, Math.max(MIN_YEAR, y));
+    y = clampYear(y);
     setViewMonth(m);
     setViewYear(y);
+  }
+
+  function commitYear(raw: string) {
+    const n = Number(raw);
+    if (Number.isFinite(n) && raw.trim() !== "") setViewYear(clampYear(Math.round(n)));
   }
 
   const numDays = daysInMonth(viewYear, viewMonth);
@@ -85,11 +88,14 @@ export default function DatePicker({
         <div className="dp-panel">
           <div className="dp-head">
             <button type="button" onClick={() => changeMonth(-1)} aria-label="Previous month">‹</button>
-            <select value={viewYear} onChange={(e) => setViewYear(Number(e.target.value))}>
-              {ALL_YEARS.map((y) => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
+            <input
+              type="number"
+              className="dp-year-input"
+              min={MIN_YEAR}
+              max={MAX_YEAR}
+              value={viewYear}
+              onChange={(e) => commitYear(e.target.value)}
+            />
             <select value={viewMonth} onChange={(e) => setViewMonth(Number(e.target.value))}>
               {MONTH_NAMES.map((mn, i) => (
                 <option key={mn} value={i}>{mn}</option>
