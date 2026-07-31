@@ -4,6 +4,12 @@ import { useEffect, useRef } from "react";
 import { parseContent, extractHeadings } from "@/lib/content-blocks";
 import InlineBold from "./InlineBold";
 
+export type GameLink = {
+  id: number;
+  label: string;
+  href: string;
+};
+
 export type GameDetail = {
   id: number;
   title: string;
@@ -11,10 +17,12 @@ export type GameDetail = {
   engine: string;
   desc: string;
   tags: string[];
+  feats: string[];
   target: string;
   img: string;
   year: number;
   content: string;
+  links: GameLink[];
 };
 
 export default function GameDetailOverlay({ game, onClose }: { game: GameDetail | null; onClose: () => void }) {
@@ -93,12 +101,32 @@ export default function GameDetailOverlay({ game, onClose }: { game: GameDetail 
               <div className="gdo-side-lbl">Target</div>
               <div className="gdo-side-val">{game.target}</div>
             </div>
+            {game.feats.length > 0 && (
+              <div className="gdo-side-section">
+                <div className="gdo-side-lbl">Features</div>
+                {game.feats.map((f) => (
+                  <div className="gdo-feat" key={f}>{f}</div>
+                ))}
+              </div>
+            )}
             {game.tags.length > 0 && (
               <div className="gdo-side-section">
                 <div className="gdo-side-lbl">Tags</div>
                 <div className="gdo-side-tags">
                   {game.tags.map((t) => (
                     <span className="gdo-tag" key={t}>{t}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {game.links.length > 0 && (
+              <div className="gdo-side-section">
+                <div className="gdo-side-lbl">Links</div>
+                <div className="gdo-side-links">
+                  {game.links.map((l) => (
+                    <a key={l.id} href={l.href} target="_blank" rel="noopener noreferrer" className="gdo-link-btn">
+                      {l.label}
+                    </a>
                   ))}
                 </div>
               </div>

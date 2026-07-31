@@ -27,12 +27,14 @@ export default async function AdminServicesListPage() {
             <tr key={item.id}>
               <td>{item.icon}</td>
               <td>{item.title}</td>
-              <td className="adm-actions">
-                <Link href={`/admin/services/${item.id}/edit`}>Edit</Link>
-                <form action={deleteService}>
-                  <input type="hidden" name="id" value={item.id} />
-                  <DeleteButton confirmText={`Delete "${item.title}"?`} />
-                </form>
+              <td>
+                <div className="adm-actions">
+                  <Link href={`/admin/services/${item.id}/edit`}>Edit</Link>
+                  <form action={deleteService}>
+                    <input type="hidden" name="id" value={item.id} />
+                    <DeleteButton confirmText={`Delete "${item.title}"?`} />
+                  </form>
+                </div>
               </td>
             </tr>
           ))}

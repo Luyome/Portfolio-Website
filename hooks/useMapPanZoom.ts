@@ -34,6 +34,12 @@ export function useMapPanZoom(viewportRef: React.RefObject<HTMLDivElement | null
     const drag = dragRef.current;
     const vp = viewportRef.current;
     if (!drag || !vp) return;
+    if ((e.buttons & 1) === 0) {
+      // Left button was released without a mouseup ever reaching us (e.g. released
+      // outside the window) — stop panning instead of continuing to drag forever.
+      dragRef.current = null;
+      return;
+    }
     const dx = e.clientX - drag.startX;
     const dy = e.clientY - drag.startY;
     if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) drag.moved = true;

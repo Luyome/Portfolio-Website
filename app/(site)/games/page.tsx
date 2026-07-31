@@ -1,10 +1,18 @@
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { games } from "@/db/schema";
+import { games, gameLinks } from "@/db/schema";
 import GamesBrowser from "@/components/GamesBrowser";
 
 export default async function GamesPage() {
-  const items = await db.select().from(games).orderBy(asc(games.sortOrder));
+  const [rows, linkRows] = await Promise.all([
+    db.select().from(games).orderBy(asc(games.sortOrder)),
+    db.select().from(gameLinks).orderBy(asc(gameLinks.sortOrder)),
+  ]);
+
+  const items = rows.map((g) => ({
+    ...g,
+    links: linkRows.filter((l) => l.gameId === g.id),
+  }));
 
   return (
     <div className="page">

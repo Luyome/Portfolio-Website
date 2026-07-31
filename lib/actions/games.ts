@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { games } from "@/db/schema";
+import { games, gameLinks } from "@/db/schema";
 import { num, parseCsv, parseLines, str } from "@/lib/form-utils";
 
 function readFields(formData: FormData) {
@@ -43,5 +43,29 @@ export async function updateGame(id: number, formData: FormData) {
 export async function deleteGame(formData: FormData) {
   const id = num(formData.get("id"));
   await db.delete(games).where(eq(games.id, id));
+  revalidateAll();
+}
+
+function readLinkFields(formData: FormData) {
+  return {
+    label: str(formData.get("label")),
+    href: str(formData.get("href")),
+    sortOrder: num(formData.get("sortOrder")),
+  };
+}
+
+export async function createGameLink(gameId: number, formData: FormData) {
+  await db.insert(gameLinks).values({ gameId, ...readLinkFields(formData) });
+  revalidateAll();
+}
+
+export async function updateGameLink(id: number, formData: FormData) {
+  await db.update(gameLinks).set(readLinkFields(formData)).where(eq(gameLinks.id, id));
+  revalidateAll();
+}
+
+export async function deleteGameLink(formData: FormData) {
+  const id = num(formData.get("id"));
+  await db.delete(gameLinks).where(eq(gameLinks.id, id));
   revalidateAll();
 }

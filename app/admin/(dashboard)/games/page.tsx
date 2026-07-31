@@ -27,12 +27,14 @@ export default async function AdminGamesListPage() {
             <tr key={item.id}>
               <td>{item.title}</td>
               <td>{item.status}</td>
-              <td className="adm-actions">
-                <Link href={`/admin/games/${item.id}/edit`}>Edit</Link>
-                <form action={deleteGame}>
-                  <input type="hidden" name="id" value={item.id} />
-                  <DeleteButton confirmText={`Delete "${item.title}"?`} />
-                </form>
+              <td>
+                <div className="adm-actions">
+                  <Link href={`/admin/games/${item.id}/edit`}>Edit</Link>
+                  <form action={deleteGame}>
+                    <input type="hidden" name="id" value={item.id} />
+                    <DeleteButton confirmText={`Delete "${item.title}"?`} />
+                  </form>
+                </div>
               </td>
             </tr>
           ))}

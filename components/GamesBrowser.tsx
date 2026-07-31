@@ -3,9 +3,7 @@
 import { useState } from "react";
 import GameDetailOverlay, { GameDetail } from "./GameDetailOverlay";
 
-export type Game = GameDetail & {
-  feats: string[];
-};
+export type Game = GameDetail;
 
 export default function GamesBrowser({ items }: { items: Game[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -14,9 +12,9 @@ export default function GamesBrowser({ items }: { items: Game[] }) {
     <>
       <div className="games-wrap">
         {items.map((g, i) => (
-          <div className="game-card" key={g.id}>
+          <div className={`game-row ${i % 2 === 1 ? "rev" : ""}`} key={g.id}>
             <div
-              className="game-cover"
+              className="game-row-media"
               role="button"
               tabIndex={0}
               onClick={() => setOpenIndex(i)}
@@ -28,30 +26,18 @@ export default function GamesBrowser({ items }: { items: Game[] }) {
               }}
             >
               <img src={g.img} alt={g.title} />
-              <div className="game-cover-over">
-                <div className="gco-st">{g.status} — {g.engine}</div>
-                <div className="gco-t">{g.title}</div>
-              </div>
             </div>
-            <div className="game-body">
-              <div>
-                <p className="gb-desc">{g.desc}</p>
-                <div className="gb-tags">
-                  {g.tags.map((t) => (
-                    <span className="gb-tag" key={t}>{t}</span>
-                  ))}
-                </div>
-              </div>
-              <div className="g-aside">
-                <div className="ga-lbl">Features</div>
-                {g.feats.map((f) => (
-                  <div className="ga-feat" key={f}>{f}</div>
+            <div className="game-row-content">
+              <div className="gr-index">{String(i + 1).padStart(2, "0")}</div>
+              <div className="gr-status">{g.status} — {g.engine}</div>
+              <h3 className="gr-title" onClick={() => setOpenIndex(i)}>{g.title}</h3>
+              <p className="gr-desc">{g.desc}</p>
+              <div className="gr-tags">
+                {g.tags.map((t) => (
+                  <span className="gr-tag" key={t}>{t}</span>
                 ))}
-                <div className="ga-tgt">
-                  <strong>Target</strong>
-                  <span>{g.target}</span>
-                </div>
               </div>
+              <button type="button" className="gr-btn" onClick={() => setOpenIndex(i)}>View Details</button>
             </div>
           </div>
         ))}

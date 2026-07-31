@@ -64,6 +64,14 @@ export const games = pgTable("games", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const gameLinks = pgTable("game_links", {
+  id: serial("id").primaryKey(),
+  gameId: integer("game_id").notNull().references(() => games.id, { onDelete: "cascade" }),
+  label: text("label").notNull(),
+  href: text("href").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
 export const mapSettings = pgTable("map_settings", {
   id: serial("id").primaryKey(),
   imageUrl: text("image_url").notNull().default(""),

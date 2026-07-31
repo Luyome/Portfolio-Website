@@ -8,6 +8,8 @@ import {
   deleteTimelineEntry,
 } from "@/lib/actions/about";
 import DeleteButton from "@/components/admin/DeleteButton";
+import TimelineYearPicker from "@/components/admin/TimelineYearPicker";
+import NumberPicker from "@/components/admin/NumberPicker";
 
 export default async function AdminAboutPage() {
   const [aboutRows, timeline] = await Promise.all([
@@ -53,19 +55,28 @@ export default async function AdminAboutPage() {
         <tbody>
           {timeline.map((t) => {
             const updateWithId = updateTimelineEntry.bind(null, t.id);
+            const formId = `timeline-form-${t.id}`;
             return (
               <tr key={t.id}>
-                <td colSpan={4}>
-                  <form action={updateWithId} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                    <input name="year" defaultValue={t.year} style={{ width: 70 }} />
-                    <input name="text" defaultValue={t.text} style={{ flex: 1 }} />
-                    <input name="sortOrder" type="number" defaultValue={t.sortOrder} style={{ width: 70 }} />
-                    <button type="submit" className="adm-btn" style={{ padding: "10px 16px" }}>Save</button>
+                <td>
+                  <form id={formId} action={updateWithId}>
+                    <TimelineYearPicker name="year" defaultValue={t.year} />
                   </form>
-                  <form action={deleteTimelineEntry} className="adm-actions" style={{ marginTop: 6 }}>
-                    <input type="hidden" name="id" value={t.id} />
-                    <DeleteButton confirmText="Delete this timeline entry?" />
-                  </form>
+                </td>
+                <td>
+                  <input name="text" form={formId} defaultValue={t.text} />
+                </td>
+                <td>
+                  <NumberPicker name="sortOrder" defaultValue={t.sortOrder} formId={formId} />
+                </td>
+                <td>
+                  <div className="adm-actions">
+                    <button type="submit" form={formId} className="adm-btn" style={{ padding: "8px 14px" }}>Save</button>
+                    <form action={deleteTimelineEntry}>
+                      <input type="hidden" name="id" value={t.id} />
+                      <DeleteButton confirmText="Delete this timeline entry?" />
+                    </form>
+                  </div>
                 </td>
               </tr>
             );
@@ -76,8 +87,8 @@ export default async function AdminAboutPage() {
       <p className="adm-sub" style={{ marginTop: 32 }}>Add Timeline Entry</p>
       <form action={createTimelineEntry} className="adm-form">
         <div className="adm-field">
-          <label htmlFor="year">Year</label>
-          <input id="year" name="year" defaultValue="" required placeholder="2026 or →" />
+          <label>Year</label>
+          <TimelineYearPicker name="year" />
         </div>
         <div className="adm-field">
           <label htmlFor="text">Text</label>

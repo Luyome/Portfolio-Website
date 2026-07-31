@@ -83,12 +83,14 @@ export default async function AdminHomePage() {
                 <td>
                   <NumberPicker name="sortOrder" defaultValue={b.sortOrder} formId={formId} />
                 </td>
-                <td className="adm-actions">
-                  <button type="submit" form={formId} className="adm-btn" style={{ padding: "8px 14px" }}>Save</button>
-                  <form action={deleteHeroButton}>
-                    <input type="hidden" name="id" value={b.id} />
-                    <DeleteButton confirmText={`Delete "${b.label}"?`} />
-                  </form>
+                <td>
+                  <div className="adm-actions">
+                    <button type="submit" form={formId} className="adm-btn" style={{ padding: "8px 14px" }}>Save</button>
+                    <form action={deleteHeroButton}>
+                      <input type="hidden" name="id" value={b.id} />
+                      <DeleteButton confirmText={`Delete "${b.label}"?`} />
+                    </form>
+                  </div>
                 </td>
               </tr>
             );

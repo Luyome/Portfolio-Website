@@ -27,12 +27,14 @@ export default async function AdminSketchesListPage() {
             <tr key={item.id}>
               <td>{item.label}</td>
               <td>{item.year}</td>
-              <td className="adm-actions">
-                <Link href={`/admin/sketches/${item.id}/edit`}>Edit</Link>
-                <form action={deleteSketch}>
-                  <input type="hidden" name="id" value={item.id} />
-                  <DeleteButton confirmText={`Delete "${item.label}"?`} />
-                </form>
+              <td>
+                <div className="adm-actions">
+                  <Link href={`/admin/sketches/${item.id}/edit`}>Edit</Link>
+                  <form action={deleteSketch}>
+                    <input type="hidden" name="id" value={item.id} />
+                    <DeleteButton confirmText={`Delete "${item.label}"?`} />
+                  </form>
+                </div>
               </td>
             </tr>
           ))}

@@ -32,12 +32,14 @@ export default async function AdminPortfolioListPage() {
               <td>{item.title}</td>
               <td>{item.cat}</td>
               <td>{item.year}</td>
-              <td className="adm-actions">
-                <Link href={`/admin/portfolio/${item.id}/edit`}>Edit</Link>
-                <form action={deletePortfolioItem}>
-                  <input type="hidden" name="id" value={item.id} />
-                  <DeleteButton confirmText={`Delete "${item.title}"?`} />
-                </form>
+              <td>
+                <div className="adm-actions">
+                  <Link href={`/admin/portfolio/${item.id}/edit`}>Edit</Link>
+                  <form action={deletePortfolioItem}>
+                    <input type="hidden" name="id" value={item.id} />
+                    <DeleteButton confirmText={`Delete "${item.title}"?`} />
+                  </form>
+                </div>
               </td>
             </tr>
           ))}
