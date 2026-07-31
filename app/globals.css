@@ -282,8 +282,8 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .game-row-content{flex:1;order:2}
 .game-row.rev .game-row-media{order:2}
 .game-row.rev .game-row-content{order:1}
-.gr-index{font-family:var(--T);font-size:4rem;font-weight:900;color:var(--red);opacity:.25;line-height:1;margin-bottom:8px}
-.gr-status{font-family:var(--M);font-size:0.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--red);margin-bottom:16px}
+.gr-index{font-family:var(--T);font-size:4rem;font-weight:900;color:var(--text);opacity:.25;line-height:1;margin-bottom:8px}
+.gr-status{font-family:var(--M);font-size:0.85rem;letter-spacing:.24em;text-transform:uppercase;color:var(--red);margin-bottom:16px}
 .gr-title{font-family:var(--T);font-size:clamp(1.8rem,3.2vw,2.6rem);font-weight:900;line-height:1.05;letter-spacing:-.01em;color:var(--text);margin-bottom:20px;cursor:pointer}
 .gr-desc{font-family:var(--B);font-size:1rem;color:var(--text2);line-height:1.9;margin-bottom:24px;max-width:480px}
 .gr-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:30px}
