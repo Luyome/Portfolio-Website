@@ -24,11 +24,11 @@ export default function WorldbuildingForm({
       </div>
       <div className="adm-field">
         <label htmlFor="year">Year</label>
-        <YearPicker id="year" name="year" defaultValue={item?.year} required />
+        <YearPicker id="year" name="year" defaultValue={item?.year} />
       </div>
       <div className="adm-field">
         <label htmlFor="date">Display Date</label>
-        <DatePicker id="date" name="date" defaultValue={item?.date} required />
+        <DatePicker id="date" name="date" defaultValue={item?.date} />
       </div>
       <div className="adm-field">
         <label htmlFor="excerpt">Excerpt</label>

@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { worldbuildingEntries } from "@/db/schema";
 import { deleteWorldbuildingEntry } from "@/lib/actions/worldbuilding";
 import DeleteButton from "@/components/admin/DeleteButton";
+import ResizableTh from "@/components/admin/ResizableTh";
 
 export default async function AdminWorldbuildingListPage() {
   const items = await db
@@ -19,9 +20,9 @@ export default async function AdminWorldbuildingListPage() {
       <table className="adm-table" style={{ marginTop: 24 }}>
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Year</th>
+            <ResizableTh>Title</ResizableTh>
+            <ResizableTh>Category</ResizableTh>
+            <ResizableTh>Year</ResizableTh>
             <th>Actions</th>
           </tr>
         </thead>

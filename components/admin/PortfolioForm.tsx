@@ -23,7 +23,7 @@ export default function PortfolioForm({
       </div>
       <div className="adm-field">
         <label htmlFor="year">Year</label>
-        <YearPicker id="year" name="year" defaultValue={item?.year} required />
+        <YearPicker id="year" name="year" defaultValue={item?.year} />
       </div>
       <div className="adm-field">
         <label htmlFor="desc">Description</label>

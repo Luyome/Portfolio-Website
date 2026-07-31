@@ -118,6 +118,7 @@ export default function MapEditor({
               onPointerDown={(e) => handlePinPointerDown(l.id, e)}
               onPointerMove={(e) => handlePinPointerMove(l.id, e)}
               onPointerUp={(e) => handlePinPointerUp(l.id, e)}
+              onClick={(e) => e.stopPropagation()}
             >
               <span className="map-pin-dot" />
               <span className="map-pin-label">{l.name}</span>

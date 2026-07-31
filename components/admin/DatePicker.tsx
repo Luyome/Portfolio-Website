@@ -26,16 +26,15 @@ export default function DatePicker({
   id,
   name,
   defaultValue,
-  required,
 }: {
   id?: string;
   name: string;
   defaultValue?: string;
-  required?: boolean;
 }) {
   const parsed = parseDisplayDate(defaultValue);
   const today = new Date();
-  const [value, setValue] = useState(defaultValue ?? "");
+  const fallback = formatDisplayDate(today.getFullYear(), today.getMonth(), today.getDate());
+  const [value, setValue] = useState(defaultValue || fallback);
   const [open, setOpen] = useState(false);
   const [viewYear, setViewYear] = useState(parsed?.y ?? today.getFullYear());
   const [viewMonth, setViewMonth] = useState(parsed?.m ?? today.getMonth());
@@ -80,9 +79,9 @@ export default function DatePicker({
 
   return (
     <div className="dp" ref={ref}>
-      <input type="hidden" name={name} value={value} required={required} readOnly />
+      <input type="hidden" name={name} value={value} readOnly />
       <button type="button" id={id} className="dp-trigger" onClick={() => setOpen((o) => !o)}>
-        {value || "Select date"}
+        {value}
       </button>
       {open && (
         <div className="dp-panel">

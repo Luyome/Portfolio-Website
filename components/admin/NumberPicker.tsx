@@ -2,25 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export const MIN_YEAR = 2000;
-export const MAX_YEAR = 2199;
-
-export function clampYear(n: number) {
-  return Math.min(MAX_YEAR, Math.max(MIN_YEAR, n));
-}
-
-export default function YearPicker({
+export default function NumberPicker({
   id,
   name,
   defaultValue,
+  min = 0,
+  max = 999,
 }: {
   id?: string;
   name: string;
-  defaultValue?: number | null;
+  defaultValue?: number;
+  min?: number;
+  max?: number;
 }) {
-  const fallback = new Date().getFullYear();
-  const [value, setValue] = useState<number>(defaultValue ?? fallback);
-  const [draft, setDraft] = useState(String(defaultValue ?? fallback));
+  const fallback = defaultValue ?? 0;
+  const [value, setValue] = useState(fallback);
+  const [draft, setDraft] = useState(String(fallback));
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -40,7 +37,7 @@ export default function YearPicker({
   function commit() {
     const n = Number(draft);
     if (Number.isFinite(n) && draft.trim() !== "") {
-      const clamped = clampYear(Math.round(n));
+      const clamped = Math.min(max, Math.max(min, Math.round(n)));
       setValue(clamped);
       setDraft(String(clamped));
     }
@@ -59,8 +56,8 @@ export default function YearPicker({
             ref={inputRef}
             type="number"
             className="yp-input"
-            min={MIN_YEAR}
-            max={MAX_YEAR}
+            min={min}
+            max={max}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
@@ -70,8 +67,8 @@ export default function YearPicker({
               }
             }}
           />
-          <div className="yp-hint">{MIN_YEAR}–{MAX_YEAR}</div>
-          <button type="button" className="yp-confirm" onClick={commit}>Set Year</button>
+          <div className="yp-hint">{min}–{max}</div>
+          <button type="button" className="yp-confirm" onClick={commit}>Set Value</button>
         </div>
       )}
     </div>

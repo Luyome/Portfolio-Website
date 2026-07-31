@@ -1,32 +1,41 @@
 import Link from "next/link";
+import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { services } from "@/db/schema";
+import { services, heroButtons } from "@/db/schema";
 import { getSiteSettings } from "@/lib/site-settings";
+import InlineBold from "@/components/InlineBold";
 
 export default async function HomePage() {
-  const [servicesList, settings] = await Promise.all([
+  const [servicesList, settings, buttons] = await Promise.all([
     db.select().from(services).orderBy(services.sortOrder),
     getSiteSettings(),
+    db.select().from(heroButtons).orderBy(asc(heroButtons.sortOrder)),
   ]);
 
   return (
     <div className="page home-page">
+      {settings.homeBgImage && (
+        <div
+          className="home-bg-image"
+          style={{ backgroundImage: `url(${settings.homeBgImage})`, opacity: settings.homeBgOpacity / 100 }}
+        />
+      )}
       <div className="home-glow" />
 
       <div className="home-hero">
-        <div className="h-eyebrow">Istanbul, Turkey — 2026</div>
+        <div className="h-eyebrow">{settings.heroEyebrow}</div>
         <h1 className="h-name">{settings.name.toLocaleUpperCase("tr-TR")}</h1>
-        <div className="h-jp">ゲームデザイナー　物語　世界</div>
+        <div className="h-jp">{settings.heroJpLine}</div>
         <div className="h-rule" />
         <p className="h-bio">
-          Game Designer &amp; worldbuilder. Building <strong>visceral, narrative-driven</strong>{" "}
-          games with Unreal Engine 5. Currently developing <strong>The Abyss</strong> — a
-          psychological horror anomaly game for Steam.
+          <InlineBold text={settings.heroBio} />
         </p>
         <div className="h-btns">
-          <Link className="hbtn hbtn-p" href="/portfolio">View Portfolio</Link>
-          <Link className="hbtn hbtn-g" href="/games">Game Projects</Link>
-          <Link className="hbtn hbtn-g" href="/worldbuilding">Worldbuilding</Link>
+          {buttons.map((b) => (
+            <Link key={b.id} className={`hbtn ${b.style === "primary" ? "hbtn-p" : "hbtn-g"}`} href={b.href}>
+              {b.label}
+            </Link>
+          ))}
         </div>
       </div>
 

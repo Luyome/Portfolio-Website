@@ -6,7 +6,7 @@ export default async function AdminDashboardPage() {
   const { events, sections, totalPages, totalWords, totalImages, addedThisMonth } = await getDashboardData();
 
   return (
-    <div>
+    <div className="adm-dashboard">
       <div className="adm-title">Dashboard</div>
       <p className="adm-sub">Content overview, generated from everything you&apos;ve added to the site.</p>
 

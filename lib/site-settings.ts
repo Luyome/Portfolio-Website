@@ -11,6 +11,12 @@ export const DEFAULT_SITE_SETTINGS = {
   artstationUrl: "https://www.artstation.com/demirunal",
   linkedinUrl: "https://www.linkedin.com/in/egedemirunal/",
   instagramUrl: "https://www.instagram.com/demirunal3d/",
+  heroEyebrow: "Istanbul, Turkey — 2026",
+  heroJpLine: "ゲームデザイナー　物語　世界",
+  heroBio:
+    "Game Designer & worldbuilder. Building **visceral, narrative-driven** games with Unreal Engine 5. Currently developing **The Abyss** — a psychological horror anomaly game for Steam.",
+  homeBgImage: "",
+  homeBgOpacity: 30,
 };
 
 export async function getSiteSettings() {

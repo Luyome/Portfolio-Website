@@ -44,7 +44,19 @@ export default function WorldbuildingBrowser({ items }: { items: WorldbuildingEn
       </div>
       <div className="wb-grid">
         {filtered.map((w, i) => (
-          <div className="wb-card" key={w.id} onClick={() => setModalIndex(i)}>
+          <div
+            className="wb-card"
+            key={w.id}
+            role="button"
+            tabIndex={0}
+            onClick={() => setModalIndex(i)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setModalIndex(i);
+              }
+            }}
+          >
             <div className="wb-card-img">
               <img src={w.img} alt={w.title} loading="lazy" />
               <div className="wb-card-date">{w.date}</div>
@@ -62,11 +74,7 @@ export default function WorldbuildingBrowser({ items }: { items: WorldbuildingEn
             <div className="wb-card-footer">
               <div className="wb-card-chips">
                 {w.chips.slice(0, 2).map((c) => (
-                  <span
-                    className="wb-chip"
-                    key={c}
-                    style={{ background: "rgba(212,64,64,.1)", color: "var(--red)", borderColor: "rgba(212,64,64,.2)" }}
-                  >
+                  <span className="wb-chip featured" key={c}>
                     {c}
                   </span>
                 ))}

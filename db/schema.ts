@@ -58,6 +58,8 @@ export const games = pgTable("games", {
   feats: text("feats").array().notNull().default([]),
   target: text("target").notNull(),
   img: text("img").notNull(),
+  year: integer("year").notNull().default(2026),
+  content: text("content").notNull().default(""),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -101,4 +103,19 @@ export const siteSettings = pgTable("site_settings", {
   artstationUrl: text("artstation_url").notNull().default(""),
   linkedinUrl: text("linkedin_url").notNull().default(""),
   instagramUrl: text("instagram_url").notNull().default(""),
+  heroEyebrow: text("hero_eyebrow").notNull().default("Istanbul, Turkey — 2026"),
+  heroJpLine: text("hero_jp_line").notNull().default("ゲームデザイナー　物語　世界"),
+  heroBio: text("hero_bio").notNull().default(
+    "Game Designer & worldbuilder. Building **visceral, narrative-driven** games with Unreal Engine 5. Currently developing **The Abyss** — a psychological horror anomaly game for Steam."
+  ),
+  homeBgImage: text("home_bg_image").notNull().default(""),
+  homeBgOpacity: integer("home_bg_opacity").notNull().default(30),
+});
+
+export const heroButtons = pgTable("hero_buttons", {
+  id: serial("id").primaryKey(),
+  label: text("label").notNull(),
+  href: text("href").notNull(),
+  style: text("style").notNull().default("primary"),
+  sortOrder: integer("sort_order").notNull().default(0),
 });

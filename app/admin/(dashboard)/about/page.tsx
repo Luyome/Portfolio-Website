@@ -62,7 +62,7 @@ export default async function AdminAboutPage() {
                     <input name="sortOrder" type="number" defaultValue={t.sortOrder} style={{ width: 70 }} />
                     <button type="submit" className="adm-btn" style={{ padding: "10px 16px" }}>Save</button>
                   </form>
-                  <form action={deleteTimelineEntry} style={{ marginTop: 6 }}>
+                  <form action={deleteTimelineEntry} className="adm-actions" style={{ marginTop: 6 }}>
                     <input type="hidden" name="id" value={t.id} />
                     <DeleteButton confirmText="Delete this timeline entry?" />
                   </form>

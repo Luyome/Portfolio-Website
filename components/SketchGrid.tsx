@@ -12,8 +12,8 @@ export type Sketch = {
   colorHex: string | null;
 };
 
-export default function SketchGrid({ items }: { items: Sketch[] }) {
-  const [year, setYear] = useState<string>("all");
+export default function SketchGrid({ items, initialYear }: { items: Sketch[]; initialYear?: string }) {
+  const [year, setYear] = useState<string>(initialYear ?? "all");
   const [modalIndex, setModalIndex] = useState<number | null>(null);
 
   const years = useMemo(
@@ -45,7 +45,19 @@ export default function SketchGrid({ items }: { items: Sketch[] }) {
       <div className="sk-grid">
         {filtered.map((s, i) =>
           s.img ? (
-            <div className="sk-item" key={s.id} onClick={() => setModalIndex(i)}>
+            <div
+              className="sk-item"
+              key={s.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => setModalIndex(i)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setModalIndex(i);
+                }
+              }}
+            >
               <img src={s.img} alt={s.label} loading="lazy" />
               <div className="sk-lbl">{s.label}</div>
             </div>
@@ -53,7 +65,15 @@ export default function SketchGrid({ items }: { items: Sketch[] }) {
             <div
               className="sk-item"
               key={s.id}
+              role="button"
+              tabIndex={0}
               onClick={() => setModalIndex(i)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setModalIndex(i);
+                }
+              }}
               style={{
                 background: s.colorHex ?? "#151010",
                 minHeight: 160,

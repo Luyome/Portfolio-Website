@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { games } from "@/db/schema";
 import { deleteGame } from "@/lib/actions/games";
 import DeleteButton from "@/components/admin/DeleteButton";
+import ResizableTh from "@/components/admin/ResizableTh";
 
 export default async function AdminGamesListPage() {
   const items = await db.select().from(games).orderBy(asc(games.sortOrder));
@@ -16,8 +17,8 @@ export default async function AdminGamesListPage() {
       <table className="adm-table" style={{ marginTop: 24 }}>
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Status</th>
+            <ResizableTh>Title</ResizableTh>
+            <ResizableTh>Status</ResizableTh>
             <th>Actions</th>
           </tr>
         </thead>

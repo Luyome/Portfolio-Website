@@ -3,7 +3,12 @@ import { db } from "@/db";
 import { sketches } from "@/db/schema";
 import SketchGrid from "@/components/SketchGrid";
 
-export default async function SketchesPage() {
+export default async function SketchesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ year?: string }>;
+}) {
+  const { year } = await searchParams;
   const items = await db
     .select()
     .from(sketches)
@@ -17,7 +22,7 @@ export default async function SketchesPage() {
         <h2 className="ph-title">Sketches</h2>
         <p className="ph-sub">Personal sketches and studies — unfiltered.</p>
       </div>
-      <SketchGrid items={items} />
+      <SketchGrid items={items} initialYear={year} />
     </div>
   );
 }

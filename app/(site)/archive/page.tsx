@@ -25,15 +25,25 @@ export default async function ArchivePage() {
         <div className="arc-list">
           {years.map((y) => {
             const count = all.filter((d) => d.year === y).length;
+            const hasPortfolio = port.some((d) => d.year === y);
+            const hasSketches = sk.some((d) => d.year === y);
+            const hasWorldbuilding = wb.some((d) => d.year === y);
             const cats = Array.from(
               new Set([
                 ...port.filter((d) => d.year === y).map((d) => d.cat),
-                ...(sk.some((d) => d.year === y) ? ["Sketch"] : []),
-                ...(wb.some((d) => d.year === y) ? ["Worldbuilding"] : []),
+                ...(hasSketches ? ["Sketch"] : []),
+                ...(hasWorldbuilding ? ["Worldbuilding"] : []),
               ])
             );
+            // Link to whichever section actually has content for this year —
+            // /portfolio?year=Y is a dead empty grid for years with only sketches/worldbuilding.
+            const href = hasPortfolio
+              ? `/portfolio?year=${y}`
+              : hasSketches
+                ? `/sketches?year=${y}`
+                : "/worldbuilding";
             return (
-              <Link className="arc-card" href={`/portfolio?year=${y}`} key={y}>
+              <Link className="arc-card" href={href} key={y}>
                 <div className="arc-y">{y}</div>
                 <div className="arc-info">
                   <div className="arc-cnt">{count} pieces</div>

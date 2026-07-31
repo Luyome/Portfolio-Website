@@ -17,6 +17,8 @@ function readFields(formData: FormData) {
     feats: parseLines(formData.get("feats")),
     target: str(formData.get("target")),
     img: str(formData.get("img")),
+    year: num(formData.get("year")),
+    content: str(formData.get("content")),
     sortOrder: num(formData.get("sortOrder")),
   };
 }

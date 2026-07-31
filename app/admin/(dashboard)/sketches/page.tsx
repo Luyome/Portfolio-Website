@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { sketches } from "@/db/schema";
 import { deleteSketch } from "@/lib/actions/sketches";
 import DeleteButton from "@/components/admin/DeleteButton";
+import ResizableTh from "@/components/admin/ResizableTh";
 
 export default async function AdminSketchesListPage() {
   const items = await db.select().from(sketches).orderBy(desc(sketches.year), asc(sketches.sortOrder));
@@ -16,8 +17,8 @@ export default async function AdminSketchesListPage() {
       <table className="adm-table" style={{ marginTop: 24 }}>
         <thead>
           <tr>
-            <th>Label</th>
-            <th>Year</th>
+            <ResizableTh>Label</ResizableTh>
+            <ResizableTh>Year</ResizableTh>
             <th>Actions</th>
           </tr>
         </thead>

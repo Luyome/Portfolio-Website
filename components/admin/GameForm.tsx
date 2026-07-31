@@ -1,4 +1,6 @@
 import ImageUploadField from "./ImageUploadField";
+import YearPicker from "./YearPicker";
+import ContentEditor from "./ContentEditor";
 import type { games } from "@/db/schema";
 
 type GameRow = typeof games.$inferSelect;
@@ -25,8 +27,13 @@ export default function GameForm({
         <input id="engine" name="engine" defaultValue={item?.engine} required placeholder="Unreal Engine 5" />
       </div>
       <div className="adm-field">
+        <label htmlFor="year">Year</label>
+        <YearPicker id="year" name="year" defaultValue={item?.year} />
+      </div>
+      <div className="adm-field">
         <label htmlFor="desc">Description</label>
         <textarea id="desc" name="desc" defaultValue={item?.desc} required />
+        <div className="adm-hint">Short summary shown on the Games list card.</div>
       </div>
       <div className="adm-field">
         <label htmlFor="tags">Tags</label>
@@ -43,6 +50,7 @@ export default function GameForm({
         <input id="target" name="target" defaultValue={item?.target} required placeholder="Steam — June 2026" />
       </div>
       <ImageUploadField name="img" initialUrl={item?.img} />
+      <ContentEditor name="content" defaultValue={item?.content} />
       <div className="adm-field">
         <label htmlFor="sortOrder">Sort Order</label>
         <input id="sortOrder" name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />

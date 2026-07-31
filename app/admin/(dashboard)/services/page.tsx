@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { services } from "@/db/schema";
 import { deleteService } from "@/lib/actions/services";
 import DeleteButton from "@/components/admin/DeleteButton";
+import ResizableTh from "@/components/admin/ResizableTh";
 
 export default async function AdminServicesListPage() {
   const items = await db.select().from(services).orderBy(asc(services.sortOrder));
@@ -16,8 +17,8 @@ export default async function AdminServicesListPage() {
       <table className="adm-table" style={{ marginTop: 24 }}>
         <thead>
           <tr>
-            <th>Icon</th>
-            <th>Title</th>
+            <ResizableTh>Icon</ResizableTh>
+            <ResizableTh>Title</ResizableTh>
             <th>Actions</th>
           </tr>
         </thead>

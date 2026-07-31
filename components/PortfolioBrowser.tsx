@@ -75,7 +75,18 @@ export default function PortfolioBrowser({
       <div className="port-list">
         {filtered.map((p, i) => (
           <div className="port-card" key={p.id}>
-            <div className="port-img-wrap" onClick={() => setModalIndex(i)}>
+            <div
+              className="port-img-wrap"
+              role="button"
+              tabIndex={0}
+              onClick={() => setModalIndex(i)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setModalIndex(i);
+                }
+              }}
+            >
               <img src={p.img} alt={p.title} loading="lazy" />
               <div className="port-yr-badge">{p.year}</div>
               <div className="port-img-open">View Full →</div>
