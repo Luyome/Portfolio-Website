@@ -161,8 +161,9 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
   width:100%;padding:60px 64px;
   border-top:1px solid var(--border);
   display:flex;flex-direction:column;align-items:center;
-  text-align:center;
+  text-align:center;position:relative;overflow:hidden;
 }
+.contact-bg-image{position:absolute;inset:0;background-size:cover;background-position:center;pointer-events:none;z-index:0}
 .hc-title{font-family:var(--T);font-size:2.6rem;font-weight:900;color:var(--red);margin-bottom:14px}
 .hc-sub{font-family:var(--B);font-size:1.05rem;color:var(--text2);max-width:520px;line-height:1.8;margin-bottom:28px}
 .hc-btn{
@@ -356,6 +357,7 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .adm-table td{font-family:var(--B);font-size:0.9rem;color:var(--text2);padding:12px 14px;border-bottom:1px solid rgba(var(--red-rgb),.08);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
 .adm-table tr:hover td{background:var(--bg2)}
 .adm-table th:last-child,.adm-table td:last-child{width:160px;overflow:visible;white-space:normal}
+.adm-table td:has(.hlp),.adm-table td:has(.yp),.adm-table td:has(.dp){overflow:visible}
 .adm-table th:not(:first-child):not(:last-child),
 .adm-table td:not(:first-child):not(:last-child){width:130px}
 .adm-th-resizable{position:relative}
@@ -572,8 +574,9 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .map-zoom-label{font-family:var(--M);font-size:0.7rem;color:var(--muted);min-width:44px;text-align:center}
 .map-viewport{
   position:relative;overflow:auto;background:var(--bg2);border:1px solid var(--border);
-  height:70vh;padding:40px;
+  height:70vh;padding:40px;cursor:grab;
 }
+.map-viewport:active{cursor:grabbing}
 .map-canvas{position:relative;display:inline-block;transform-origin:0 0}
 .map-image{display:block;width:min(1400px,85vw);max-width:none;user-select:none}
 .map-empty{

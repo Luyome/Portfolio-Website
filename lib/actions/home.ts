@@ -18,6 +18,8 @@ export async function updateHomeSettings(formData: FormData) {
     heroBio: str(formData.get("heroBio")),
     homeBgImage: str(formData.get("homeBgImage")),
     homeBgOpacity: num(formData.get("homeBgOpacity")),
+    contactBgImage: str(formData.get("contactBgImage")),
+    contactBgOpacity: num(formData.get("contactBgOpacity")),
   };
 
   const [existing] = await db.select().from(siteSettings).limit(1);

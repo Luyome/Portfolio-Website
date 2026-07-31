@@ -17,6 +17,8 @@ export const DEFAULT_SITE_SETTINGS = {
     "Game Designer & worldbuilder. Building **visceral, narrative-driven** games with Unreal Engine 5. Currently developing **The Abyss** — a psychological horror anomaly game for Steam.",
   homeBgImage: "",
   homeBgOpacity: 30,
+  contactBgImage: "",
+  contactBgOpacity: 30,
 };
 
 export async function getSiteSettings() {

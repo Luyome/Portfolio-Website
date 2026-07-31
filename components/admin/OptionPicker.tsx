@@ -7,11 +7,13 @@ export default function OptionPicker({
   name,
   options,
   defaultValue,
+  formId,
 }: {
   id?: string;
   name: string;
   options: { label: string; value: string }[];
   defaultValue?: string;
+  formId?: string;
 }) {
   const initial = options.find((o) => o.value === defaultValue) ?? options[0];
   const [selected, setSelected] = useState(initial);
@@ -28,7 +30,7 @@ export default function OptionPicker({
 
   return (
     <div className="hlp" ref={ref}>
-      <input type="hidden" name={name} value={selected.value} readOnly />
+      <input type="hidden" name={name} value={selected.value} form={formId} readOnly />
       <button type="button" id={id} className="hlp-trigger" onClick={() => setOpen((o) => !o)}>
         {selected.label}
       </button>

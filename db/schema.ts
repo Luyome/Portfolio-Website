@@ -110,6 +110,8 @@ export const siteSettings = pgTable("site_settings", {
   ),
   homeBgImage: text("home_bg_image").notNull().default(""),
   homeBgOpacity: integer("home_bg_opacity").notNull().default(30),
+  contactBgImage: text("contact_bg_image").notNull().default(""),
+  contactBgOpacity: integer("contact_bg_opacity").notNull().default(30),
 });
 
 export const heroButtons = pgTable("hero_buttons", {

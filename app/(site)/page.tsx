@@ -14,15 +14,14 @@ export default async function HomePage() {
 
   return (
     <div className="page home-page">
-      {settings.homeBgImage && (
-        <div
-          className="home-bg-image"
-          style={{ backgroundImage: `url(${settings.homeBgImage})`, opacity: settings.homeBgOpacity / 100 }}
-        />
-      )}
-      <div className="home-glow" />
-
       <div className="home-hero">
+        {settings.homeBgImage && (
+          <div
+            className="home-bg-image"
+            style={{ backgroundImage: `url(${settings.homeBgImage})`, opacity: settings.homeBgOpacity / 100 }}
+          />
+        )}
+        <div className="home-glow" />
         <div className="h-eyebrow">{settings.heroEyebrow}</div>
         <h1 className="h-name">{settings.name.toLocaleUpperCase("tr-TR")}</h1>
         <div className="h-jp">{settings.heroJpLine}</div>
@@ -54,6 +53,12 @@ export default async function HomePage() {
       </div>
 
       <div className="home-contact">
+        {settings.contactBgImage && (
+          <div
+            className="contact-bg-image"
+            style={{ backgroundImage: `url(${settings.contactBgImage})`, opacity: settings.contactBgOpacity / 100 }}
+          />
+        )}
         <div className="hc-title">Let&apos;s Work Together</div>
         <p className="hc-sub">
           Interested in collaborating on your next project? Let&apos;s create something together.

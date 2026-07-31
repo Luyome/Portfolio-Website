@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { createMapLocation, updateMapLocationPosition, updateMapImage } from "@/lib/actions/map";
+import { useMapPanZoom } from "@/hooks/useMapPanZoom";
 import ImageUploadField from "./ImageUploadField";
 import MapPinEditPanel from "./MapPinEditPanel";
 import type { MapLocation } from "@/lib/map-types";
@@ -14,12 +15,13 @@ export default function MapEditor({
   locations: MapLocation[];
 }) {
   const [locations, setLocations] = useState(initialLocations);
-  const [zoom, setZoom] = useState(1);
   const [newName, setNewName] = useState("");
   const [placing, setPlacing] = useState(false);
   const [editing, setEditing] = useState<MapLocation | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const dragState = useRef<{ id: number; moved: boolean } | null>(null);
+  const { zoom, setZoom, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(viewportRef);
 
   function coordsFromEvent(e: { clientX: number; clientY: number }) {
     const rect = canvasRef.current!.getBoundingClientRect();
@@ -29,6 +31,7 @@ export default function MapEditor({
   }
 
   async function handleCanvasClick(e: React.MouseEvent) {
+    if (wasPanning()) return;
     if (!placing || !newName.trim()) return;
     const { x, y } = coordsFromEvent(e);
     const row = await createMapLocation(newName.trim(), x, y);
@@ -98,11 +101,18 @@ export default function MapEditor({
         </div>
       </div>
 
-      <div className="map-viewport">
+      <div
+        className="map-viewport"
+        ref={viewportRef}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
+      >
         <div
           className="map-canvas"
           ref={canvasRef}
-          style={{ transform: `scale(${zoom})`, cursor: placing ? "crosshair" : "default" }}
+          style={{ transform: `scale(${zoom})`, cursor: placing ? "crosshair" : undefined }}
           onClick={handleCanvasClick}
         >
           {imageUrl ? (
@@ -118,6 +128,7 @@ export default function MapEditor({
               onPointerDown={(e) => handlePinPointerDown(l.id, e)}
               onPointerMove={(e) => handlePinPointerMove(l.id, e)}
               onPointerUp={(e) => handlePinPointerUp(l.id, e)}
+              onMouseDown={(e) => e.stopPropagation()}
               onClick={(e) => e.stopPropagation()}
             >
               <span className="map-pin-dot" />

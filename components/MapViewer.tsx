@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
+import { useMapPanZoom } from "@/hooks/useMapPanZoom";
 import type { MapLocation } from "@/lib/map-types";
 
 export default function MapViewer({ imageUrl, locations }: { imageUrl: string; locations: MapLocation[] }) {
-  const [zoom, setZoom] = useState(1);
   const [modalIndex, setModalIndex] = useState<number | null>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const { zoom, setZoom, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(viewportRef);
 
   const galleryItems: GalleryItem[] = locations.map((l) => ({
     img: l.img,
@@ -23,7 +25,14 @@ export default function MapViewer({ imageUrl, locations }: { imageUrl: string; l
         <button type="button" onClick={() => setZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)))}>+</button>
         <button type="button" onClick={() => setZoom(1)}>Reset</button>
       </div>
-      <div className="map-viewport">
+      <div
+        className="map-viewport"
+        ref={viewportRef}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
+      >
         <div className="map-canvas" style={{ transform: `scale(${zoom})` }}>
           {imageUrl ? (
             <img src={imageUrl} alt="Map" className="map-image" />
@@ -36,7 +45,10 @@ export default function MapViewer({ imageUrl, locations }: { imageUrl: string; l
               key={l.id}
               className="map-pin"
               style={{ left: `${l.x}%`, top: `${l.y}%` }}
-              onClick={() => setModalIndex(i)}
+              onClick={() => {
+                if (wasPanning()) return;
+                setModalIndex(i);
+              }}
             >
               <span className="map-pin-dot" />
               <span className="map-pin-label">{l.name}</span>

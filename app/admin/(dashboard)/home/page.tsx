@@ -9,6 +9,7 @@ import DeleteButton from "@/components/admin/DeleteButton";
 import HeroLinkPicker from "@/components/admin/HeroLinkPicker";
 import OptionPicker from "@/components/admin/OptionPicker";
 import NumberPicker from "@/components/admin/NumberPicker";
+import ResizableTh from "@/components/admin/ResizableTh";
 
 const STYLE_OPTIONS = [
   { label: "Primary", value: "primary" },
@@ -42,10 +43,15 @@ export default async function AdminHomePage() {
           <textarea id="heroBio" name="heroBio" defaultValue={settings.heroBio} style={{ minHeight: 110 }} />
           <div className="adm-hint">Wrap words in **double asterisks** to bold them, e.g. **The Abyss**.</div>
         </div>
-        <ImageUploadField name="homeBgImage" initialUrl={settings.homeBgImage} label="Background Image" />
+        <ImageUploadField name="homeBgImage" initialUrl={settings.homeBgImage} label="Hero Background Image" />
         <div className="adm-field">
-          <label htmlFor="homeBgOpacity">Background Opacity ({settings.homeBgOpacity}%)</label>
+          <label htmlFor="homeBgOpacity">Hero Background Opacity ({settings.homeBgOpacity}%)</label>
           <input id="homeBgOpacity" name="homeBgOpacity" type="range" min={0} max={100} defaultValue={settings.homeBgOpacity} />
+        </div>
+        <ImageUploadField name="contactBgImage" initialUrl={settings.contactBgImage} label="Let's Work Together Background Image" />
+        <div className="adm-field">
+          <label htmlFor="contactBgOpacity">Let&apos;s Work Together Background Opacity ({settings.contactBgOpacity}%)</label>
+          <input id="contactBgOpacity" name="contactBgOpacity" type="range" min={0} max={100} defaultValue={settings.contactBgOpacity} />
         </div>
         <button type="submit" className="adm-btn">Save</button>
       </form>
@@ -54,29 +60,32 @@ export default async function AdminHomePage() {
       <table className="adm-table">
         <thead>
           <tr>
-            <th>Label / Link</th>
-            <th>Style</th>
-            <th>Order</th>
+            <ResizableTh>Label / Link</ResizableTh>
+            <ResizableTh>Style</ResizableTh>
+            <ResizableTh>Order</ResizableTh>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {buttons.map((b) => {
             const updateWithId = updateHeroButton.bind(null, b.id);
+            const formId = `hero-form-${b.id}`;
             return (
               <tr key={b.id}>
-                <td colSpan={4}>
-                  <form action={updateWithId} style={{ display: "flex", gap: 10, alignItems: "flex-start", flexWrap: "wrap" }}>
+                <td>
+                  <form id={formId} action={updateWithId}>
                     <HeroLinkPicker labelName="label" hrefName="href" defaultLabel={b.label} defaultHref={b.href} />
-                    <div style={{ width: 130 }}>
-                      <OptionPicker name="style" options={STYLE_OPTIONS} defaultValue={b.style} />
-                    </div>
-                    <div style={{ width: 90 }}>
-                      <NumberPicker name="sortOrder" defaultValue={b.sortOrder} />
-                    </div>
-                    <button type="submit" className="adm-btn" style={{ padding: "10px 16px" }}>Save</button>
                   </form>
-                  <form action={deleteHeroButton} className="adm-actions" style={{ marginTop: 6 }}>
+                </td>
+                <td>
+                  <OptionPicker name="style" options={STYLE_OPTIONS} defaultValue={b.style} formId={formId} />
+                </td>
+                <td>
+                  <NumberPicker name="sortOrder" defaultValue={b.sortOrder} formId={formId} />
+                </td>
+                <td className="adm-actions">
+                  <button type="submit" form={formId} className="adm-btn" style={{ padding: "8px 14px" }}>Save</button>
+                  <form action={deleteHeroButton}>
                     <input type="hidden" name="id" value={b.id} />
                     <DeleteButton confirmText={`Delete "${b.label}"?`} />
                   </form>

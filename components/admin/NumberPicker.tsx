@@ -8,12 +8,14 @@ export default function NumberPicker({
   defaultValue,
   min = 0,
   max = 999,
+  formId,
 }: {
   id?: string;
   name: string;
   defaultValue?: number;
   min?: number;
   max?: number;
+  formId?: string;
 }) {
   const fallback = defaultValue ?? 0;
   const [value, setValue] = useState(fallback);
@@ -46,7 +48,7 @@ export default function NumberPicker({
 
   return (
     <div className="yp" ref={ref}>
-      <input type="hidden" name={name} value={value} readOnly />
+      <input type="hidden" name={name} value={value} form={formId} readOnly />
       <button type="button" id={id} className="yp-trigger" onClick={() => setOpen((o) => !o)}>
         {value}
       </button>
