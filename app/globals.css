@@ -10,6 +10,7 @@
   --red-dim: rgba(212,64,64,0.14);
   --border:  rgba(212,64,64,0.16);
   --sw:      270px;
+  --asw:     260px;
   --T: 'Playfair Display', Georgia, serif;
   --B: 'Lora', Georgia, serif;
   --M: 'Space Mono', monospace;
@@ -328,10 +329,6 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .adm-wrap{padding:52px 64px 80px;max-width:960px}
 .adm-title{font-family:var(--T);font-size:2rem;font-weight:700;color:var(--text);margin-bottom:8px}
 .adm-sub{font-family:var(--B);font-size:0.95rem;color:var(--text2);margin-bottom:36px}
-.adm-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px}
-.adm-nav a,.adm-nav button{font-family:var(--M);font-size:0.65rem;letter-spacing:.14em;text-transform:uppercase;padding:8px 16px;border:1px solid var(--border);color:var(--muted);transition:all .18s}
-.adm-nav a:hover,.adm-nav button:hover{color:var(--text);border-color:rgba(212,64,64,.5)}
-.adm-nav a.on{color:var(--text);border-color:var(--red)}
 .adm-table{width:100%;border-collapse:collapse;margin-bottom:24px}
 .adm-table th{text-align:left;font-family:var(--M);font-size:0.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);padding:10px 14px;border-bottom:1px solid var(--border)}
 .adm-table td{font-family:var(--B);font-size:0.9rem;color:var(--text2);padding:12px 14px;border-bottom:1px solid rgba(212,64,64,.08)}
@@ -355,17 +352,72 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .adm-error{font-family:var(--M);font-size:0.72rem;color:var(--red2);margin-top:10px}
 .adm-img-preview{max-width:200px;margin-top:10px;border:1px solid var(--border)}
 
+/* ══ ADMIN SIDEBAR / SHELL ══════════════════ */
+.adm-shell{display:flex;min-height:100vh}
+.adm-sb{
+  position:fixed;top:0;left:0;width:var(--asw);height:100vh;
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;z-index:100;
+}
+.adm-sb-brand{display:flex;align-items:center;gap:12px;padding:28px 24px;border-bottom:1px solid var(--border)}
+.adm-sb-logo{
+  width:38px;height:38px;flex-shrink:0;background:var(--red);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--T);font-weight:900;font-size:1.1rem;color:var(--text);
+}
+.adm-sb-title{font-family:var(--T);font-size:1.05rem;font-weight:700;color:var(--text)}
+.adm-sb-sub{font-family:var(--M);font-size:0.6rem;color:var(--muted);letter-spacing:.1em;margin-top:3px;text-transform:uppercase}
+.adm-sb-nav{flex:1;padding:20px 0}
+.adm-sb-link{
+  display:flex;align-items:center;gap:12px;padding:11px 24px;
+  font-family:var(--B);font-size:0.98rem;color:var(--muted);
+  border-left:2px solid transparent;transition:all .18s;
+}
+.adm-sb-link:hover{color:var(--text);background:var(--red-dim)}
+.adm-sb-link.on{color:var(--text);border-left-color:var(--red);background:rgba(212,64,64,.07)}
+.adm-sb-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .18s}
+.adm-sb-link.on .adm-sb-dot,.adm-sb-link:hover .adm-sb-dot{background:var(--red)}
+.adm-sb-foot{padding:20px 24px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:12px}
+.adm-sb-logout{
+  width:100%;text-align:left;font-family:var(--M);font-size:0.65rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:4px 0;transition:color .18s;
+}
+.adm-sb-logout:hover{color:var(--red2)}
+
+.adm-main{margin-left:var(--asw);min-height:100vh;width:calc(100% - var(--asw))}
+
+/* ══ ADMIN EXIT / BACK TO SITE ══════════════ */
+.adm-exit-btn{
+  display:flex;align-items:center;gap:8px;width:fit-content;
+  padding:10px 16px;border:1px solid var(--border);
+  font-family:var(--M);font-size:0.65rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);transition:all .18s;
+}
+.adm-exit-btn:hover{color:var(--text);border-color:rgba(212,64,64,.5);background:var(--red-dim)}
+.adm-exit-btn .arr{color:var(--red);font-family:var(--T);font-size:0.9rem}
+.adm-exit-btn.fixed{position:fixed;left:24px;bottom:24px;background:var(--bg2);z-index:200}
+
+/* ══ ADMIN DASHBOARD CARDS ══════════════════ */
+.adm-dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:8px}
+.adm-dash-card{
+  background:var(--bg2);border:1px solid var(--border);padding:24px 22px;
+  display:flex;align-items:center;justify-content:space-between;transition:all .18s;
+}
+.adm-dash-card:hover{border-color:rgba(212,64,64,.45);background:var(--bg3)}
+.adm-dash-card-label{font-family:var(--T);font-size:1.05rem;font-weight:700;color:var(--text)}
+.adm-dash-card-arrow{color:var(--red);font-family:var(--T);font-size:1.2rem}
+
 /* ══ RESPONSIVE ════════════════════════ */
 @media(max-width:1060px){
-  :root{--sw:220px}
+  :root{--sw:220px;--asw:220px}
   .ph,.port-list,.port-ctrl,.sk-ctrl,.sk-grid,.wb-ctrl,.wb-grid,
   .games-wrap,.about-wrap,.archive-wrap,.home-hero,.home-services,.home-contact,.adm-wrap{padding-left:36px;padding-right:36px}
   .hs-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:820px){
-  :root{--sw:0px}
-  .sb{display:none}
-  .main{margin-left:0;width:100%}
+  :root{--sw:0px;--asw:0px}
+  .sb,.adm-sb{display:none}
+  .main,.adm-main{margin-left:0;width:100%}
   .port-card{grid-template-columns:1fr}
   .port-img-wrap{max-height:300px;aspect-ratio:16/9}
   .game-body{grid-template-columns:1fr}

@@ -1,4 +1,5 @@
 import LoginForm from "@/components/admin/LoginForm";
+import BackToSiteButton from "@/components/admin/BackToSiteButton";
 
 export default function AdminLoginPage() {
   return (
@@ -6,6 +7,7 @@ export default function AdminLoginPage() {
       <div className="adm-title">Admin Login</div>
       <p className="adm-sub">Sign in to manage site content.</p>
       <LoginForm />
+      <BackToSiteButton fixed />
     </div>
   );
 }
