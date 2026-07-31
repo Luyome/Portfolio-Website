@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { aboutContent, timelineEntries } from "@/db/schema";
 import { num, parseCsv, parseLines, str } from "@/lib/form-utils";
+import { readStyles } from "@/lib/style-fields";
 
 function revalidateAll() {
   revalidatePath("/about");
@@ -15,6 +16,7 @@ export async function updateAboutContent(formData: FormData) {
   const fields = {
     whoIAmParagraphs: parseLines(formData.get("whoIAmParagraphs")),
     tools: parseCsv(formData.get("tools")),
+    styles: readStyles(formData, ["whoIAmParagraphs"]),
   };
 
   const [existing] = await db.select().from(aboutContent).limit(1);

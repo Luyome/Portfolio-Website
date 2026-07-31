@@ -10,13 +10,20 @@ export default function TimelineYearPicker({
   name,
   defaultValue,
   formId,
+  onValueChange,
 }: {
   name: string;
   defaultValue?: string;
   formId?: string;
+  onValueChange?: (value: string) => void;
 }) {
   const fallback = String(new Date().getFullYear());
-  const [value, setValue] = useState(defaultValue ?? fallback);
+  const [value, setValueState] = useState(defaultValue ?? fallback);
+
+  function setValue(v: string) {
+    setValueState(v);
+    onValueChange?.(v);
+  }
   const [draft, setDraft] = useState(value === ONGOING ? fallback : value);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

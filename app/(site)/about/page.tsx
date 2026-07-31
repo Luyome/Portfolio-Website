@@ -1,16 +1,19 @@
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
 import { aboutContent, timelineEntries } from "@/db/schema";
+import { fieldStyle } from "@/lib/style-fields";
+import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 export default async function AboutPage() {
-  const [aboutRows, timeline] = await Promise.all([
+  const [aboutRows, timeline, appearance] = await Promise.all([
     db.select().from(aboutContent).limit(1),
     db.select().from(timelineEntries).orderBy(asc(timelineEntries.sortOrder)),
+    getPageAppearance("about"),
   ]);
   const about = aboutRows[0];
 
   return (
-    <div className="page">
+    <div className="page" style={pageAppearanceVars(appearance)}>
       <div className="ph">
         <div className="ph-wm">自己</div>
         <div className="ph-eyebrow">Profile</div>
@@ -22,7 +25,7 @@ export default async function AboutPage() {
           <div className="ab-block ab-full">
             <div className="ab-t">Who I Am</div>
             {about?.whoIAmParagraphs.map((p, i) => (
-              <p className="ab-p" key={i}>{p}</p>
+              <p className="ab-p" key={i} style={fieldStyle(about.styles, "whoIAmParagraphs")}>{p}</p>
             ))}
           </div>
           <div className="ab-block">

@@ -26,15 +26,22 @@ export default function DatePicker({
   id,
   name,
   defaultValue,
+  onValueChange,
 }: {
   id?: string;
   name: string;
   defaultValue?: string;
+  onValueChange?: (value: string) => void;
 }) {
   const parsed = parseDisplayDate(defaultValue);
   const today = new Date();
   const fallback = formatDisplayDate(today.getFullYear(), today.getMonth(), today.getDate());
-  const [value, setValue] = useState(defaultValue || fallback);
+  const [value, setValueState] = useState(defaultValue || fallback);
+
+  function setValue(v: string) {
+    setValueState(v);
+    onValueChange?.(v);
+  }
   const [open, setOpen] = useState(false);
   const [viewYear, setViewYear] = useState(parsed?.y ?? today.getFullYear());
   const [viewMonth, setViewMonth] = useState(parsed?.m ?? today.getMonth());

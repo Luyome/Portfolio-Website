@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { parseContent, extractHeadings } from "@/lib/content-blocks";
 import InlineBold from "./InlineBold";
+import { fieldStyle } from "@/lib/style-fields";
+import type { StylesMap } from "@/lib/style-fields";
 
 export type GameLink = {
   id: number;
@@ -23,6 +25,7 @@ export type GameDetail = {
   year: number;
   content: string;
   links: GameLink[];
+  styles?: StylesMap;
 };
 
 export default function GameDetailOverlay({ game, onClose }: { game: GameDetail | null; onClose: () => void }) {
@@ -71,17 +74,20 @@ export default function GameDetailOverlay({ game, onClose }: { game: GameDetail 
               if (b.type === "image") {
                 return <img key={i} src={b.src} alt={b.alt} className="gdo-inline-img" />;
               }
+              const isDescFallback = !game.content.trim();
               return (
-                <p key={i} className="gdo-paragraph">
+                <p key={i} className="gdo-paragraph" style={isDescFallback ? fieldStyle(game.styles, "desc") : undefined}>
                   <InlineBold text={b.text} />
                 </p>
               );
             })}
           </div>
           <div className="gdo-side">
-            <div className="gdo-side-title">{game.title}</div>
+            <div className="gdo-side-title" style={fieldStyle(game.styles, "title")}>{game.title}</div>
             <div className="gdo-side-year">{game.year}</div>
-            <div className="gdo-side-status">{game.status} — {game.engine}</div>
+            <div className="gdo-side-status">
+              <span style={fieldStyle(game.styles, "status")}>{game.status}</span> — <span style={fieldStyle(game.styles, "engine")}>{game.engine}</span>
+            </div>
 
             {headings.length > 0 && (
               <>
@@ -99,7 +105,7 @@ export default function GameDetailOverlay({ game, onClose }: { game: GameDetail 
             <div className="gdo-side-divider" />
             <div className="gdo-side-section">
               <div className="gdo-side-lbl">Target</div>
-              <div className="gdo-side-val">{game.target}</div>
+              <div className="gdo-side-val" style={fieldStyle(game.styles, "target")}>{game.target}</div>
             </div>
             {game.feats.length > 0 && (
               <div className="gdo-side-section">

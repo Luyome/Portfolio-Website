@@ -36,6 +36,34 @@
       "when": 1785499504161,
       "tag": "0004_flowery_electro",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1785508985324,
+      "tag": "0005_nosy_bloodstrike",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1785514589230,
+      "tag": "0006_brainy_wind_dancer",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1785514616329,
+      "tag": "0007_whole_wasp",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1785518422224,
+      "tag": "0008_natural_terrax",
+      "breakpoints": true
     }
   ]
 }

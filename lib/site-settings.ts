@@ -1,5 +1,6 @@
 import { db } from "@/db";
 import { siteSettings } from "@/db/schema";
+import type { StylesMap } from "@/db/schema";
 
 export const DEFAULT_SITE_SETTINGS = {
   name: "Ege Demir Ünal",
@@ -17,8 +18,11 @@ export const DEFAULT_SITE_SETTINGS = {
     "Game Designer & worldbuilder. Building **visceral, narrative-driven** games with Unreal Engine 5. Currently developing **The Abyss** — a psychological horror anomaly game for Steam.",
   homeBgImage: "",
   homeBgOpacity: 30,
+  homeBgWidth: null as number | null,
+  homeBgHeight: null as number | null,
   contactBgImage: "",
   contactBgOpacity: 30,
+  styles: {} as StylesMap,
 };
 
 export async function getSiteSettings() {

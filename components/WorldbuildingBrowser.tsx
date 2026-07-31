@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
+import { fieldStyle, remapStyles } from "@/lib/style-fields";
+import type { StylesMap } from "@/lib/style-fields";
 
 export type WorldbuildingEntry = {
   id: number;
@@ -12,6 +14,7 @@ export type WorldbuildingEntry = {
   excerpt: string;
   chips: string[];
   img: string;
+  styles?: StylesMap;
 };
 
 const CATS = ["all", "Characters", "Cities", "Lore", "Events"];
@@ -31,6 +34,7 @@ export default function WorldbuildingBrowser({ items }: { items: WorldbuildingEn
     ],
     desc: w.excerpt,
     tags: w.chips,
+    styles: remapStyles(w.styles, { title: "title", excerpt: "desc" }),
   }));
 
   return (
@@ -63,8 +67,8 @@ export default function WorldbuildingBrowser({ items }: { items: WorldbuildingEn
             </div>
             <div className="wb-card-body">
               <span className="wb-card-cat">{w.cat}</span>
-              <div className="wb-card-title">{w.title}</div>
-              <div className="wb-card-excerpt">{w.excerpt}</div>
+              <div className="wb-card-title" style={fieldStyle(w.styles, "title")}>{w.title}</div>
+              <div className="wb-card-excerpt" style={fieldStyle(w.styles, "excerpt")}>{w.excerpt}</div>
               <div className="wb-card-chips">
                 {w.chips.map((c) => (
                   <span className="wb-chip" key={c}>{c}</span>

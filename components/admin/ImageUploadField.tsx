@@ -2,19 +2,31 @@
 
 import { useState } from "react";
 import { upload } from "@vercel/blob/client";
+import NumberPicker from "./NumberPicker";
 
 export default function ImageUploadField({
   name,
   initialUrl,
   label = "Image",
+  sizeFieldName,
+  initialSize,
+  onValueChange,
 }: {
   name: string;
   initialUrl?: string;
   label?: string;
+  sizeFieldName?: string;
+  initialSize?: { width?: number | null; height?: number | null };
+  onValueChange?: (value: string) => void;
 }) {
-  const [url, setUrl] = useState(initialUrl ?? "");
+  const [url, setUrlState] = useState(initialUrl ?? "");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function setUrl(v: string) {
+    setUrlState(v);
+    onValueChange?.(v);
+  }
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -49,6 +61,18 @@ export default function ImageUploadField({
         placeholder="https://..."
       />
       {url && <img src={url} alt="" className="adm-img-preview" />}
+      {sizeFieldName && (
+        <div className="aif-size-row">
+          <div className="aif-size-field">
+            <div className="adm-hint">Width (px) — 0 = auto</div>
+            <NumberPicker name={`${sizeFieldName}Width`} defaultValue={initialSize?.width ?? 0} min={0} max={4000} />
+          </div>
+          <div className="aif-size-field">
+            <div className="adm-hint">Height (px) — 0 = auto</div>
+            <NumberPicker name={`${sizeFieldName}Height`} defaultValue={initialSize?.height ?? 0} min={0} max={4000} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

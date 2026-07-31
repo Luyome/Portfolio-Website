@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import GameDetailOverlay, { GameDetail } from "./GameDetailOverlay";
+import { fieldStyle } from "@/lib/style-fields";
 
 export type Game = GameDetail;
 
@@ -29,9 +30,11 @@ export default function GamesBrowser({ items }: { items: Game[] }) {
             </div>
             <div className="game-row-content">
               <div className="gr-index">{String(i + 1).padStart(2, "0")}</div>
-              <div className="gr-status">{g.status} — {g.engine}</div>
-              <h3 className="gr-title" onClick={() => setOpenIndex(i)}>{g.title}</h3>
-              <p className="gr-desc">{g.desc}</p>
+              <div className="gr-status">
+                <span style={fieldStyle(g.styles, "status")}>{g.status}</span> — <span style={fieldStyle(g.styles, "engine")}>{g.engine}</span>
+              </div>
+              <h3 className="gr-title" style={fieldStyle(g.styles, "title")} onClick={() => setOpenIndex(i)}>{g.title}</h3>
+              <p className="gr-desc" style={fieldStyle(g.styles, "desc")}>{g.desc}</p>
               <div className="gr-tags">
                 {g.tags.map((t) => (
                   <span className="gr-tag" key={t}>{t}</span>

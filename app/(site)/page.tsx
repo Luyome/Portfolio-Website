@@ -4,37 +4,48 @@ import { db } from "@/db";
 import { services, heroButtons } from "@/db/schema";
 import { getSiteSettings } from "@/lib/site-settings";
 import InlineBold from "@/components/InlineBold";
+import { fieldStyle } from "@/lib/style-fields";
+import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 export default async function HomePage() {
-  const [servicesList, settings, buttons] = await Promise.all([
+  const [servicesList, settings, buttons, appearance] = await Promise.all([
     db.select().from(services).orderBy(services.sortOrder),
     getSiteSettings(),
     db.select().from(heroButtons).orderBy(asc(heroButtons.sortOrder)),
+    getPageAppearance("home"),
   ]);
 
   return (
-    <div className="page home-page">
-      <div className="home-hero">
+    <div className="page home-page" style={pageAppearanceVars(appearance)}>
+      <div className="home-hero-band">
         {settings.homeBgImage && (
           <div
             className="home-bg-image"
-            style={{ backgroundImage: `url(${settings.homeBgImage})`, opacity: settings.homeBgOpacity / 100 }}
+            style={{
+              backgroundImage: `url(${settings.homeBgImage})`,
+              opacity: settings.homeBgOpacity / 100,
+              ...(settings.homeBgWidth && settings.homeBgHeight
+                ? { backgroundSize: `${settings.homeBgWidth}px ${settings.homeBgHeight}px`, backgroundRepeat: "no-repeat" }
+                : {}),
+            }}
           />
         )}
-        <div className="home-glow" />
-        <div className="h-eyebrow">{settings.heroEyebrow}</div>
-        <h1 className="h-name">{settings.name.toLocaleUpperCase("tr-TR")}</h1>
-        <div className="h-jp">{settings.heroJpLine}</div>
-        <div className="h-rule" />
-        <p className="h-bio">
-          <InlineBold text={settings.heroBio} />
-        </p>
-        <div className="h-btns">
-          {buttons.map((b) => (
-            <Link key={b.id} className={`hbtn ${b.style === "primary" ? "hbtn-p" : "hbtn-g"}`} href={b.href}>
-              {b.label}
-            </Link>
-          ))}
+        <div className="home-hero">
+          <div className="home-glow" />
+          <div className="h-eyebrow" style={fieldStyle(settings.styles, "heroEyebrow")}>{settings.heroEyebrow}</div>
+          <h1 className="h-name">{settings.name.toLocaleUpperCase("tr-TR")}</h1>
+          <div className="h-jp" style={fieldStyle(settings.styles, "heroJpLine")}>{settings.heroJpLine}</div>
+          <div className="h-rule" />
+          <p className="h-bio" style={fieldStyle(settings.styles, "heroBio")}>
+            <InlineBold text={settings.heroBio} />
+          </p>
+          <div className="h-btns">
+            {buttons.map((b) => (
+              <Link key={b.id} className={`hbtn ${b.style === "primary" ? "hbtn-p" : "hbtn-g"}`} href={b.href}>
+                {b.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -13,14 +13,21 @@ export default function YearPicker({
   id,
   name,
   defaultValue,
+  onValueChange,
 }: {
   id?: string;
   name: string;
   defaultValue?: number | null;
+  onValueChange?: (value: number) => void;
 }) {
   const fallback = new Date().getFullYear();
-  const [value, setValue] = useState<number>(defaultValue ?? fallback);
+  const [value, setValueState] = useState<number>(defaultValue ?? fallback);
   const [draft, setDraft] = useState(String(defaultValue ?? fallback));
+
+  function setValue(v: number) {
+    setValueState(v);
+    onValueChange?.(v);
+  }
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);

@@ -1,0 +1,1 @@
+ALTER TABLE "page_appearance" ADD COLUMN "colors" jsonb DEFAULT '{}'::jsonb NOT NULL;

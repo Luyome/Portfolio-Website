@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
+import { fieldStyle, remapStyles } from "@/lib/style-fields";
+import type { StylesMap } from "@/lib/style-fields";
 
 export type Sketch = {
   id: number;
@@ -10,6 +12,7 @@ export type Sketch = {
   desc: string;
   img: string | null;
   colorHex: string | null;
+  styles?: StylesMap;
 };
 
 export default function SketchGrid({ items, initialYear }: { items: Sketch[]; initialYear?: string }) {
@@ -29,6 +32,7 @@ export default function SketchGrid({ items, initialYear }: { items: Sketch[]; in
     catLabel: "Sketch",
     metaRows: [{ label: "Year", value: String(s.year) }],
     desc: s.desc,
+    styles: remapStyles(s.styles, { label: "title", desc: "desc" }),
   }));
 
   return (
@@ -59,7 +63,7 @@ export default function SketchGrid({ items, initialYear }: { items: Sketch[]; in
               }}
             >
               <img src={s.img} alt={s.label} loading="lazy" />
-              <div className="sk-lbl">{s.label}</div>
+              <div className="sk-lbl" style={fieldStyle(s.styles, "label")}>{s.label}</div>
             </div>
           ) : (
             <div
@@ -93,6 +97,7 @@ export default function SketchGrid({ items, initialYear }: { items: Sketch[]; in
                   textTransform: "uppercase",
                   textAlign: "center",
                   lineHeight: 1.6,
+                  ...fieldStyle(s.styles, "label"),
                 }}
               >
                 {s.label}

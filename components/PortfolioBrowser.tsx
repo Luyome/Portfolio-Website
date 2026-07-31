@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
+import { fieldStyle } from "@/lib/style-fields";
+import type { StylesMap } from "@/lib/style-fields";
 
 export type PortfolioItem = {
   id: number;
@@ -14,6 +16,7 @@ export type PortfolioItem = {
   software: string;
   link: string;
   img: string;
+  styles?: StylesMap;
 };
 
 export default function PortfolioBrowser({
@@ -52,6 +55,7 @@ export default function PortfolioBrowser({
     desc: p.desc,
     tags: p.tags,
     link: p.link,
+    styles: p.styles,
   }));
 
   return (
@@ -93,8 +97,8 @@ export default function PortfolioBrowser({
             </div>
             <div className="port-info">
               <div className="pi-cat">{p.cat}</div>
-              <div className="pi-title">{p.title}</div>
-              <p className="pi-desc">{p.desc}</p>
+              <div className="pi-title" style={fieldStyle(p.styles, "title")}>{p.title}</div>
+              <p className="pi-desc" style={fieldStyle(p.styles, "desc")}>{p.desc}</p>
               <div className="pi-tags">
                 {p.tags.map((t) => (
                   <span className="pi-tag" key={t}>{t}</span>

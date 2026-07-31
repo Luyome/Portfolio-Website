@@ -9,6 +9,7 @@ export default function NumberPicker({
   min = 0,
   max = 999,
   formId,
+  onValueChange,
 }: {
   id?: string;
   name: string;
@@ -16,9 +17,15 @@ export default function NumberPicker({
   min?: number;
   max?: number;
   formId?: string;
+  onValueChange?: (value: number) => void;
 }) {
   const fallback = defaultValue ?? 0;
-  const [value, setValue] = useState(fallback);
+  const [value, setValueState] = useState(fallback);
+
+  function setValue(v: number) {
+    setValueState(v);
+    onValueChange?.(v);
+  }
   const [draft, setDraft] = useState(String(fallback));
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { services } from "@/db/schema";
 import ServiceForm from "@/components/admin/ServiceForm";
 import { updateService } from "@/lib/actions/services";
+import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 export default async function EditServicePage({
   params,
@@ -11,7 +12,10 @@ export default async function EditServicePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [item] = await db.select().from(services).where(eq(services.id, Number(id)));
+  const [[item], appearance] = await Promise.all([
+    db.select().from(services).where(eq(services.id, Number(id))),
+    getPageAppearance("home"),
+  ]);
   if (!item) notFound();
 
   const updateWithId = updateService.bind(null, item.id);
@@ -19,7 +23,7 @@ export default async function EditServicePage({
   return (
     <div>
       <div className="adm-title">Edit Service</div>
-      <ServiceForm action={updateWithId} item={item} />
+      <ServiceForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
     </div>
   );
 }

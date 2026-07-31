@@ -4,7 +4,8 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { siteSettings, heroButtons } from "@/db/schema";
-import { num, str } from "@/lib/form-utils";
+import { num, numOrNull, str } from "@/lib/form-utils";
+import { readStyles } from "@/lib/style-fields";
 
 function revalidateAll() {
   revalidatePath("/", "layout");
@@ -18,8 +19,11 @@ export async function updateHomeSettings(formData: FormData) {
     heroBio: str(formData.get("heroBio")),
     homeBgImage: str(formData.get("homeBgImage")),
     homeBgOpacity: num(formData.get("homeBgOpacity")),
+    homeBgWidth: numOrNull(formData.get("homeBgWidth")),
+    homeBgHeight: numOrNull(formData.get("homeBgHeight")),
     contactBgImage: str(formData.get("contactBgImage")),
     contactBgOpacity: num(formData.get("contactBgOpacity")),
+    styles: readStyles(formData, ["heroEyebrow", "heroJpLine", "heroBio"]),
   };
 
   const [existing] = await db.select().from(siteSettings).limit(1);

@@ -6,6 +6,7 @@ import GameForm from "@/components/admin/GameForm";
 import DeleteButton from "@/components/admin/DeleteButton";
 import NumberPicker from "@/components/admin/NumberPicker";
 import { updateGame, createGameLink, updateGameLink, deleteGameLink } from "@/lib/actions/games";
+import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 export default async function EditGamePage({
   params,
@@ -17,7 +18,10 @@ export default async function EditGamePage({
   const [item] = await db.select().from(games).where(eq(games.id, gameId));
   if (!item) notFound();
 
-  const links = await db.select().from(gameLinks).where(eq(gameLinks.gameId, gameId)).orderBy(asc(gameLinks.sortOrder));
+  const [links, appearance] = await Promise.all([
+    db.select().from(gameLinks).where(eq(gameLinks.gameId, gameId)).orderBy(asc(gameLinks.sortOrder)),
+    getPageAppearance("games"),
+  ]);
 
   const updateWithId = updateGame.bind(null, item.id);
   const createLinkWithId = createGameLink.bind(null, gameId);
@@ -25,7 +29,7 @@ export default async function EditGamePage({
   return (
     <div>
       <div className="adm-title">Edit Game</div>
-      <GameForm action={updateWithId} item={item} />
+      <GameForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
 
       <p className="adm-sub" style={{ marginTop: 48 }}>Links</p>
       <p className="adm-sub" style={{ marginTop: 0 }}>Shown in the game&apos;s detail panel on the public Games page (Steam, trailer, Discord, etc).</p>

@@ -10,11 +10,14 @@ import {
 import DeleteButton from "@/components/admin/DeleteButton";
 import TimelineYearPicker from "@/components/admin/TimelineYearPicker";
 import NumberPicker from "@/components/admin/NumberPicker";
+import AboutForm from "@/components/admin/AboutForm";
+import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 export default async function AdminAboutPage() {
-  const [aboutRows, timeline] = await Promise.all([
+  const [aboutRows, timeline, appearance] = await Promise.all([
     db.select().from(aboutContent).limit(1),
     db.select().from(timelineEntries).orderBy(asc(timelineEntries.sortOrder)),
+    getPageAppearance("about"),
   ]);
   const about = aboutRows[0];
 
@@ -23,24 +26,14 @@ export default async function AdminAboutPage() {
       <div className="adm-title">About</div>
 
       <p className="adm-sub">Who I Am &amp; Tools</p>
-      <form action={updateAboutContent} className="adm-form">
-        <div className="adm-field">
-          <label htmlFor="whoIAmParagraphs">Who I Am (paragraphs)</label>
-          <textarea
-            id="whoIAmParagraphs"
-            name="whoIAmParagraphs"
-            defaultValue={about?.whoIAmParagraphs.join("\n")}
-            style={{ minHeight: 160 }}
-          />
-          <div className="adm-hint">One paragraph per line.</div>
-        </div>
-        <div className="adm-field">
-          <label htmlFor="tools">Tools</label>
-          <input id="tools" name="tools" defaultValue={about?.tools.join(", ")} />
-          <div className="adm-hint">Comma separated, e.g. Unreal Engine 5, Blender, ZBrush</div>
-        </div>
-        <button type="submit" className="adm-btn">Save</button>
-      </form>
+      <AboutForm
+        action={updateAboutContent}
+        whoIAmParagraphs={about?.whoIAmParagraphs.join("\n") ?? ""}
+        tools={about?.tools.join(", ") ?? ""}
+        timeline={timeline}
+        styles={about?.styles}
+        pageVars={pageAppearanceVars(appearance)}
+      />
 
       <p className="adm-sub" style={{ marginTop: 48 }}>Timeline</p>
       <table className="adm-table">

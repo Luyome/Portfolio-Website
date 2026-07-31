@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { fieldStyle } from "@/lib/style-fields";
+import type { StylesMap } from "@/lib/style-fields";
 
 export type GalleryItem = {
   img: string | null;
@@ -10,6 +12,7 @@ export type GalleryItem = {
   desc?: string;
   tags?: string[];
   link?: string;
+  styles?: StylesMap;
 };
 
 const NO_IMAGE_SVG =
@@ -73,7 +76,7 @@ export default function GalleryModal({
               <span className="gm-cat-lbl">{item.catLabel}</span>
               <button className="gm-close" onClick={onClose}>✕ &nbsp; Close</button>
             </div>
-            <div className="gm-title">{item.title}</div>
+            <div className="gm-title" style={fieldStyle(item.styles, "title")}>{item.title}</div>
             {item.metaRows && item.metaRows.length > 0 && (
               <div>
                 {item.metaRows.map((row) => (
@@ -85,7 +88,7 @@ export default function GalleryModal({
               </div>
             )}
             <div className="gm-desc-wrap">
-              {item.desc && <div className="gm-desc">{item.desc}</div>}
+              {item.desc && <div className="gm-desc" style={fieldStyle(item.styles, "desc")}>{item.desc}</div>}
               {item.tags && item.tags.length > 0 && (
                 <div className="gm-tags">
                   {item.tags.map((t) => (

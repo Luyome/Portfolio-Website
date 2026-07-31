@@ -1,4 +1,12 @@
-import { pgTable, serial, integer, text, timestamp, doublePrecision } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb } from "drizzle-orm/pg-core";
+
+export type ThemedColor = { dark?: string; light?: string };
+export type FieldStyle = { color?: ThemedColor; fontSize?: string };
+export type StylesMap = Record<string, FieldStyle>;
+const stylesColumn = () => jsonb("styles").$type<StylesMap>().notNull().default({});
+
+export type PageColorKey = "bg" | "bg2" | "bg3" | "text" | "text2" | "accent";
+export type PageColorMap = Partial<Record<PageColorKey, ThemedColor>>;
 
 export const services = pgTable("services", {
   id: serial("id").primaryKey(),
@@ -22,6 +30,7 @@ export const portfolioItems = pgTable("portfolio_items", {
   img: text("img").notNull(),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  styles: stylesColumn(),
 });
 
 export const sketches = pgTable("sketches", {
@@ -33,6 +42,7 @@ export const sketches = pgTable("sketches", {
   colorHex: text("color_hex"),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  styles: stylesColumn(),
 });
 
 export const worldbuildingEntries = pgTable("worldbuilding_entries", {
@@ -46,6 +56,7 @@ export const worldbuildingEntries = pgTable("worldbuilding_entries", {
   img: text("img").notNull(),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  styles: stylesColumn(),
 });
 
 export const games = pgTable("games", {
@@ -62,6 +73,7 @@ export const games = pgTable("games", {
   content: text("content").notNull().default(""),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  styles: stylesColumn(),
 });
 
 export const gameLinks = pgTable("game_links", {
@@ -91,6 +103,7 @@ export const aboutContent = pgTable("about_content", {
   id: serial("id").primaryKey(),
   whoIAmParagraphs: text("who_i_am_paragraphs").array().notNull().default([]),
   tools: text("tools").array().notNull().default([]),
+  styles: stylesColumn(),
 });
 
 export const timelineEntries = pgTable("timeline_entries", {
@@ -118,8 +131,11 @@ export const siteSettings = pgTable("site_settings", {
   ),
   homeBgImage: text("home_bg_image").notNull().default(""),
   homeBgOpacity: integer("home_bg_opacity").notNull().default(30),
+  homeBgWidth: integer("home_bg_width"),
+  homeBgHeight: integer("home_bg_height"),
   contactBgImage: text("contact_bg_image").notNull().default(""),
   contactBgOpacity: integer("contact_bg_opacity").notNull().default(30),
+  styles: stylesColumn(),
 });
 
 export const heroButtons = pgTable("hero_buttons", {
@@ -127,5 +143,18 @@ export const heroButtons = pgTable("hero_buttons", {
   label: text("label").notNull(),
   href: text("href").notNull(),
   style: text("style").notNull().default("primary"),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const pageAppearance = pgTable("page_appearance", {
+  id: serial("id").primaryKey(),
+  page: text("page").notNull().unique(),
+  colors: jsonb("colors").$type<PageColorMap>().notNull().default({}),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const archiveCategories = pgTable("archive_categories", {
+  id: serial("id").primaryKey(),
+  label: text("label").notNull(),
   sortOrder: integer("sort_order").notNull().default(0),
 });

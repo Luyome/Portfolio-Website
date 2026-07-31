@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { portfolioItems } from "@/db/schema";
 import { num, parseCsv, str } from "@/lib/form-utils";
+import { readStyles } from "@/lib/style-fields";
 
 function readFields(formData: FormData) {
   return {
@@ -19,6 +20,7 @@ function readFields(formData: FormData) {
     link: str(formData.get("link")),
     img: str(formData.get("img")),
     sortOrder: num(formData.get("sortOrder")),
+    styles: readStyles(formData, ["title", "desc"]),
   };
 }
 

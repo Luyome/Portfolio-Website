@@ -2,6 +2,7 @@ import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { portfolioItems } from "@/db/schema";
 import PortfolioBrowser from "@/components/PortfolioBrowser";
+import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 export default async function PortfolioPage({
   searchParams,
@@ -9,13 +10,13 @@ export default async function PortfolioPage({
   searchParams: Promise<{ year?: string }>;
 }) {
   const { year } = await searchParams;
-  const items = await db
-    .select()
-    .from(portfolioItems)
-    .orderBy(desc(portfolioItems.year), asc(portfolioItems.sortOrder));
+  const [items, appearance] = await Promise.all([
+    db.select().from(portfolioItems).orderBy(desc(portfolioItems.year), asc(portfolioItems.sortOrder)),
+    getPageAppearance("portfolio"),
+  ]);
 
   return (
-    <div className="page">
+    <div className="page" style={pageAppearanceVars(appearance)}>
       <div className="ph">
         <div className="ph-wm">作品</div>
         <div className="ph-eyebrow">Works</div>

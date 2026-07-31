@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { worldbuildingEntries } from "@/db/schema";
 import { num, parseCsv, str } from "@/lib/form-utils";
+import { readStyles } from "@/lib/style-fields";
 
 function readFields(formData: FormData) {
   return {
@@ -17,6 +18,7 @@ function readFields(formData: FormData) {
     chips: parseCsv(formData.get("chips")),
     img: str(formData.get("img")),
     sortOrder: num(formData.get("sortOrder")),
+    styles: readStyles(formData, ["title", "excerpt"]),
   };
 }
 

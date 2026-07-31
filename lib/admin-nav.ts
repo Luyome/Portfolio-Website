@@ -1,11 +1,36 @@
-export const ADMIN_LINKS = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/home", label: "Home" },
-  { href: "/admin/portfolio", label: "Portfolio" },
-  { href: "/admin/sketches", label: "Sketches" },
-  { href: "/admin/worldbuilding", label: "Worldbuilding" },
-  { href: "/admin/map", label: "Map" },
-  { href: "/admin/games", label: "Games" },
-  { href: "/admin/about", label: "About" },
-  { href: "/admin/settings", label: "Settings" },
+export type AdminNavItem = { href: string; label: string };
+export type AdminNavSection = { section: string | null; items: AdminNavItem[] };
+
+export const ADMIN_NAV: AdminNavSection[] = [
+  { section: null, items: [{ href: "/admin", label: "Dashboard" }] },
+  {
+    section: "Content",
+    items: [
+      { href: "/admin/home", label: "Home" },
+      { href: "/admin/portfolio", label: "Portfolio" },
+      { href: "/admin/sketches", label: "Sketches" },
+      { href: "/admin/worldbuilding", label: "Worldbuilding" },
+      { href: "/admin/games", label: "Games" },
+      { href: "/admin/services", label: "Services" },
+    ],
+  },
+  {
+    section: "Archive",
+    items: [{ href: "/admin/archive", label: "Archive" }],
+  },
+  {
+    section: "Appearance",
+    items: [{ href: "/admin/appearance", label: "Appearance" }],
+  },
+  {
+    section: "Site",
+    items: [
+      { href: "/admin/about", label: "About" },
+      { href: "/admin/map", label: "Map" },
+    ],
+  },
+  {
+    section: "Settings",
+    items: [{ href: "/admin/settings", label: "Settings" }],
+  },
 ];

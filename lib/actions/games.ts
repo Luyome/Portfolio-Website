@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { games, gameLinks } from "@/db/schema";
 import { num, parseCsv, parseLines, str } from "@/lib/form-utils";
+import { readStyles } from "@/lib/style-fields";
 
 function readFields(formData: FormData) {
   return {
@@ -20,6 +21,7 @@ function readFields(formData: FormData) {
     year: num(formData.get("year")),
     content: str(formData.get("content")),
     sortOrder: num(formData.get("sortOrder")),
+    styles: readStyles(formData, ["title", "status", "engine", "desc", "target"]),
   };
 }
 

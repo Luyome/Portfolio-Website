@@ -4,12 +4,13 @@ import { db } from "@/db";
 import { heroButtons, services } from "@/db/schema";
 import { getSiteSettings } from "@/lib/site-settings";
 import { updateHomeSettings, createHeroButton, updateHeroButton, deleteHeroButton } from "@/lib/actions/home";
-import ImageUploadField from "@/components/admin/ImageUploadField";
 import DeleteButton from "@/components/admin/DeleteButton";
 import HeroLinkPicker from "@/components/admin/HeroLinkPicker";
 import OptionPicker from "@/components/admin/OptionPicker";
 import NumberPicker from "@/components/admin/NumberPicker";
 import ResizableTh from "@/components/admin/ResizableTh";
+import HomeHeroForm from "@/components/admin/HomeHeroForm";
+import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 const STYLE_OPTIONS = [
   { label: "Primary", value: "primary" },
@@ -17,10 +18,11 @@ const STYLE_OPTIONS = [
 ];
 
 export default async function AdminHomePage() {
-  const [settings, buttons, serviceRows] = await Promise.all([
+  const [settings, buttons, serviceRows, appearance] = await Promise.all([
     getSiteSettings(),
     db.select().from(heroButtons).orderBy(asc(heroButtons.sortOrder)),
     db.select().from(services),
+    getPageAppearance("home"),
   ]);
 
   return (
@@ -29,32 +31,7 @@ export default async function AdminHomePage() {
       <p className="adm-sub">Manage the main website&apos;s Home page — background, hero text, and shortcut buttons.</p>
 
       <p className="adm-sub" style={{ marginTop: 0 }}>Hero Content</p>
-      <form action={updateHomeSettings} className="adm-form">
-        <div className="adm-field">
-          <label htmlFor="heroEyebrow">Eyebrow</label>
-          <input id="heroEyebrow" name="heroEyebrow" defaultValue={settings.heroEyebrow} placeholder="Istanbul, Turkey — 2026" />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="heroJpLine">Japanese Subtitle</label>
-          <input id="heroJpLine" name="heroJpLine" defaultValue={settings.heroJpLine} />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="heroBio">Bio</label>
-          <textarea id="heroBio" name="heroBio" defaultValue={settings.heroBio} style={{ minHeight: 110 }} />
-          <div className="adm-hint">Wrap words in **double asterisks** to bold them, e.g. **The Abyss**.</div>
-        </div>
-        <ImageUploadField name="homeBgImage" initialUrl={settings.homeBgImage} label="Hero Background Image" />
-        <div className="adm-field">
-          <label htmlFor="homeBgOpacity">Hero Background Opacity ({settings.homeBgOpacity}%)</label>
-          <input id="homeBgOpacity" name="homeBgOpacity" type="range" min={0} max={100} defaultValue={settings.homeBgOpacity} />
-        </div>
-        <ImageUploadField name="contactBgImage" initialUrl={settings.contactBgImage} label="Let's Work Together Background Image" />
-        <div className="adm-field">
-          <label htmlFor="contactBgOpacity">Let&apos;s Work Together Background Opacity ({settings.contactBgOpacity}%)</label>
-          <input id="contactBgOpacity" name="contactBgOpacity" type="range" min={0} max={100} defaultValue={settings.contactBgOpacity} />
-        </div>
-        <button type="submit" className="adm-btn">Save</button>
-      </form>
+      <HomeHeroForm action={updateHomeSettings} settings={settings} pageVars={pageAppearanceVars(appearance)} />
 
       <p className="adm-sub" style={{ marginTop: 48 }}>Hero Buttons</p>
       <table className="adm-table">

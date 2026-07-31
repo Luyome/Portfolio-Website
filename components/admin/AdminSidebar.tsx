@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/lib/actions/auth";
-import { ADMIN_LINKS } from "@/lib/admin-nav";
+import { ADMIN_NAV } from "@/lib/admin-nav";
 import BackToSiteButton from "@/components/admin/BackToSiteButton";
 
 export default function AdminSidebar() {
@@ -22,15 +22,20 @@ export default function AdminSidebar() {
         </div>
       </div>
       <nav className="adm-sb-nav">
-        {ADMIN_LINKS.map((l) => (
-          <Link
-            key={l.href}
-            href={l.href}
-            className={`adm-sb-link ${isActive(l.href) ? "on" : ""}`}
-          >
-            <span className="adm-sb-dot" />
-            {l.label}
-          </Link>
+        {ADMIN_NAV.map((section, i) => (
+          <div key={section.section ?? `top-${i}`} className="adm-sb-group">
+            {section.section && <div className="adm-sb-section-label">{section.section}</div>}
+            {section.items.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={`adm-sb-link ${isActive(l.href) ? "on" : ""}`}
+              >
+                <span className="adm-sb-dot" />
+                {l.label}
+              </Link>
+            ))}
+          </div>
         ))}
       </nav>
       <div className="adm-sb-foot">

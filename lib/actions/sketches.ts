@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { sketches } from "@/db/schema";
 import { num, str } from "@/lib/form-utils";
+import { readStyles } from "@/lib/style-fields";
 
 function readFields(formData: FormData) {
   const img = str(formData.get("img"));
@@ -17,6 +18,7 @@ function readFields(formData: FormData) {
     img: img || null,
     colorHex: colorHex || null,
     sortOrder: num(formData.get("sortOrder")),
+    styles: readStyles(formData, ["label", "desc"]),
   };
 }
 

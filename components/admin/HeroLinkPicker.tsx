@@ -18,18 +18,25 @@ export default function HeroLinkPicker({
   hrefName,
   defaultLabel,
   defaultHref,
+  onValueChange,
 }: {
   labelName: string;
   hrefName: string;
   defaultLabel?: string;
   defaultHref?: string;
+  onValueChange?: (value: { label: string; href: string }) => void;
 }) {
   const matched = PAGE_OPTIONS.find((p) => p.href === defaultHref);
   // Preserve any existing href that isn't one of the known pages (external URL, mailto:, etc.)
   // instead of silently discarding it in favor of Home.
   const custom = !matched && defaultHref ? { label: defaultLabel || defaultHref, href: defaultHref } : null;
   const options = custom ? [custom, ...PAGE_OPTIONS] : PAGE_OPTIONS;
-  const [selected, setSelected] = useState(matched ?? custom ?? PAGE_OPTIONS[0]);
+  const [selected, setSelectedState] = useState(matched ?? custom ?? PAGE_OPTIONS[0]);
+
+  function setSelected(opt: { label: string; href: string }) {
+    setSelectedState(opt);
+    onValueChange?.(opt);
+  }
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 

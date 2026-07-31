@@ -2,11 +2,13 @@ import { asc } from "drizzle-orm";
 import { db } from "@/db";
 import { games, gameLinks } from "@/db/schema";
 import GamesBrowser from "@/components/GamesBrowser";
+import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 export default async function GamesPage() {
-  const [rows, linkRows] = await Promise.all([
+  const [rows, linkRows, appearance] = await Promise.all([
     db.select().from(games).orderBy(asc(games.sortOrder)),
     db.select().from(gameLinks).orderBy(asc(gameLinks.sortOrder)),
+    getPageAppearance("games"),
   ]);
 
   const items = rows.map((g) => ({
@@ -15,7 +17,7 @@ export default async function GamesPage() {
   }));
 
   return (
-    <div className="page">
+    <div className="page" style={pageAppearanceVars(appearance)}>
       <div className="ph">
         <div className="ph-wm">ゲーム</div>
         <div className="ph-eyebrow">Game Development</div>

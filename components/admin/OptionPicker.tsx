@@ -8,15 +8,22 @@ export default function OptionPicker({
   options,
   defaultValue,
   formId,
+  onValueChange,
 }: {
   id?: string;
   name: string;
   options: { label: string; value: string }[];
   defaultValue?: string;
   formId?: string;
+  onValueChange?: (value: string) => void;
 }) {
   const initial = options.find((o) => o.value === defaultValue) ?? options[0];
-  const [selected, setSelected] = useState(initial);
+  const [selected, setSelectedState] = useState(initial);
+
+  function setSelected(opt: { label: string; value: string }) {
+    setSelectedState(opt);
+    onValueChange?.(opt.value);
+  }
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 

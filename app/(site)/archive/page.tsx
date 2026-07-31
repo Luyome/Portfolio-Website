@@ -1,64 +1,68 @@
-import Link from "next/link";
+import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { portfolioItems, sketches, worldbuildingEntries } from "@/db/schema";
+import { portfolioItems, sketches, worldbuildingEntries, games, archiveCategories } from "@/db/schema";
+import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import ArchiveList from "@/components/ArchiveList";
+import type { ArchiveItem } from "@/components/ArchiveList";
 
 export default async function ArchivePage() {
-  const [port, sk, wb] = await Promise.all([
+  const [port, sk, wb, gm, categories, appearance] = await Promise.all([
     db.select().from(portfolioItems),
     db.select().from(sketches),
     db.select().from(worldbuildingEntries),
+    db.select().from(games),
+    db.select().from(archiveCategories).orderBy(asc(archiveCategories.sortOrder)),
+    getPageAppearance("archive"),
   ]);
 
-  const all = [...port, ...sk, ...wb];
-  const years = Array.from(new Set(all.map((d) => d.year))).sort((a, b) => b - a);
+  const items: ArchiveItem[] = [
+    ...port.map((p) => ({
+      id: `portfolio-${p.id}`,
+      type: "Portfolio" as const,
+      title: p.title,
+      cat: p.cat,
+      year: p.year,
+      img: p.img,
+      href: `/portfolio?year=${p.year}`,
+    })),
+    ...sk.map((s) => ({
+      id: `sketch-${s.id}`,
+      type: "Sketches" as const,
+      title: s.label,
+      cat: "Sketch",
+      year: s.year,
+      img: s.img ?? "",
+      href: `/sketches?year=${s.year}`,
+    })),
+    ...wb.map((w) => ({
+      id: `worldbuilding-${w.id}`,
+      type: "Worldbuilding" as const,
+      title: w.title,
+      cat: w.cat,
+      year: w.year,
+      img: w.img,
+      href: "/worldbuilding",
+    })),
+    ...gm.map((g) => ({
+      id: `game-${g.id}`,
+      type: "Games" as const,
+      title: g.title,
+      cat: g.status,
+      year: g.year,
+      img: g.img,
+      href: "/games",
+    })),
+  ].sort((a, b) => b.year - a.year);
 
   return (
-    <div className="page">
+    <div className="page" style={pageAppearanceVars(appearance)}>
       <div className="ph">
         <div className="ph-wm">記録</div>
         <div className="ph-eyebrow">Year by Year</div>
         <h2 className="ph-title">Archive</h2>
-        <p className="ph-sub">Browse all work by year.</p>
+        <p className="ph-sub">Every project, sketch, world, and game — in one place.</p>
       </div>
-      <div className="archive-wrap">
-        <p className="archive-intro">Select a year to browse all work from that period.</p>
-        <div className="arc-list">
-          {years.map((y) => {
-            const count = all.filter((d) => d.year === y).length;
-            const hasPortfolio = port.some((d) => d.year === y);
-            const hasSketches = sk.some((d) => d.year === y);
-            const hasWorldbuilding = wb.some((d) => d.year === y);
-            const cats = Array.from(
-              new Set([
-                ...port.filter((d) => d.year === y).map((d) => d.cat),
-                ...(hasSketches ? ["Sketch"] : []),
-                ...(hasWorldbuilding ? ["Worldbuilding"] : []),
-              ])
-            );
-            // Link to whichever section actually has content for this year —
-            // /portfolio?year=Y is a dead empty grid for years with only sketches/worldbuilding.
-            const href = hasPortfolio
-              ? `/portfolio?year=${y}`
-              : hasSketches
-                ? `/sketches?year=${y}`
-                : "/worldbuilding";
-            return (
-              <Link className="arc-card" href={href} key={y}>
-                <div className="arc-y">{y}</div>
-                <div className="arc-info">
-                  <div className="arc-cnt">{count} pieces</div>
-                  <div className="arc-cats">
-                    {cats.map((c) => (
-                      <span className="arc-cat" key={c}>{c}</span>
-                    ))}
-                  </div>
-                </div>
-                <button className="arc-btn">Browse {y} →</button>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
+      <ArchiveList items={items} categories={categories.map((c) => c.label)} />
     </div>
   );
 }
