@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-export type ArchiveItemType = "Portfolio" | "Sketches" | "Worldbuilding" | "Games";
+export type ArchiveItemType = "Portfolio" | "Sketches" | "3D" | "Worldbuilding" | "Games";
 
 export type ArchiveItem = {
   id: string;
@@ -14,7 +14,7 @@ export type ArchiveItem = {
   href: string;
 };
 
-const TYPES: ArchiveItemType[] = ["Portfolio", "Sketches", "Worldbuilding", "Games"];
+const TYPES: ArchiveItemType[] = ["Portfolio", "Sketches", "3D", "Worldbuilding", "Games"];
 
 export default function ArchiveList({ items, categories }: { items: ArchiveItem[]; categories: string[] }) {
   const [year, setYear] = useState("all");

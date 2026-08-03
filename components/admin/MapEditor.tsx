@@ -5,6 +5,7 @@ import { createMapLocation, updateMapLocationPosition, updateMapImage } from "@/
 import { useMapPanZoom } from "@/hooks/useMapPanZoom";
 import ImageUploadField from "./ImageUploadField";
 import MapPinEditPanel from "./MapPinEditPanel";
+import SaveButton from "./SaveButton";
 import type { MapLocation } from "@/lib/map-types";
 
 export default function MapEditor({
@@ -21,7 +22,7 @@ export default function MapEditor({
   const canvasRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const dragState = useRef<{ id: number; moved: boolean } | null>(null);
-  const { zoom, setZoom, minZoom, maxZoom, fitSize, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(viewportRef);
+  const { zoom, setZoom, minZoom, maxZoom, aspectRatio, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(viewportRef);
 
   function coordsFromEvent(e: { clientX: number; clientY: number }) {
     const rect = canvasRef.current!.getBoundingClientRect();
@@ -73,7 +74,7 @@ export default function MapEditor({
     <div>
       <form action={updateMapImage} className="adm-form" style={{ marginBottom: 32 }}>
         <ImageUploadField name="imageUrl" initialUrl={imageUrl} label="Map Background Image" />
-        <button type="submit" className="adm-btn">Save Map Image</button>
+        <SaveButton>Save Map Image</SaveButton>
       </form>
 
       <div className="map-admin-toolbar">
@@ -108,6 +109,7 @@ export default function MapEditor({
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
+        style={aspectRatio ? { aspectRatio } : undefined}
       >
         <div
           className="map-canvas"
@@ -121,7 +123,6 @@ export default function MapEditor({
               alt="Map"
               className="map-image"
               draggable={false}
-              style={fitSize ? { width: fitSize.width, height: fitSize.height } : undefined}
             />
           ) : (
             <div className="map-empty">Upload a map image above to get started.</div>

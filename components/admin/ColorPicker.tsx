@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 
 const SWATCHES = [
-  "#c2415e", "#8a2438", "#d4536f", "#6b1c2c",
+  "#c1121f", "#e0293a", "#910e17", "#8a2438",
   "#f0e6dc", "#241417", "#c7b7ab", "#4a2f34",
-  "#0f0a0b", "#f8f1e8", "#7d6b64", "#8c7770",
+  "#171011", "#f8f1e8", "#7d6b64", "#8c7770",
 ];
 
 const HEX_RE = /^#[0-9a-fA-F]{6}$/;

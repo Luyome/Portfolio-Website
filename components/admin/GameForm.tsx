@@ -5,9 +5,11 @@ import type { CSSProperties } from "react";
 import ImageUploadField from "./ImageUploadField";
 import YearPicker from "./YearPicker";
 import ContentEditor from "./ContentEditor";
+import OrderPicker from "./OrderPicker";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import GamePreviewCard from "./GamePreviewCard";
+import SaveButton from "./SaveButton";
 import type { games } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
@@ -124,10 +126,17 @@ export default function GameForm({
         <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
         <ContentEditor name="content" defaultValue={item?.content} />
         <div className="adm-field">
+          <label>Content Order</label>
+          <div className="adm-hint" style={{ marginBottom: 8 }}>
+            Where Content lands relative to Gallery Images and Videos (lower number = earlier).
+          </div>
+          <OrderPicker name="contentOrder" defaultValue={item?.contentOrder ?? 0} />
+        </div>
+        <div className="adm-field">
           <label htmlFor="sortOrder">Sort Order</label>
           <input id="sortOrder" name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
         </div>
-        <button type="submit" className="adm-btn">Save</button>
+        <SaveButton />
       </form>
     </PreviewToggle>
   );

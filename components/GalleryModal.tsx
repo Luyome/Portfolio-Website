@@ -1,19 +1,39 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
+import { parseContent, extractHeadings } from "@/lib/content-blocks";
+import { downloadUrl } from "@/lib/download-url";
+import { toEmbedUrl } from "@/lib/video-embed";
+import type { MediaEntry } from "@/lib/group-images";
+import InlineBold from "./InlineBold";
+import ImageZoomOverlay from "./ImageZoomOverlay";
+
+export type GalleryLink = { id: number | string; label: string; href: string; kind?: string };
 
 export type GalleryItem = {
   img: string | null;
+  images?: MediaEntry[];
+  videos?: MediaEntry[];
   title: string;
   catLabel: string;
+  subtitle?: string;
   metaRows?: { label: string; value: string }[];
   desc?: string;
+  content?: string;
+  contentOrder?: number;
+  feats?: string[];
   tags?: string[];
   link?: string;
+  links?: GalleryLink[];
   styles?: StylesMap;
 };
+
+type SeqEntry =
+  | { kind: "content"; order: number }
+  | { kind: "image"; order: number; url: string }
+  | { kind: "video"; order: number; embed: string };
 
 const NO_IMAGE_SVG =
   'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="%23151010"/><text fill="%23555" x="50%25" y="50%25" font-size="18" text-anchor="middle" dy=".35em">No Image</text></svg>';
@@ -31,17 +51,62 @@ export default function GalleryModal({
 }) {
   const open = index !== null;
   const item = open ? items[index] : null;
+  const [zoomSrc, setZoomSrc] = useState<string | null>(null);
+  const readingRef = useRef<HTMLDivElement>(null);
+
+  function goTo(next: number) {
+    setZoomSrc(null);
+    onNavigate(next);
+  }
 
   useEffect(() => {
     if (!open) return;
     function onKeyDown(e: KeyboardEvent) {
+      if (zoomSrc) return;
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft" && index !== null && index > 0) onNavigate(index - 1);
-      if (e.key === "ArrowRight" && index !== null && index < items.length - 1) onNavigate(index + 1);
+      if (e.key === "ArrowLeft" && index !== null && index > 0) goTo(index - 1);
+      if (e.key === "ArrowRight" && index !== null && index < items.length - 1) goTo(index + 1);
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, index, items.length, onClose, onNavigate]);
+  }, [open, index, items.length, onClose, zoomSrc]); // eslint-disable-line react-hooks/exhaustive-deps -- goTo is stable across renders (only closes over onNavigate/setZoomSrc)
+
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (readingRef.current) readingRef.current.scrollTop = 0;
+  }, [index]);
+
+  const hasRichContent = !!item?.content?.trim();
+  const blocks = hasRichContent ? parseContent(item!.content!) : [];
+  const headings = hasRichContent ? extractHeadings(item!.content!) : [];
+
+  const imageEntries: SeqEntry[] = (item?.images ?? []).map((im) => ({
+    kind: "image",
+    order: im.order,
+    url: im.url,
+  }));
+  const videoEntries: SeqEntry[] = (item?.videos ?? [])
+    .map((v) => ({ order: v.order, embed: toEmbedUrl(v.url) }))
+    .filter((v): v is { order: number; embed: string } => !!v.embed)
+    .map((v) => ({ kind: "video", order: v.order, embed: v.embed }));
+  const sequence: SeqEntry[] = (
+    hasRichContent
+      ? [{ kind: "content", order: item?.contentOrder ?? 0 } as SeqEntry, ...imageEntries, ...videoEntries]
+      : [...imageEntries, ...videoEntries]
+  ).sort((a, b) => a.order - b.order);
+
+  function scrollToHeading(slug: string) {
+    const el = readingRef.current?.querySelector(`#${CSS.escape(slug)}`);
+    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   return (
     <div
@@ -53,19 +118,124 @@ export default function GalleryModal({
       {item && (
         <div className="gm-panel">
           <div className="gm-img-side">
-            <img src={item.img || NO_IMAGE_SVG} alt={item.title} />
+            <div className="gm-img-scroll" ref={readingRef}>
+              {hasRichContent ? (
+                <div className="gm-reading">
+                  {item.img ? (
+                    <div className="gm-reading-cover" onClick={() => setZoomSrc(item.img!)}>
+                      <img src={item.img} alt={item.title} />
+                    </div>
+                  ) : sequence.length === 0 ? (
+                    <div className="gm-reading-cover">
+                      <img src={NO_IMAGE_SVG} alt={item.title} />
+                    </div>
+                  ) : null}
+                  {sequence.map((entry, i) => {
+                    if (entry.kind === "content") {
+                      return (
+                        <div key="content">
+                          {blocks.map((b, bi) => {
+                            if (b.type === "heading") {
+                              return <h3 key={bi} id={b.slug} className="gm-reading-heading">{b.text}</h3>;
+                            }
+                            if (b.type === "image") {
+                              return (
+                                <img
+                                  key={bi}
+                                  src={b.src}
+                                  alt={b.alt}
+                                  className="gm-reading-img"
+                                  onClick={() => setZoomSrc(b.src)}
+                                />
+                              );
+                            }
+                            if (b.type === "video") {
+                              const embed = toEmbedUrl(b.src);
+                              if (!embed) return null;
+                              return (
+                                <iframe
+                                  key={bi}
+                                  src={embed}
+                                  className="gm-video-embed gm-reading-video"
+                                  title={`${item.title} video`}
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              );
+                            }
+                            return (
+                              <p key={bi} className="gm-reading-p">
+                                <InlineBold text={b.text} />
+                              </p>
+                            );
+                          })}
+                        </div>
+                      );
+                    }
+                    if (entry.kind === "image") {
+                      return (
+                        <img
+                          key={`img-${i}`}
+                          src={entry.url}
+                          alt={item.title}
+                          className="gm-reading-img"
+                          onClick={() => setZoomSrc(entry.url)}
+                        />
+                      );
+                    }
+                    return (
+                      <iframe
+                        key={`vid-${i}`}
+                        src={entry.embed}
+                        className="gm-video-embed gm-reading-video"
+                        title={`${item.title} video`}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="gm-img-list">
+                  {item.img ? (
+                    <img src={item.img} alt={item.title} onClick={() => setZoomSrc(item.img!)} />
+                  ) : sequence.length === 0 ? (
+                    <img src={NO_IMAGE_SVG} alt={item.title} />
+                  ) : null}
+                  {sequence.map((entry, i) =>
+                    entry.kind === "video" ? (
+                      <iframe
+                        key={`vid-${i}`}
+                        src={entry.embed}
+                        className="gm-video-embed"
+                        title={`${item.title} video ${i + 1}`}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : entry.kind === "image" ? (
+                      <img
+                        key={`img-${i}`}
+                        src={entry.url}
+                        alt={item.title}
+                        onClick={() => setZoomSrc(entry.url)}
+                      />
+                    ) : null
+                  )}
+                </div>
+              )}
+            </div>
             <div className="gm-nav">
               <button
                 className="gm-nav-btn"
                 disabled={index === 0}
-                onClick={() => index !== null && onNavigate(index - 1)}
+                onClick={() => index !== null && goTo(index - 1)}
               >
                 ← Prev
               </button>
               <button
                 className="gm-nav-btn"
                 disabled={index === items.length - 1}
-                onClick={() => index !== null && onNavigate(index + 1)}
+                onClick={() => index !== null && goTo(index + 1)}
               >
                 Next →
               </button>
@@ -77,6 +247,7 @@ export default function GalleryModal({
               <button className="gm-close" onClick={onClose}>✕ &nbsp; Close</button>
             </div>
             <div className="gm-title" style={fieldStyle(item.styles, "title")}>{item.title}</div>
+            {item.subtitle && <div className="gm-subtitle">{item.subtitle}</div>}
             {item.metaRows && item.metaRows.length > 0 && (
               <div>
                 {item.metaRows.map((row) => (
@@ -86,6 +257,18 @@ export default function GalleryModal({
                   </div>
                 ))}
               </div>
+            )}
+            {headings.length > 0 && (
+              <>
+                <div className="gm-divider" />
+                <nav className="gm-toc">
+                  {headings.map((h) => (
+                    <button key={h.slug} type="button" className="gm-toc-link" onClick={() => scrollToHeading(h.slug)}>
+                      {h.text}
+                    </button>
+                  ))}
+                </nav>
+              </>
             )}
             <div className="gm-desc-wrap">
               {item.desc && <div className="gm-desc" style={fieldStyle(item.styles, "desc")}>{item.desc}</div>}
@@ -97,7 +280,32 @@ export default function GalleryModal({
                 </div>
               )}
             </div>
-            {item.link && (
+            {item.feats && item.feats.length > 0 && (
+              <div className="gm-feats">
+                <div className="gm-feats-lbl">Features</div>
+                {item.feats.map((f) => (
+                  <div className="gm-feat" key={f}>{f}</div>
+                ))}
+              </div>
+            )}
+            {item.links && item.links.length > 0 ? (
+              <div className="gm-link-area">
+                <div className="gm-link-lbl">Links</div>
+                <div className="gm-links-list">
+                  {item.links.map((l) =>
+                    l.kind === "download" ? (
+                      <a key={l.id} href={downloadUrl(l.href, l.label)} className="gm-link-chip">
+                        {l.label}
+                      </a>
+                    ) : (
+                      <a key={l.id} href={l.href} target="_blank" rel="noopener noreferrer" className="gm-link-chip">
+                        {l.label}
+                      </a>
+                    )
+                  )}
+                </div>
+              </div>
+            ) : item.link && (
               <div className="gm-link-area">
                 <div className="gm-link-lbl">External Link</div>
                 <div className="gm-link-row">
@@ -111,6 +319,7 @@ export default function GalleryModal({
           </div>
         </div>
       )}
+      {zoomSrc && <ImageZoomOverlay src={zoomSrc} alt={item?.title ?? ""} onClose={() => setZoomSrc(null)} />}
     </div>
   );
 }

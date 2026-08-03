@@ -6,6 +6,7 @@ import ImageUploadField from "./ImageUploadField";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import HomePreviewCard from "./HomePreviewCard";
+import SaveButton from "./SaveButton";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
 type PreviewState = {
@@ -121,7 +122,7 @@ export default function HomeHeroForm({
           <label htmlFor="contactBgOpacity">Let&apos;s Work Together Background Opacity ({settings.contactBgOpacity}%)</label>
           <input id="contactBgOpacity" name="contactBgOpacity" type="range" min={0} max={100} defaultValue={settings.contactBgOpacity} />
         </div>
-        <button type="submit" className="adm-btn">Save</button>
+        <SaveButton />
       </form>
     </PreviewToggle>
   );

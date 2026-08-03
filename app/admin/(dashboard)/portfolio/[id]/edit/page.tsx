@@ -1,9 +1,12 @@
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { db } from "@/db";
-import { portfolioItems } from "@/db/schema";
+import { portfolioItems, portfolioImages, portfolioLinks, portfolioVideos } from "@/db/schema";
 import PortfolioForm from "@/components/admin/PortfolioForm";
-import { updatePortfolioItem } from "@/lib/actions/portfolio";
+import ExtraImagesPanel from "@/components/admin/ExtraImagesPanel";
+import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
+import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
+import { updatePortfolioItem, createPortfolioImage, updatePortfolioImage, deletePortfolioImage, createPortfolioLink, updatePortfolioLink, deletePortfolioLink, createPortfolioVideo, updatePortfolioVideo, deletePortfolioVideo } from "@/lib/actions/portfolio";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 export default async function EditPortfolioItemPage({
@@ -12,18 +15,28 @@ export default async function EditPortfolioItemPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [item, appearance] = await Promise.all([
-    db.select().from(portfolioItems).where(eq(portfolioItems.id, Number(id))).then((rows) => rows[0]),
+  const portfolioId = Number(id);
+  const [item, images, links, videos, appearance] = await Promise.all([
+    db.select().from(portfolioItems).where(eq(portfolioItems.id, portfolioId)).then((rows) => rows[0]),
+    db.select().from(portfolioImages).where(eq(portfolioImages.portfolioId, portfolioId)).orderBy(asc(portfolioImages.sortOrder)),
+    db.select().from(portfolioLinks).where(eq(portfolioLinks.portfolioId, portfolioId)).orderBy(asc(portfolioLinks.sortOrder)),
+    db.select().from(portfolioVideos).where(eq(portfolioVideos.portfolioId, portfolioId)).orderBy(asc(portfolioVideos.sortOrder)),
     getPageAppearance("portfolio"),
   ]);
   if (!item) notFound();
 
   const updateWithId = updatePortfolioItem.bind(null, item.id);
+  const createImageWithId = createPortfolioImage.bind(null, portfolioId);
+  const createLinkWithId = createPortfolioLink.bind(null, portfolioId);
+  const createVideoWithId = createPortfolioVideo.bind(null, portfolioId);
 
   return (
     <div>
       <div className="adm-title">Edit Portfolio Item</div>
       <PortfolioForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
+      <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updatePortfolioImage} deleteAction={deletePortfolioImage} />
+      <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updatePortfolioVideo} deleteAction={deletePortfolioVideo} />
+      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updatePortfolioLink} deleteAction={deletePortfolioLink} />
     </div>
   );
 }

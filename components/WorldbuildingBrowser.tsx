@@ -4,6 +4,7 @@ import { useState } from "react";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
 import { fieldStyle, remapStyles } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
+import type { MediaEntry } from "@/lib/group-images";
 
 export type WorldbuildingEntry = {
   id: number;
@@ -14,6 +15,9 @@ export type WorldbuildingEntry = {
   excerpt: string;
   chips: string[];
   img: string;
+  images?: MediaEntry[];
+  videos?: MediaEntry[];
+  links?: { id: number; label: string; href: string; kind: string }[];
   styles?: StylesMap;
 };
 
@@ -26,6 +30,8 @@ export default function WorldbuildingBrowser({ items }: { items: WorldbuildingEn
 
   const galleryItems: GalleryItem[] = filtered.map((w) => ({
     img: w.img,
+    images: w.images,
+    videos: w.videos,
     title: w.title,
     catLabel: w.cat,
     metaRows: [
@@ -34,6 +40,7 @@ export default function WorldbuildingBrowser({ items }: { items: WorldbuildingEn
     ],
     desc: w.excerpt,
     tags: w.chips,
+    links: w.links,
     styles: remapStyles(w.styles, { title: "title", excerpt: "desc" }),
   }));
 

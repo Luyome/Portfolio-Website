@@ -1,13 +1,54 @@
 "use client";
 
 import { useState } from "react";
-import GameDetailOverlay, { GameDetail } from "./GameDetailOverlay";
+import GalleryModal, { GalleryItem } from "./GalleryModal";
 import { fieldStyle } from "@/lib/style-fields";
+import type { StylesMap } from "@/lib/style-fields";
+import type { MediaEntry } from "@/lib/group-images";
 
-export type Game = GameDetail;
+export type GameLink = { id: number; label: string; href: string; kind: string };
+
+export type Game = {
+  id: number;
+  title: string;
+  status: string;
+  engine: string;
+  desc: string;
+  tags: string[];
+  feats: string[];
+  target: string;
+  img: string;
+  year: number;
+  content: string;
+  contentOrder: number;
+  links: GameLink[];
+  images?: MediaEntry[];
+  videos?: MediaEntry[];
+  styles?: StylesMap;
+};
 
 export default function GamesBrowser({ items }: { items: Game[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const galleryItems: GalleryItem[] = items.map((g) => ({
+    img: g.img,
+    images: g.images,
+    videos: g.videos,
+    title: g.title,
+    catLabel: "Games",
+    subtitle: `${g.status} — ${g.engine}`,
+    metaRows: [
+      { label: "Year", value: String(g.year) },
+      { label: "Target", value: g.target },
+    ],
+    desc: g.desc,
+    content: g.content,
+    contentOrder: g.contentOrder,
+    feats: g.feats,
+    tags: g.tags,
+    links: g.links,
+    styles: g.styles,
+  }));
 
   return (
     <>
@@ -45,7 +86,12 @@ export default function GamesBrowser({ items }: { items: Game[] }) {
           </div>
         ))}
       </div>
-      <GameDetailOverlay game={openIndex !== null ? items[openIndex] : null} onClose={() => setOpenIndex(null)} />
+      <GalleryModal
+        items={galleryItems}
+        index={openIndex}
+        onClose={() => setOpenIndex(null)}
+        onNavigate={setOpenIndex}
+      />
     </>
   );
 }

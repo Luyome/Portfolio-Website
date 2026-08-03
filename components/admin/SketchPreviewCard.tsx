@@ -22,8 +22,10 @@ export default function SketchPreviewCard({
       <div className="sk-grid" style={{ padding: 20, gridTemplateColumns: "1fr" }}>
         {state.img ? (
           <div className="sk-item">
-            <img src={state.img} alt={state.label} />
-            <div className="sk-lbl" style={{ opacity: 1, ...fieldStyle(state.styles, "label") }}>{state.label}</div>
+            <div className="sk-thumb">
+              <img src={state.img} alt={state.label} />
+            </div>
+            <div className="sk-lbl" style={fieldStyle(state.styles, "label")}>{state.label}</div>
           </div>
         ) : (
           <div

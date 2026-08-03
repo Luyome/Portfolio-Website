@@ -10,6 +10,7 @@ import OptionPicker from "@/components/admin/OptionPicker";
 import NumberPicker from "@/components/admin/NumberPicker";
 import ResizableTh from "@/components/admin/ResizableTh";
 import HomeHeroForm from "@/components/admin/HomeHeroForm";
+import SaveButton from "@/components/admin/SaveButton";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 const STYLE_OPTIONS = [
@@ -62,7 +63,7 @@ export default async function AdminHomePage() {
                 </td>
                 <td>
                   <div className="adm-actions">
-                    <button type="submit" form={formId} className="adm-btn" style={{ padding: "8px 14px" }}>Save</button>
+                    <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
                     <form action={deleteHeroButton}>
                       <input type="hidden" name="id" value={b.id} />
                       <DeleteButton confirmText={`Delete "${b.label}"?`} />

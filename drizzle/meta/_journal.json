@@ -71,6 +71,48 @@
       "when": 1785521474412,
       "tag": "0009_broad_toxin",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1785741784800,
+      "tag": "0010_sudden_titanium_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1785748766858,
+      "tag": "0011_sad_zaran",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1785750424244,
+      "tag": "0012_overconfident_sersi",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1785752308792,
+      "tag": "0013_many_frank_castle",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1785757290121,
+      "tag": "0014_silly_strong_guy",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1785759651798,
+      "tag": "0015_sleepy_tarantula",
+      "breakpoints": true
     }
   ]
 }

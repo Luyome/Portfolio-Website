@@ -7,6 +7,7 @@ import YearPicker from "./YearPicker";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import PortfolioPreviewCard from "./PortfolioPreviewCard";
+import SaveButton from "./SaveButton";
 import type { portfolioItems } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
@@ -112,7 +113,7 @@ export default function PortfolioForm({
           <label htmlFor="sortOrder">Sort Order</label>
           <input id="sortOrder" name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
         </div>
-        <button type="submit" className="adm-btn">Save</button>
+        <SaveButton />
       </form>
     </PreviewToggle>
   );

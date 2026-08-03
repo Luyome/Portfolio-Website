@@ -6,10 +6,12 @@ const PAGE_OPTIONS = [
   { label: "Home", href: "/" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Sketches", href: "/sketches" },
+  { label: "3D", href: "/3d" },
   { label: "Worldbuilding", href: "/worldbuilding" },
   { label: "Map", href: "/map" },
   { label: "Games", href: "/games" },
   { label: "About", href: "/about" },
+  { label: "CV", href: "/cv" },
   { label: "Archive", href: "/archive" },
 ];
 

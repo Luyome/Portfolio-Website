@@ -8,6 +8,7 @@ import DatePicker from "./DatePicker";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import WorldbuildingPreviewCard from "./WorldbuildingPreviewCard";
+import SaveButton from "./SaveButton";
 import type { worldbuildingEntries } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
@@ -105,7 +106,7 @@ export default function WorldbuildingForm({
           <label htmlFor="sortOrder">Sort Order</label>
           <input id="sortOrder" name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
         </div>
-        <button type="submit" className="adm-btn">Save</button>
+        <SaveButton />
       </form>
     </PreviewToggle>
   );

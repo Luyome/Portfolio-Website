@@ -1,4 +1,5 @@
 import ColorPicker from "./ColorPicker";
+import SaveButton from "./SaveButton";
 import type { PageAppearanceRow, PageKey } from "@/lib/page-appearance";
 import type { PageColorKey } from "@/db/schema";
 
@@ -43,7 +44,7 @@ export default function PageAppearanceForm({
             </div>
           </div>
         ))}
-        <button type="submit" className="adm-btn pa-save">Save</button>
+        <SaveButton className="adm-btn pa-save" />
       </form>
     </div>
   );

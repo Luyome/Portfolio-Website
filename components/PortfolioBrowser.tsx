@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
 import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
+import type { MediaEntry } from "@/lib/group-images";
 
 export type PortfolioItem = {
   id: number;
@@ -16,6 +17,9 @@ export type PortfolioItem = {
   software: string;
   link: string;
   img: string;
+  images?: MediaEntry[];
+  videos?: MediaEntry[];
+  links?: { id: number; label: string; href: string; kind: string }[];
   styles?: StylesMap;
 };
 
@@ -45,6 +49,8 @@ export default function PortfolioBrowser({
 
   const galleryItems: GalleryItem[] = filtered.map((p) => ({
     img: p.img,
+    images: p.images,
+    videos: p.videos,
     title: p.title,
     catLabel: p.cat,
     metaRows: [
@@ -55,6 +61,7 @@ export default function PortfolioBrowser({
     desc: p.desc,
     tags: p.tags,
     link: p.link,
+    links: p.links,
     styles: p.styles,
   }));
 

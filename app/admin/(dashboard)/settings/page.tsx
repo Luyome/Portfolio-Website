@@ -1,5 +1,6 @@
 import { getSiteSettings } from "@/lib/site-settings";
 import { updateSiteSettings } from "@/lib/actions/settings";
+import SaveButton from "@/components/admin/SaveButton";
 
 export default async function AdminSettingsPage() {
   const settings = await getSiteSettings();
@@ -46,7 +47,7 @@ export default async function AdminSettingsPage() {
           <label htmlFor="instagramUrl">Instagram URL</label>
           <input id="instagramUrl" name="instagramUrl" defaultValue={settings.instagramUrl} />
         </div>
-        <button type="submit" className="adm-btn">Save</button>
+        <SaveButton />
       </form>
     </div>
   );

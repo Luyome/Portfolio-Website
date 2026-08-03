@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { portfolioItems, sketches, worldbuildingEntries, games, services } from "@/db/schema";
+import { portfolioItems, sketches, models3d, worldbuildingEntries, games, services } from "@/db/schema";
 
 export type ContentEvent = {
   createdAt: string;
@@ -24,9 +24,10 @@ export type DashboardData = {
 };
 
 export async function getDashboardData(): Promise<DashboardData> {
-  const [portfolio, sketchRows, worldbuilding, gameRows, serviceRows] = await Promise.all([
+  const [portfolio, sketchRows, model3dRows, worldbuilding, gameRows, serviceRows] = await Promise.all([
     db.select().from(portfolioItems),
     db.select().from(sketches),
+    db.select().from(models3d),
     db.select().from(worldbuildingEntries),
     db.select().from(games),
     db.select().from(services),
@@ -42,6 +43,11 @@ export async function getDashboardData(): Promise<DashboardData> {
       createdAt: s.createdAt.toISOString(),
       words: countWords(s.label, s.desc),
       hasImage: Boolean(s.img),
+    })),
+    ...model3dRows.map((m) => ({
+      createdAt: m.createdAt.toISOString(),
+      words: countWords(m.label, m.desc),
+      hasImage: Boolean(m.img),
     })),
     ...worldbuilding.map((w) => ({
       createdAt: w.createdAt.toISOString(),
@@ -63,6 +69,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   const sections: SectionCount[] = [
     { label: "Portfolio", href: "/admin/portfolio", count: portfolio.length },
     { label: "Sketches", href: "/admin/sketches", count: sketchRows.length },
+    { label: "3D", href: "/admin/3d", count: model3dRows.length },
     { label: "Worldbuilding", href: "/admin/worldbuilding", count: worldbuilding.length },
     { label: "Games", href: "/admin/games", count: gameRows.length },
     { label: "Services", href: "/admin/services", count: serviceRows.length },

@@ -1,14 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
-import { useMapPanZoom } from "@/hooks/useMapPanZoom";
+import MapZoomOverlay from "./MapZoomOverlay";
 import type { MapLocation } from "@/lib/map-types";
 
 export default function MapViewer({ imageUrl, locations }: { imageUrl: string; locations: MapLocation[] }) {
   const [modalIndex, setModalIndex] = useState<number | null>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const { zoom, setZoom, minZoom, maxZoom, fitSize, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(viewportRef);
+  const [exploring, setExploring] = useState(false);
 
   const galleryItems: GalleryItem[] = locations.map((l) => ({
     img: l.img,
@@ -19,49 +18,24 @@ export default function MapViewer({ imageUrl, locations }: { imageUrl: string; l
 
   return (
     <div className="map-wrap">
-      <div className="map-controls">
-        <button type="button" onClick={() => setZoom((z) => Math.max(minZoom, +(z - 0.25).toFixed(2)))}>−</button>
-        <span className="map-zoom-label">{Math.round(zoom * 100)}%</span>
-        <button type="button" onClick={() => setZoom((z) => Math.min(maxZoom, +(z + 0.25).toFixed(2)))}>+</button>
-        <button type="button" onClick={() => setZoom(minZoom)}>Reset</button>
-      </div>
-      <div
-        className="map-viewport"
-        ref={viewportRef}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
-        onMouseLeave={onMouseUp}
-      >
-        <div className="map-canvas" style={{ transform: `scale(${zoom})` }}>
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt="Map"
-              className="map-image"
-              draggable={false}
-              style={fitSize ? { width: fitSize.width, height: fitSize.height } : undefined}
-            />
-          ) : (
-            <div className="map-empty">No map yet.</div>
-          )}
-          {locations.map((l, i) => (
-            <button
-              type="button"
-              key={l.id}
-              className="map-pin"
-              style={{ left: `${l.x}%`, top: `${l.y}%` }}
-              onClick={() => {
-                if (wasPanning()) return;
-                setModalIndex(i);
-              }}
-            >
-              <span className="map-pin-dot" />
-              <span className="map-pin-label">{l.name}</span>
-            </button>
-          ))}
+      {imageUrl ? (
+        <div className="map-static" onClick={() => setExploring(true)}>
+          <div className="map-static-canvas">
+            <img src={imageUrl} alt="Map" className="map-static-img" draggable={false} />
+          </div>
+          <div className="map-static-hint">Click to explore — drag to pan, scroll to zoom</div>
         </div>
-      </div>
+      ) : (
+        <div className="map-empty">No map yet.</div>
+      )}
+      {exploring && (
+        <MapZoomOverlay
+          imageUrl={imageUrl}
+          locations={locations}
+          onClose={() => setExploring(false)}
+          onLocationClick={setModalIndex}
+        />
+      )}
       <GalleryModal
         items={galleryItems}
         index={modalIndex}

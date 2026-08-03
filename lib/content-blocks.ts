@@ -1,7 +1,8 @@
 export type ContentBlock =
   | { type: "heading"; text: string; slug: string }
   | { type: "paragraph"; text: string }
-  | { type: "image"; src: string; alt: string };
+  | { type: "image"; src: string; alt: string }
+  | { type: "video"; src: string };
 
 export function slugify(text: string): string {
   return text
@@ -12,6 +13,7 @@ export function slugify(text: string): string {
 }
 
 const IMAGE_RE = /^!\[(.*?)\]\((.*?)\)$/;
+const VIDEO_RE = /^video:\s*(\S+)/i;
 const HEADING_RE = /^#+\s*(.+)$/;
 
 export function parseContent(content: string): ContentBlock[] {
@@ -49,6 +51,12 @@ export function parseContent(content: string): ContentBlock[] {
     if (imgMatch) {
       flushParagraph();
       blocks.push({ type: "image", alt: imgMatch[1], src: imgMatch[2] });
+      continue;
+    }
+    const videoMatch = line.match(VIDEO_RE);
+    if (videoMatch) {
+      flushParagraph();
+      blocks.push({ type: "video", src: videoMatch[1] });
       continue;
     }
     paragraphBuf.push(line);

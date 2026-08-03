@@ -5,6 +5,7 @@ import type { CSSProperties } from "react";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import AboutPreviewCard from "./AboutPreviewCard";
+import SaveButton from "./SaveButton";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
 export default function AboutForm({
@@ -78,7 +79,7 @@ export default function AboutForm({
           <input id="tools" name="tools" defaultValue={tools} />
           <div className="adm-hint">Comma separated, e.g. Unreal Engine 5, Blender, ZBrush</div>
         </div>
-        <button type="submit" className="adm-btn">Save</button>
+        <SaveButton />
       </form>
     </PreviewToggle>
   );

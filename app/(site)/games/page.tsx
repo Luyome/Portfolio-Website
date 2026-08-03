@@ -1,19 +1,26 @@
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { games, gameLinks } from "@/db/schema";
+import { games, gameLinks, gameImages, gameVideos } from "@/db/schema";
 import GamesBrowser from "@/components/GamesBrowser";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import { groupImagesByParent } from "@/lib/group-images";
 
 export default async function GamesPage() {
-  const [rows, linkRows, appearance] = await Promise.all([
+  const [rows, linkRows, imageRows, videoRows, appearance] = await Promise.all([
     db.select().from(games).orderBy(asc(games.sortOrder)),
     db.select().from(gameLinks).orderBy(asc(gameLinks.sortOrder)),
+    db.select().from(gameImages).orderBy(asc(gameImages.sortOrder)),
+    db.select().from(gameVideos).orderBy(asc(gameVideos.sortOrder)),
     getPageAppearance("games"),
   ]);
+  const imagesByGame = groupImagesByParent(imageRows, (r) => r.gameId);
+  const videosByGame = groupImagesByParent(videoRows, (r) => r.gameId);
 
   const items = rows.map((g) => ({
     ...g,
     links: linkRows.filter((l) => l.gameId === g.id),
+    images: imagesByGame.get(g.id) ?? [],
+    videos: videosByGame.get(g.id) ?? [],
   }));
 
   return (

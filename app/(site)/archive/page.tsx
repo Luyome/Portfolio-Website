@@ -1,14 +1,15 @@
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { portfolioItems, sketches, worldbuildingEntries, games, archiveCategories } from "@/db/schema";
+import { portfolioItems, sketches, models3d, worldbuildingEntries, games, archiveCategories } from "@/db/schema";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import ArchiveList from "@/components/ArchiveList";
 import type { ArchiveItem } from "@/components/ArchiveList";
 
 export default async function ArchivePage() {
-  const [port, sk, wb, gm, categories, appearance] = await Promise.all([
+  const [port, sk, m3, wb, gm, categories, appearance] = await Promise.all([
     db.select().from(portfolioItems),
     db.select().from(sketches),
+    db.select().from(models3d),
     db.select().from(worldbuildingEntries),
     db.select().from(games),
     db.select().from(archiveCategories).orderBy(asc(archiveCategories.sortOrder)),
@@ -33,6 +34,15 @@ export default async function ArchivePage() {
       year: s.year,
       img: s.img ?? "",
       href: `/sketches?year=${s.year}`,
+    })),
+    ...m3.map((m) => ({
+      id: `3d-${m.id}`,
+      type: "3D" as const,
+      title: m.label,
+      cat: "3D",
+      year: m.year,
+      img: m.img ?? "",
+      href: `/3d?year=${m.year}`,
     })),
     ...wb.map((w) => ({
       id: `worldbuilding-${w.id}`,

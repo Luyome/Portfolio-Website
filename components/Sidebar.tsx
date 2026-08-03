@@ -22,12 +22,13 @@ const NAV_GROUPS: { label: string; items: { href: string; label: string }[] }[] 
     items: [
       { href: "/portfolio", label: "Portfolio" },
       { href: "/sketches", label: "Sketches" },
+      { href: "/3d", label: "3D" },
       { href: "/worldbuilding", label: "Worldbuilding" },
       { href: "/map", label: "Map" },
       { href: "/games", label: "Games" },
     ],
   },
-  { label: "Info", items: [{ href: "/about", label: "About" }] },
+  { label: "Info", items: [{ href: "/about", label: "About" }, { href: "/cv", label: "CV" }] },
 ];
 
 export default function Sidebar({ settings }: { settings: SiteSettings }) {

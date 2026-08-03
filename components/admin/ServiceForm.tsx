@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { CSSProperties } from "react";
 import PreviewToggle from "./PreviewToggle";
 import ServicePreviewCard from "./ServicePreviewCard";
+import SaveButton from "./SaveButton";
 import type { services } from "@/db/schema";
 
 type ServiceRow = typeof services.$inferSelect;
@@ -51,7 +52,7 @@ export default function ServiceForm({
           <label htmlFor="sortOrder">Sort Order</label>
           <input id="sortOrder" name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
         </div>
-        <button type="submit" className="adm-btn">Save</button>
+        <SaveButton />
       </form>
     </PreviewToggle>
   );

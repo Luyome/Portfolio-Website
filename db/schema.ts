@@ -33,16 +33,99 @@ export const portfolioItems = pgTable("portfolio_items", {
   styles: stylesColumn(),
 });
 
+export const portfolioImages = pgTable("portfolio_images", {
+  id: serial("id").primaryKey(),
+  portfolioId: integer("portfolio_id").notNull().references(() => portfolioItems.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const portfolioVideos = pgTable("portfolio_videos", {
+  id: serial("id").primaryKey(),
+  portfolioId: integer("portfolio_id").notNull().references(() => portfolioItems.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const portfolioLinks = pgTable("portfolio_links", {
+  id: serial("id").primaryKey(),
+  portfolioId: integer("portfolio_id").notNull().references(() => portfolioItems.id, { onDelete: "cascade" }),
+  label: text("label").notNull(),
+  href: text("href").notNull(),
+  kind: text("kind").notNull().default("link"),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
 export const sketches = pgTable("sketches", {
   id: serial("id").primaryKey(),
   year: integer("year").notNull(),
   label: text("label").notNull(),
   desc: text("desc").notNull().default(""),
   img: text("img"),
+  link: text("link"),
   colorHex: text("color_hex"),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   styles: stylesColumn(),
+});
+
+export const sketchImages = pgTable("sketch_images", {
+  id: serial("id").primaryKey(),
+  sketchId: integer("sketch_id").notNull().references(() => sketches.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const sketchVideos = pgTable("sketch_videos", {
+  id: serial("id").primaryKey(),
+  sketchId: integer("sketch_id").notNull().references(() => sketches.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const sketchLinks = pgTable("sketch_links", {
+  id: serial("id").primaryKey(),
+  sketchId: integer("sketch_id").notNull().references(() => sketches.id, { onDelete: "cascade" }),
+  label: text("label").notNull(),
+  href: text("href").notNull(),
+  kind: text("kind").notNull().default("link"),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const models3d = pgTable("models_3d", {
+  id: serial("id").primaryKey(),
+  year: integer("year").notNull(),
+  label: text("label").notNull(),
+  desc: text("desc").notNull().default(""),
+  img: text("img"),
+  link: text("link"),
+  colorHex: text("color_hex"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  styles: stylesColumn(),
+});
+
+export const model3dImages = pgTable("model_3d_images", {
+  id: serial("id").primaryKey(),
+  modelId: integer("model_id").notNull().references(() => models3d.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const model3dVideos = pgTable("model_3d_videos", {
+  id: serial("id").primaryKey(),
+  modelId: integer("model_id").notNull().references(() => models3d.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const model3dLinks = pgTable("model_3d_links", {
+  id: serial("id").primaryKey(),
+  modelId: integer("model_id").notNull().references(() => models3d.id, { onDelete: "cascade" }),
+  label: text("label").notNull(),
+  href: text("href").notNull(),
+  kind: text("kind").notNull().default("link"),
+  sortOrder: integer("sort_order").notNull().default(0),
 });
 
 export const worldbuildingEntries = pgTable("worldbuilding_entries", {
@@ -59,6 +142,29 @@ export const worldbuildingEntries = pgTable("worldbuilding_entries", {
   styles: stylesColumn(),
 });
 
+export const worldbuildingImages = pgTable("worldbuilding_images", {
+  id: serial("id").primaryKey(),
+  entryId: integer("entry_id").notNull().references(() => worldbuildingEntries.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const worldbuildingVideos = pgTable("worldbuilding_videos", {
+  id: serial("id").primaryKey(),
+  entryId: integer("entry_id").notNull().references(() => worldbuildingEntries.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const worldbuildingLinks = pgTable("worldbuilding_links", {
+  id: serial("id").primaryKey(),
+  entryId: integer("entry_id").notNull().references(() => worldbuildingEntries.id, { onDelete: "cascade" }),
+  label: text("label").notNull(),
+  href: text("href").notNull(),
+  kind: text("kind").notNull().default("link"),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
 export const games = pgTable("games", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
@@ -71,6 +177,7 @@ export const games = pgTable("games", {
   img: text("img").notNull(),
   year: integer("year").notNull().default(2026),
   content: text("content").notNull().default(""),
+  contentOrder: integer("content_order").notNull().default(0),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   styles: stylesColumn(),
@@ -81,6 +188,21 @@ export const gameLinks = pgTable("game_links", {
   gameId: integer("game_id").notNull().references(() => games.id, { onDelete: "cascade" }),
   label: text("label").notNull(),
   href: text("href").notNull(),
+  kind: text("kind").notNull().default("link"),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const gameImages = pgTable("game_images", {
+  id: serial("id").primaryKey(),
+  gameId: integer("game_id").notNull().references(() => games.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const gameVideos = pgTable("game_videos", {
+  id: serial("id").primaryKey(),
+  gameId: integer("game_id").notNull().references(() => games.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
@@ -104,6 +226,11 @@ export const aboutContent = pgTable("about_content", {
   whoIAmParagraphs: text("who_i_am_paragraphs").array().notNull().default([]),
   tools: text("tools").array().notNull().default([]),
   styles: stylesColumn(),
+});
+
+export const cvContent = pgTable("cv_content", {
+  id: serial("id").primaryKey(),
+  img: text("img"),
 });
 
 export const timelineEntries = pgTable("timeline_entries", {

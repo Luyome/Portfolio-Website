@@ -4,6 +4,7 @@ import { archiveCategories } from "@/db/schema";
 import { createArchiveCategory, updateArchiveCategory, deleteArchiveCategory } from "@/lib/actions/archive-categories";
 import DeleteButton from "@/components/admin/DeleteButton";
 import NumberPicker from "@/components/admin/NumberPicker";
+import SaveButton from "@/components/admin/SaveButton";
 
 export default async function AdminArchivePage() {
   const categories = await db.select().from(archiveCategories).orderBy(asc(archiveCategories.sortOrder));
@@ -41,7 +42,7 @@ export default async function AdminArchivePage() {
                 </td>
                 <td>
                   <div className="adm-actions">
-                    <button type="submit" form={formId} className="adm-btn" style={{ padding: "8px 14px" }}>Save</button>
+                    <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
                     <form action={deleteArchiveCategory}>
                       <input type="hidden" name="id" value={c.id} />
                       <DeleteButton confirmText={`Delete "${c.label}" category?`} />

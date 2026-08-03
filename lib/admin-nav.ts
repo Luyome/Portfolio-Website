@@ -9,7 +9,9 @@ export const ADMIN_NAV: AdminNavSection[] = [
       { href: "/admin/home", label: "Home" },
       { href: "/admin/portfolio", label: "Portfolio" },
       { href: "/admin/sketches", label: "Sketches" },
+      { href: "/admin/3d", label: "3D" },
       { href: "/admin/worldbuilding", label: "Worldbuilding" },
+      { href: "/admin/map", label: "Map" },
       { href: "/admin/games", label: "Games" },
       { href: "/admin/services", label: "Services" },
     ],
@@ -26,7 +28,7 @@ export const ADMIN_NAV: AdminNavSection[] = [
     section: "Site",
     items: [
       { href: "/admin/about", label: "About" },
-      { href: "/admin/map", label: "Map" },
+      { href: "/admin/cv", label: "CV" },
     ],
   },
   {

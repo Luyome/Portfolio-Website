@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
 import { fieldStyle, remapStyles } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
+import type { MediaEntry } from "@/lib/group-images";
 
 export type Sketch = {
   id: number;
@@ -11,6 +12,10 @@ export type Sketch = {
   label: string;
   desc: string;
   img: string | null;
+  link?: string | null;
+  images?: MediaEntry[];
+  videos?: MediaEntry[];
+  links?: { id: number; label: string; href: string; kind: string }[];
   colorHex: string | null;
   styles?: StylesMap;
 };
@@ -28,10 +33,14 @@ export default function SketchGrid({ items, initialYear }: { items: Sketch[]; in
 
   const galleryItems: GalleryItem[] = filtered.map((s) => ({
     img: s.img,
+    images: s.images,
+    videos: s.videos,
     title: s.label,
     catLabel: "Sketch",
     metaRows: [{ label: "Year", value: String(s.year) }],
     desc: s.desc,
+    link: s.link ?? undefined,
+    links: s.links,
     styles: remapStyles(s.styles, { label: "title", desc: "desc" }),
   }));
 
@@ -62,7 +71,9 @@ export default function SketchGrid({ items, initialYear }: { items: Sketch[]; in
                 }
               }}
             >
-              <img src={s.img} alt={s.label} loading="lazy" />
+              <div className="sk-thumb">
+                <img src={s.img} alt={s.label} loading="lazy" />
+              </div>
               <div className="sk-lbl" style={fieldStyle(s.styles, "label")}>{s.label}</div>
             </div>
           ) : (

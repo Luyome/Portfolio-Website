@@ -11,6 +11,7 @@ import DeleteButton from "@/components/admin/DeleteButton";
 import TimelineYearPicker from "@/components/admin/TimelineYearPicker";
 import NumberPicker from "@/components/admin/NumberPicker";
 import AboutForm from "@/components/admin/AboutForm";
+import SaveButton from "@/components/admin/SaveButton";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 export default async function AdminAboutPage() {
@@ -64,7 +65,7 @@ export default async function AdminAboutPage() {
                 </td>
                 <td>
                   <div className="adm-actions">
-                    <button type="submit" form={formId} className="adm-btn" style={{ padding: "8px 14px" }}>Save</button>
+                    <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
                     <form action={deleteTimelineEntry}>
                       <input type="hidden" name="id" value={t.id} />
                       <DeleteButton confirmText="Delete this timeline entry?" />
