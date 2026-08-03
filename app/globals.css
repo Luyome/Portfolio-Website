@@ -289,9 +289,15 @@ a.arv-row:hover{background:var(--bg2)}
 }
 
 /* ══ WORLDBUILDING — controls (search / view toggle / category pills) ══ */
-/* No horizontal padding: flush with the sidebar on the left and the
-   browser edge on the right, matching .wa-viewport's full-bleed width. */
-.wb-ctrl{padding:24px 0;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:16px}
+/* A self-contained card (not a full-width divider strip): margin insets it
+   to the same 64px column as .wa-wrap/.wb-grid so it shares their
+   alignment, padding keeps the search text and view-toggle icons off its
+   own edges. */
+.wb-ctrl{
+  margin:0 64px 24px;padding:16px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  display:flex;flex-direction:column;gap:16px;
+}
 .wb-ctrl-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .wb-search{
   flex:1;min-width:220px;background:var(--bg2);border:1px solid var(--border);color:var(--text);
@@ -872,10 +878,10 @@ a.arv-row:hover{background:var(--bg2)}
 .map-pin-icon-city .map-pin-dot{width:14px;height:14px}
 
 /* ══ WORLDBUILDING ATLAS — embedded multi-map canvas ══════════════ */
-/* Full-bleed: flush against the sidebar on the left, flush against the
-   browser edge on the right -- no horizontal page padding here. */
-.wa-wrap{padding:40px 0 0}
-.wa-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px;padding:0 24px}
+/* Matches the page's standard horizontal inset (.ph, .wb-grid, etc.) so
+   nothing sits flush against the sidebar or the browser edge. */
+.wa-wrap{padding:40px 64px 0}
+.wa-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
 .wa-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;font-family:var(--M);font-size:0.72rem}
 .wa-crumb-item{display:flex;align-items:center}
 .wa-crumb-sep{margin:0 8px;color:var(--muted)}
@@ -1014,8 +1020,10 @@ a.arv-row:hover{background:var(--bg2)}
 /* ══ RESPONSIVE ════════════════════════ */
 @media(max-width:1060px){
   :root{--sw:220px;--asw:220px}
-  .ph,.port-list,.port-ctrl,.sk-ctrl,.sk-grid,.wb-ctrl,.wb-grid,
+  .ph,.port-list,.port-ctrl,.sk-ctrl,.sk-grid,.wb-grid,
   .games-wrap,.about-wrap,.arv-wrap,.home-hero,.home-services,.home-contact,.adm-wrap,.map-wrap{padding-left:36px;padding-right:36px}
+  .wa-wrap{padding-left:36px;padding-right:36px}
+  .wb-ctrl{margin-left:36px;margin-right:36px}
   .hs-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:820px){
