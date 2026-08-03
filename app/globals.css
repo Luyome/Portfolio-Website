@@ -870,8 +870,10 @@ a.arv-row:hover{background:var(--bg2)}
 .map-pin-icon-city .map-pin-dot{width:14px;height:14px}
 
 /* ══ WORLDBUILDING ATLAS — embedded multi-map canvas ══════════════ */
-.wa-wrap{padding:40px 64px 0}
-.wa-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+/* Full-bleed: flush against the sidebar on the left, flush against the
+   browser edge on the right -- no horizontal page padding here. */
+.wa-wrap{padding:40px 0 0}
+.wa-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px;padding:0 24px}
 .wa-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;font-family:var(--M);font-size:0.72rem}
 .wa-crumb-item{display:flex;align-items:center}
 .wa-crumb-sep{margin:0 8px;color:var(--muted)}
@@ -890,8 +892,8 @@ a.arv-row:hover{background:var(--bg2)}
 }
 .wa-zoom-label{font-family:var(--M);font-size:0.68rem;color:var(--muted);min-width:40px;text-align:center}
 .wa-viewport{
-  position:relative;width:100%;max-height:70vh;aspect-ratio:16/9;overflow:hidden;
-  background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+  position:relative;width:100%;max-height:85vh;aspect-ratio:16/9;overflow:hidden;
+  background:var(--bg2);display:flex;align-items:center;justify-content:center;
 }
 /* .wa-viewport's width/height and .wa-frame-inner's inset are set inline
    (WorldbuildingAtlas.tsx) once the image loads, computed in JS so the pad

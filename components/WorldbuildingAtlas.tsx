@@ -39,7 +39,12 @@ export default function WorldbuildingAtlas({
   // accounts for the padding being subtracted from it -- and that relationship
   // depends on the actual available width, so a static CSS aspect-ratio can't
   // express it. Solve `(availW - 2*pad) / (availH - 2*pad) = imageRatio` for
-  // the frame's height (or, once capped by maxH, for its width instead).
+  // the frame's height.
+  //
+  // Width is always the full available width -- never shrunk to fit under a
+  // height cap -- so the preview stays flush from the sidebar to the right
+  // edge of the screen for any map aspect ratio; height is whatever that
+  // implies, so the image never distorts.
   useEffect(() => {
     const wrap = wrapRef.current;
     if (!naturalSize || !wrap) return;
@@ -48,17 +53,9 @@ export default function WorldbuildingAtlas({
       const availW = wrap!.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
       if (!availW) return;
       const pad = Math.min(48, Math.max(20, availW * 0.035));
-      // Generous cap (was 0.7) -- the goal is for the box to grow and use the
-      // full available width for as many map aspect ratios as possible,
-      // rather than getting height-capped and leaving unused space beside it.
-      const maxH = window.innerHeight * 0.85;
       const ratio = naturalSize!.w / naturalSize!.h;
-      let w = availW;
-      let h = (availW - 2 * pad) / ratio + 2 * pad;
-      if (h > maxH) {
-        h = maxH;
-        w = (maxH - 2 * pad) * ratio + 2 * pad;
-      }
+      const w = availW;
+      const h = (availW - 2 * pad) / ratio + 2 * pad;
       // Bail out with the same object reference when nothing actually moved
       // (rounding to whole px) -- ResizeObserver firing on a computed style
       // change that happens to round to the same size would otherwise still
