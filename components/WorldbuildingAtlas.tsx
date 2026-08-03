@@ -165,11 +165,11 @@ export default function WorldbuildingAtlas({
             if (e.target === e.currentTarget) setPinDetail(null);
           }}
         >
-          <div className="gm-panel">
-            <div className="gm-img-side">
+          <div className="pin-panel">
+            <div className="pin-img-side">
               <img src={pinDetail.img || NO_IMAGE_SVG} alt={pinDetail.name} />
             </div>
-            <div className="gm-info">
+            <div className="gm-info pin-info-side">
               <div className="gm-bar">
                 <span className="gm-cat-lbl">Location</span>
                 <button type="button" className="gm-close" onClick={() => setPinDetail(null)}>✕ &nbsp; Close</button>
