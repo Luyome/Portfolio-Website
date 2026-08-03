@@ -289,7 +289,9 @@ a.arv-row:hover{background:var(--bg2)}
 }
 
 /* ══ WORLDBUILDING — controls (search / view toggle / category pills) ══ */
-.wb-ctrl{padding:24px 64px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:16px}
+/* No horizontal padding: flush with the sidebar on the left and the
+   browser edge on the right, matching .wa-viewport's full-bleed width. */
+.wb-ctrl{padding:24px 0;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:16px}
 .wb-ctrl-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .wb-search{
   flex:1;min-width:220px;background:var(--bg2);border:1px solid var(--border);color:var(--text);
