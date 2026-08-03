@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { createMapLocation, updateMapLocationPosition } from "@/lib/actions/map";
+import { createMapLocation, deleteMapLocation, updateMapLocationPosition } from "@/lib/actions/map";
 import { useMapPanZoom } from "@/hooks/useMapPanZoom";
 import MapPinEditPanel from "./MapPinEditPanel";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
@@ -25,13 +25,24 @@ export default function MapEditor({
   const canvasRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const dragState = useRef<{ id: number; moved: boolean } | null>(null);
-  const { zoom, setZoom, minZoom, maxZoom, aspectRatio, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(viewportRef);
-
   const currentMap = maps.find((m) => m.id === currentMapId) ?? null;
+  const { zoom, setZoom, minZoom, maxZoom, aspectRatio, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(
+    viewportRef,
+    currentMap?.imageUrl
+  );
   const mapLocationsHere = useMemo(
     () => (currentMapId === null ? [] : locations.filter((l) => l.mapId === currentMapId)),
     [locations, currentMapId]
   );
+  const mapsById = useMemo(() => new Map(maps.map((m) => [m.id, m.title])), [maps]);
+  const entriesById = useMemo(() => new Map(entries.map((e) => [e.id, e.title])), [entries]);
+
+  async function handleDeleteFromTable(loc: MapLocation) {
+    if (!window.confirm(`Delete "${loc.name}"?`)) return;
+    await deleteMapLocation(loc.id);
+    setLocations((prev) => prev.filter((l) => l.id !== loc.id));
+    if (editing?.id === loc.id) setEditing(null);
+  }
 
   function coordsFromEvent(e: { clientX: number; clientY: number }) {
     const rect = canvasRef.current!.getBoundingClientRect();
@@ -162,6 +173,53 @@ export default function MapEditor({
           ))}
         </div>
       </div>
+
+      <div className="adm-title" style={{ fontSize: "1rem", marginTop: 28, marginBottom: 8 }}>
+        Pins on {currentMap.title}
+      </div>
+      {mapLocationsHere.length === 0 ? (
+        <div className="adm-hint">No pins placed on this map yet.</div>
+      ) : (
+        <table className="adm-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Pin Type</th>
+              <th>Target</th>
+              <th>Icon</th>
+              <th>Coordinates</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {mapLocationsHere.map((l) => (
+              <tr key={l.id}>
+                <td>{l.name}</td>
+                <td>{l.pinType === "submap" ? "Sub-Map" : "Lore Entry"}</td>
+                <td>
+                  {l.pinType === "submap"
+                    ? l.targetMapId !== null
+                      ? mapsById.get(l.targetMapId) ?? "—"
+                      : "—"
+                    : l.entryId !== null
+                      ? entriesById.get(l.entryId) ?? "—"
+                      : "—"}
+                </td>
+                <td>{l.iconType}</td>
+                <td>{l.x.toFixed(1)}%, {l.y.toFixed(1)}%</td>
+                <td>
+                  <div className="adm-actions">
+                    <button type="button" onClick={() => setEditing(l)}>Edit</button>
+                    <button type="button" className="danger" onClick={() => handleDeleteFromTable(l)}>
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
       {editing && (
         <MapPinEditPanel

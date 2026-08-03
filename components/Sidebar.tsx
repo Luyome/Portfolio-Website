@@ -24,7 +24,6 @@ const NAV_GROUPS: { label: string; items: { href: string; label: string }[] }[] 
       { href: "/sketches", label: "Sketches" },
       { href: "/3d", label: "3D" },
       { href: "/worldbuilding", label: "Worldbuilding" },
-      { href: "/map", label: "Map" },
       { href: "/games", label: "Games" },
     ],
   },

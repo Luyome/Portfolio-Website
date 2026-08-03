@@ -5,6 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useDragZoom } from "@/hooks/useDragZoom";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 
+const NO_IMAGE_SVG =
+  'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="%23151010"/><text fill="%23555" x="50%25" y="50%25" font-size="18" text-anchor="middle" dy=".35em">No Image</text></svg>';
+
 export default function WorldbuildingAtlas({
   maps,
   locations,
@@ -23,6 +26,7 @@ export default function WorldbuildingAtlas({
     { minZoom: 1, maxZoom: 4 }
   );
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
+  const [pinDetail, setPinDetail] = useState<MapLocation | null>(null);
 
   const mapsById = useMemo(() => new Map(maps.map((m) => [m.id, m])), [maps]);
   const currentMap = currentMapId !== null ? mapsById.get(currentMapId) ?? null : null;
@@ -59,6 +63,11 @@ export default function WorldbuildingAtlas({
       goToMap(loc.targetMapId);
     } else if (loc.entryId !== null) {
       onOpenLore(loc.entryId);
+    } else if (loc.info.trim() || loc.img) {
+      // Lore pins can skip linking to a formal Lore Entry and just carry
+      // freeform info/image instead — show that here since onOpenLore only
+      // knows how to open entries by id.
+      setPinDetail(loc);
     }
   }
 
@@ -148,6 +157,33 @@ export default function WorldbuildingAtlas({
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {pinDetail && (
+        <div
+          className="gm-overlay open"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setPinDetail(null);
+          }}
+        >
+          <div className="gm-panel">
+            <div className="gm-img-side">
+              <img src={pinDetail.img || NO_IMAGE_SVG} alt={pinDetail.name} />
+            </div>
+            <div className="gm-info">
+              <div className="gm-bar">
+                <span className="gm-cat-lbl">Location</span>
+                <button type="button" className="gm-close" onClick={() => setPinDetail(null)}>✕ &nbsp; Close</button>
+              </div>
+              <div className="gm-title">{pinDetail.name}</div>
+              {pinDetail.info.trim() && (
+                <div className="gm-desc-wrap">
+                  <div className="gm-desc">{pinDetail.info}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

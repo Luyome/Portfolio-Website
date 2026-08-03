@@ -6,7 +6,7 @@ const MAX_ZOOM = 3;
 const MIN_ZOOM = 1;
 const DRAG_THRESHOLD = 3;
 
-export function useMapPanZoom(viewportRef: React.RefObject<HTMLDivElement | null>) {
+export function useMapPanZoom(viewportRef: React.RefObject<HTMLDivElement | null>, imageUrl?: string | null) {
   const [zoom, setZoomRaw] = useState(MIN_ZOOM);
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   const dragRef = useRef<{ startX: number; startY: number; scrollLeft: number; scrollTop: number; moved: boolean } | null>(null);
@@ -54,6 +54,11 @@ export function useMapPanZoom(viewportRef: React.RefObject<HTMLDivElement | null
     const vp = viewportRef.current;
     if (!vp) return;
 
+    // Reset first so switching maps never leaves the previous map's ratio
+    // (and the stale, differently-shaped canvas it produces) applied while
+    // the new <img> is still loading.
+    setAspectRatio(null);
+
     function computeAspectRatio() {
       const img = vp!.querySelector<HTMLImageElement>("img.map-image");
       if (!img || !img.naturalWidth || !img.naturalHeight) return;
@@ -69,7 +74,7 @@ export function useMapPanZoom(viewportRef: React.RefObject<HTMLDivElement | null
     return () => {
       if (img) img.removeEventListener("load", computeAspectRatio);
     };
-  }, [viewportRef]);
+  }, [viewportRef, imageUrl]);
 
   useEffect(() => {
     const vp = viewportRef.current;

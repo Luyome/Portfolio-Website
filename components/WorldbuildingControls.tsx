@@ -32,7 +32,10 @@ export default function WorldbuildingControls({
           <button
             type="button"
             className={`wb-view-btn ${viewMode === "default" ? "on" : ""}`}
-            onClick={() => onViewModeChange("default")}
+            onClick={(e) => {
+              e.preventDefault();
+              onViewModeChange("default");
+            }}
             aria-label="Default view"
             aria-pressed={viewMode === "default"}
           >
@@ -41,7 +44,10 @@ export default function WorldbuildingControls({
           <button
             type="button"
             className={`wb-view-btn ${viewMode === "grid" ? "on" : ""}`}
-            onClick={() => onViewModeChange("grid")}
+            onClick={(e) => {
+              e.preventDefault();
+              onViewModeChange("grid");
+            }}
             aria-label="Grid view"
             aria-pressed={viewMode === "grid"}
           >
