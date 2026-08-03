@@ -52,7 +52,9 @@ export default function WorldbuildingAtlas({
       const cs = getComputedStyle(wrap!);
       const availW = wrap!.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
       if (!availW) return;
-      const pad = Math.min(48, Math.max(20, availW * 0.035));
+      // -5px so the image itself reads slightly larger against its own
+      // background mat than the raw equal-gap value alone would give.
+      const pad = Math.max(0, Math.min(48, Math.max(20, availW * 0.035)) - 5);
       const ratio = naturalSize!.w / naturalSize!.h;
       const w = availW;
       const h = (availW - 2 * pad) / ratio + 2 * pad;

@@ -879,8 +879,10 @@ a.arv-row:hover{background:var(--bg2)}
 
 /* ══ WORLDBUILDING ATLAS — embedded multi-map canvas ══════════════ */
 /* Matches the page's standard horizontal inset (.ph, .wb-grid, etc.) so
-   nothing sits flush against the sidebar or the browser edge. */
-.wa-wrap{padding:40px 64px 0}
+   nothing sits flush against the sidebar or the browser edge. Bottom
+   padding keeps a visible gap between the map and the codex/controls
+   section below instead of the two backgrounds touching edge-to-edge. */
+.wa-wrap{padding:40px 64px 40px}
 .wa-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
 .wa-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;font-family:var(--M);font-size:0.72rem}
 .wa-crumb-item{display:flex;align-items:center}
