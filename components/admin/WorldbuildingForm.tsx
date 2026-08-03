@@ -5,12 +5,15 @@ import type { CSSProperties } from "react";
 import ImageUploadField from "./ImageUploadField";
 import YearPicker from "./YearPicker";
 import DatePicker from "./DatePicker";
+import ContentEditor from "./ContentEditor";
+import OrderPicker from "./OrderPicker";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import WorldbuildingPreviewCard from "./WorldbuildingPreviewCard";
 import SaveButton from "./SaveButton";
 import type { worldbuildingEntries } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
+import { CATEGORIES } from "@/types/worldbuilding";
 
 type WorldbuildingRow = typeof worldbuildingEntries.$inferSelect;
 
@@ -79,7 +82,11 @@ export default function WorldbuildingForm({
         </div>
         <div className="adm-field">
           <label htmlFor="cat">Category</label>
-          <input id="cat" name="cat" defaultValue={item?.cat} required placeholder="Characters, Cities, Lore, Events" />
+          <select id="cat" name="cat" defaultValue={item?.cat ?? CATEGORIES[0]} required>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
         </div>
         <div className="adm-field">
           <label htmlFor="year">Year</label>
@@ -102,6 +109,14 @@ export default function WorldbuildingForm({
           <div className="adm-hint">Comma separated, e.g. Aethermoor, Lore, Cities</div>
         </div>
         <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
+        <ContentEditor name="content" defaultValue={item?.content} />
+        <div className="adm-field">
+          <label>Content Order</label>
+          <div className="adm-hint" style={{ marginBottom: 8 }}>
+            Where Content lands relative to Gallery Images and Videos (lower number = earlier).
+          </div>
+          <OrderPicker name="contentOrder" defaultValue={item?.contentOrder ?? 0} />
+        </div>
         <div className="adm-field">
           <label htmlFor="sortOrder">Sort Order</label>
           <input id="sortOrder" name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />

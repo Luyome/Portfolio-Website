@@ -1,20 +1,23 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { createMapLocation, updateMapLocationPosition, updateMapImage } from "@/lib/actions/map";
+import { useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { createMapLocation, updateMapLocationPosition } from "@/lib/actions/map";
 import { useMapPanZoom } from "@/hooks/useMapPanZoom";
-import ImageUploadField from "./ImageUploadField";
 import MapPinEditPanel from "./MapPinEditPanel";
-import SaveButton from "./SaveButton";
-import type { MapLocation } from "@/lib/map-types";
+import type { MapLocation, WorldMap } from "@/lib/map-types";
 
 export default function MapEditor({
-  imageUrl,
+  maps,
   locations: initialLocations,
+  entries,
 }: {
-  imageUrl: string;
+  maps: WorldMap[];
   locations: MapLocation[];
+  entries: { id: number; title: string }[];
 }) {
+  const rootMap = maps.find((m) => m.parentMapId === null) ?? maps[0] ?? null;
+  const [currentMapId, setCurrentMapId] = useState<number | null>(rootMap?.id ?? null);
   const [locations, setLocations] = useState(initialLocations);
   const [newName, setNewName] = useState("");
   const [placing, setPlacing] = useState(false);
@@ -23,6 +26,12 @@ export default function MapEditor({
   const viewportRef = useRef<HTMLDivElement>(null);
   const dragState = useRef<{ id: number; moved: boolean } | null>(null);
   const { zoom, setZoom, minZoom, maxZoom, aspectRatio, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(viewportRef);
+
+  const currentMap = maps.find((m) => m.id === currentMapId) ?? null;
+  const mapLocationsHere = useMemo(
+    () => (currentMapId === null ? [] : locations.filter((l) => l.mapId === currentMapId)),
+    [locations, currentMapId]
+  );
 
   function coordsFromEvent(e: { clientX: number; clientY: number }) {
     const rect = canvasRef.current!.getBoundingClientRect();
@@ -33,12 +42,10 @@ export default function MapEditor({
 
   async function handleCanvasClick(e: React.MouseEvent) {
     if (wasPanning()) return;
-    if (!placing || !newName.trim()) return;
+    if (!placing || !newName.trim() || currentMapId === null) return;
     const { x, y } = coordsFromEvent(e);
-    const row = await createMapLocation(newName.trim(), x, y);
-    if (row) {
-      setLocations((prev) => [...prev, { id: row.id, name: row.name, x: row.x, y: row.y, info: row.info, img: row.img }]);
-    }
+    const row = await createMapLocation(currentMapId, newName.trim(), x, y);
+    if (row) setLocations((prev) => [...prev, row as MapLocation]);
     setNewName("");
     setPlacing(false);
   }
@@ -70,14 +77,23 @@ export default function MapEditor({
     }
   }
 
+  if (!currentMap) {
+    return (
+      <div className="adm-hint">
+        No maps exist yet. Create one in <Link href="/admin/worldbuilding/maps">Map Manager</Link> first.
+      </div>
+    );
+  }
+
   return (
     <div>
-      <form action={updateMapImage} className="adm-form" style={{ marginBottom: 32 }}>
-        <ImageUploadField name="imageUrl" initialUrl={imageUrl} label="Map Background Image" />
-        <SaveButton>Save Map Image</SaveButton>
-      </form>
-
       <div className="map-admin-toolbar">
+        <select value={currentMapId ?? ""} onChange={(e) => setCurrentMapId(Number(e.target.value))}>
+          {maps.map((m) => (
+            <option key={m.id} value={m.id}>{m.title}</option>
+          ))}
+        </select>
+        <Link href="/admin/worldbuilding/maps" className="adm-exit-btn">Manage Maps</Link>
         <input
           type="text"
           className="map-name-input"
@@ -117,17 +133,19 @@ export default function MapEditor({
           style={{ transform: `scale(${zoom})`, cursor: placing ? "crosshair" : undefined }}
           onClick={handleCanvasClick}
         >
-          {imageUrl ? (
+          {currentMap.imageUrl ? (
             <img
-              src={imageUrl}
-              alt="Map"
+              src={currentMap.imageUrl}
+              alt={currentMap.title}
               className="map-image"
               draggable={false}
             />
           ) : (
-            <div className="map-empty">Upload a map image above to get started.</div>
+            <div className="map-empty">
+              This map has no image yet — set one in Map Manager.
+            </div>
           )}
-          {locations.map((l) => (
+          {mapLocationsHere.map((l) => (
             <div
               key={l.id}
               className="map-pin map-pin-editable"
@@ -148,6 +166,8 @@ export default function MapEditor({
       {editing && (
         <MapPinEditPanel
           location={editing}
+          maps={maps}
+          entries={entries}
           onClose={() => setEditing(null)}
           onSaved={(updated) => {
             setLocations((prev) => prev.map((l) => (l.id === updated.id ? updated : l)));

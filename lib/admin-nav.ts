@@ -11,7 +11,6 @@ export const ADMIN_NAV: AdminNavSection[] = [
       { href: "/admin/sketches", label: "Sketches" },
       { href: "/admin/3d", label: "3D" },
       { href: "/admin/worldbuilding", label: "Worldbuilding" },
-      { href: "/admin/map", label: "Map" },
       { href: "/admin/games", label: "Games" },
       { href: "/admin/services", label: "Services" },
     ],

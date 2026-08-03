@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
-import { fieldStyle, remapStyles } from "@/lib/style-fields";
+import WorldbuildingAtlas from "./WorldbuildingAtlas";
+import WorldbuildingControls from "./WorldbuildingControls";
+import WorldbuildingGrid from "./WorldbuildingGrid";
+import { remapStyles } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
+import type { MapLocation, WorldMap } from "@/lib/map-types";
+import { fuzzyMatch } from "@/lib/search";
+import type { CategoryFilter, LoreEntry, ViewMode } from "@/types/worldbuilding";
 
 export type WorldbuildingEntry = {
   id: number;
@@ -15,20 +21,56 @@ export type WorldbuildingEntry = {
   excerpt: string;
   chips: string[];
   img: string;
+  content: string;
+  contentOrder: number;
   images?: MediaEntry[];
   videos?: MediaEntry[];
   links?: { id: number; label: string; href: string; kind: string }[];
   styles?: StylesMap;
 };
 
-const CATS = ["all", "Characters", "Cities", "Lore", "Events"];
+export default function WorldbuildingBrowser({
+  items,
+  maps,
+  locations,
+}: {
+  items: WorldbuildingEntry[];
+  maps: WorldMap[];
+  locations: MapLocation[];
+}) {
+  const [category, setCategory] = useState<CategoryFilter>("all");
+  const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("default");
+  const [openEntryId, setOpenEntryId] = useState<number | null>(null);
 
-export default function WorldbuildingBrowser({ items }: { items: WorldbuildingEntry[] }) {
-  const [cat, setCat] = useState("all");
-  const [modalIndex, setModalIndex] = useState<number | null>(null);
-  const filtered = cat === "all" ? items : items.filter((w) => w.cat === cat);
+  const filtered = useMemo(
+    () =>
+      items.filter(
+        (w) =>
+          (category === "all" || w.cat === category) &&
+          (search.trim() === "" || fuzzyMatch(w.title, search) || fuzzyMatch(w.excerpt, search))
+      ),
+    [items, category, search]
+  );
 
-  const galleryItems: GalleryItem[] = filtered.map((w) => ({
+  const loreEntries: LoreEntry[] = filtered.map((w) => ({
+    id: w.id,
+    title: w.title,
+    cat: w.cat,
+    year: w.year,
+    date: w.date,
+    excerpt: w.excerpt,
+    chips: w.chips,
+    img: w.img,
+    content: w.content,
+    contentOrder: w.contentOrder,
+    images: w.images,
+    videos: w.videos,
+    links: w.links,
+    styles: w.styles,
+  }));
+
+  const galleryItems: GalleryItem[] = items.map((w) => ({
     img: w.img,
     images: w.images,
     videos: w.videos,
@@ -39,67 +81,32 @@ export default function WorldbuildingBrowser({ items }: { items: WorldbuildingEn
       { label: "Date", value: w.date },
     ],
     desc: w.excerpt,
+    content: w.content,
+    contentOrder: w.contentOrder,
     tags: w.chips,
     links: w.links,
     styles: remapStyles(w.styles, { title: "title", excerpt: "desc" }),
   }));
 
+  const modalIndex = openEntryId === null ? null : items.findIndex((i) => i.id === openEntryId);
+
   return (
     <>
-      <div className="wb-ctrl">
-        {CATS.map((c) => (
-          <button key={c} className={`wb-pill ${cat === c ? "on" : ""}`} onClick={() => setCat(c)}>
-            {c === "all" ? "All" : c}
-          </button>
-        ))}
-      </div>
-      <div className="wb-grid">
-        {filtered.map((w, i) => (
-          <div
-            className="wb-card"
-            key={w.id}
-            role="button"
-            tabIndex={0}
-            onClick={() => setModalIndex(i)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                setModalIndex(i);
-              }
-            }}
-          >
-            <div className="wb-card-img">
-              <img src={w.img} alt={w.title} loading="lazy" />
-              <div className="wb-card-date">{w.date}</div>
-            </div>
-            <div className="wb-card-body">
-              <span className="wb-card-cat">{w.cat}</span>
-              <div className="wb-card-title" style={fieldStyle(w.styles, "title")}>{w.title}</div>
-              <div className="wb-card-excerpt" style={fieldStyle(w.styles, "excerpt")}>{w.excerpt}</div>
-              <div className="wb-card-chips">
-                {w.chips.map((c) => (
-                  <span className="wb-chip" key={c}>{c}</span>
-                ))}
-              </div>
-            </div>
-            <div className="wb-card-footer">
-              <div className="wb-card-chips">
-                {w.chips.slice(0, 2).map((c) => (
-                  <span className="wb-chip featured" key={c}>
-                    {c}
-                  </span>
-                ))}
-              </div>
-              <span className="wb-card-more">Read More →</span>
-            </div>
-          </div>
-        ))}
-      </div>
+      {maps.length > 0 && <WorldbuildingAtlas maps={maps} locations={locations} onOpenLore={setOpenEntryId} />}
+      <WorldbuildingControls
+        search={search}
+        onSearchChange={setSearch}
+        category={category}
+        onCategoryChange={setCategory}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+      />
+      <WorldbuildingGrid items={loreEntries} viewMode={viewMode} onSelect={setOpenEntryId} />
       <GalleryModal
         items={galleryItems}
-        index={modalIndex}
-        onClose={() => setModalIndex(null)}
-        onNavigate={setModalIndex}
+        index={modalIndex === -1 ? null : modalIndex}
+        onClose={() => setOpenEntryId(null)}
+        onNavigate={(next) => setOpenEntryId(items[next]?.id ?? null)}
       />
     </>
   );

@@ -16,7 +16,11 @@ export default async function AdminWorldbuildingListPage() {
     <div>
       <div className="adm-title">Worldbuilding</div>
       <p className="adm-sub">{items.length} item(s)</p>
-      <Link href="/admin/worldbuilding/new" className="adm-btn">+ New Entry</Link>
+      <div className="adm-actions" style={{ marginBottom: 16 }}>
+        <Link href="/admin/worldbuilding/new" className="adm-btn">+ New Entry</Link>
+        <Link href="/admin/worldbuilding/maps">Map Manager →</Link>
+        <Link href="/admin/worldbuilding/map">Map Pins →</Link>
+      </div>
       <table className="adm-table" style={{ marginTop: 24 }}>
         <thead>
           <tr>

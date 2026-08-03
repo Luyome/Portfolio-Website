@@ -6,12 +6,11 @@ import type { RefObject } from "react";
 const DRAG_THRESHOLD = 3;
 const EDGE_SLACK = 60;
 
-// Shared translate+scale pan/zoom mechanics for fullscreen image viewers:
-// wheel = zoom in/out, holding the left mouse button drags the image and it
-// stays exactly wherever released (no momentum). Pan is clamped so the
-// content can never be dragged entirely out of view. Used by both the
-// gallery image lightbox (ImageZoomOverlay) and the map explorer
-// (MapZoomOverlay).
+// Shared translate+scale pan/zoom mechanics: wheel = zoom in/out, holding
+// the left mouse button drags the content and it stays exactly wherever
+// released (no momentum). Pan is clamped so the content can never be
+// dragged entirely out of view. Used by both the gallery image lightbox
+// (ImageZoomOverlay) and the worldbuilding atlas (WorldbuildingAtlas).
 export function useDragZoom(
   refs: { viewportRef: RefObject<HTMLElement | null>; contentRef: RefObject<HTMLElement | null> },
   { minZoom = 1, maxZoom = 5, step = 0.15 } = {}

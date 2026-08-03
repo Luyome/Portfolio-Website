@@ -14,7 +14,6 @@ export const PAGE_KEYS = [
   "games",
   "about",
   "cv",
-  "map",
   "archive",
 ] as const;
 
@@ -29,7 +28,6 @@ export const PAGE_LABELS: Record<PageKey, string> = {
   games: "Games",
   about: "About",
   cv: "CV",
-  map: "Map",
   archive: "Archive",
 };
 

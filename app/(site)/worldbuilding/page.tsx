@@ -1,16 +1,18 @@
 import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
-import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingVideos } from "@/db/schema";
+import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingVideos, worldMaps, mapLocations } from "@/db/schema";
 import WorldbuildingBrowser from "@/components/WorldbuildingBrowser";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
 
 export default async function WorldbuildingPage() {
-  const [items, imageRows, linkRows, videoRows, appearance] = await Promise.all([
+  const [items, imageRows, linkRows, videoRows, mapRows, locationRows, appearance] = await Promise.all([
     db.select().from(worldbuildingEntries).orderBy(desc(worldbuildingEntries.year), asc(worldbuildingEntries.sortOrder)),
     db.select().from(worldbuildingImages).orderBy(asc(worldbuildingImages.sortOrder)),
     db.select().from(worldbuildingLinks).orderBy(asc(worldbuildingLinks.sortOrder)),
     db.select().from(worldbuildingVideos).orderBy(asc(worldbuildingVideos.sortOrder)),
+    db.select().from(worldMaps).orderBy(asc(worldMaps.sortOrder)),
+    db.select().from(mapLocations).orderBy(asc(mapLocations.sortOrder)),
     getPageAppearance("worldbuilding"),
   ]);
   const imagesByItem = groupImagesByParent(imageRows, (r) => r.entryId);
@@ -30,7 +32,7 @@ export default async function WorldbuildingPage() {
         <h2 className="ph-title">Worldbuilding Chronicles</h2>
         <p className="ph-sub">Explore stories, lore and characters from created worlds.</p>
       </div>
-      <WorldbuildingBrowser items={itemsWithImages} />
+      <WorldbuildingBrowser items={itemsWithImages} maps={mapRows} locations={locationRows} />
     </div>
   );
 }

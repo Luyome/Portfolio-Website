@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb, boolean } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb, boolean, type AnyPgColumn } from "drizzle-orm/pg-core";
 
 export type ThemedColor = { dark?: string; light?: string };
 export type FieldStyle = { color?: ThemedColor; fontSize?: string };
@@ -137,6 +137,8 @@ export const worldbuildingEntries = pgTable("worldbuilding_entries", {
   excerpt: text("excerpt").notNull(),
   chips: text("chips").array().notNull().default([]),
   img: text("img").notNull(),
+  content: text("content").notNull().default(""),
+  contentOrder: integer("content_order").notNull().default(0),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   styles: stylesColumn(),
@@ -206,16 +208,26 @@ export const gameVideos = pgTable("game_videos", {
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
-export const mapSettings = pgTable("map_settings", {
+export const worldMaps = pgTable("world_maps", {
   id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  parentMapId: integer("parent_map_id").references((): AnyPgColumn => worldMaps.id, { onDelete: "set null" }),
   imageUrl: text("image_url").notNull().default(""),
+  description: text("description").notNull().default(""),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const mapLocations = pgTable("map_locations", {
   id: serial("id").primaryKey(),
+  mapId: integer("map_id").notNull().references(() => worldMaps.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   x: doublePrecision("x").notNull().default(50),
   y: doublePrecision("y").notNull().default(50),
+  pinType: text("pin_type").notNull().default("lore"),
+  targetMapId: integer("target_map_id").references((): AnyPgColumn => worldMaps.id, { onDelete: "set null" }),
+  entryId: integer("entry_id").references(() => worldbuildingEntries.id, { onDelete: "set null" }),
+  iconType: text("icon_type").notNull().default("default"),
   info: text("info").notNull().default(""),
   img: text("img"),
   sortOrder: integer("sort_order").notNull().default(0),

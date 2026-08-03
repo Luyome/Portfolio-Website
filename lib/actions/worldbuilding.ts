@@ -17,6 +17,8 @@ function readFields(formData: FormData) {
     excerpt: str(formData.get("excerpt")),
     chips: parseCsv(formData.get("chips")),
     img: str(formData.get("img")),
+    content: str(formData.get("content")),
+    contentOrder: num(formData.get("contentOrder")),
     sortOrder: num(formData.get("sortOrder")),
     styles: readStyles(formData, ["title", "excerpt"]),
   };

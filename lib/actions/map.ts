@@ -2,28 +2,47 @@
 
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { mapSettings, mapLocations } from "@/db/schema";
-import { str } from "@/lib/form-utils";
+import { worldMaps, mapLocations } from "@/db/schema";
+import { num, numOrNull, str } from "@/lib/form-utils";
 
 function revalidateAll() {
-  revalidatePath("/map");
-  revalidatePath("/admin/map");
+  revalidatePath("/worldbuilding");
+  revalidatePath("/admin/worldbuilding");
+  revalidatePath("/admin/worldbuilding/maps");
 }
 
-export async function updateMapImage(formData: FormData) {
-  const imageUrl = str(formData.get("imageUrl"));
-  const existing = await db.select().from(mapSettings).limit(1);
-  if (existing.length === 0) {
-    await db.insert(mapSettings).values({ imageUrl });
-  } else {
-    await db.update(mapSettings).set({ imageUrl }).where(eq(mapSettings.id, existing[0].id));
-  }
+function readMapFields(formData: FormData) {
+  return {
+    title: str(formData.get("title")),
+    parentMapId: numOrNull(formData.get("parentMapId")),
+    imageUrl: str(formData.get("imageUrl")),
+    description: str(formData.get("description")),
+    sortOrder: num(formData.get("sortOrder")),
+  };
+}
+
+export async function createWorldMap(formData: FormData) {
+  await db.insert(worldMaps).values(readMapFields(formData));
+  revalidateAll();
+  redirect("/admin/worldbuilding/maps");
+}
+
+export async function updateWorldMap(id: number, formData: FormData) {
+  await db.update(worldMaps).set(readMapFields(formData)).where(eq(worldMaps.id, id));
+  revalidateAll();
+  redirect("/admin/worldbuilding/maps");
+}
+
+export async function deleteWorldMap(formData: FormData) {
+  const id = num(formData.get("id"));
+  await db.delete(worldMaps).where(eq(worldMaps.id, id));
   revalidateAll();
 }
 
-export async function createMapLocation(name: string, x: number, y: number) {
-  const [row] = await db.insert(mapLocations).values({ name, x, y }).returning();
+export async function createMapLocation(mapId: number, name: string, x: number, y: number) {
+  const [row] = await db.insert(mapLocations).values({ mapId, name, x, y }).returning();
   revalidateAll();
   return row;
 }
@@ -35,7 +54,15 @@ export async function updateMapLocationPosition(id: number, x: number, y: number
 
 export async function updateMapLocationInfo(
   id: number,
-  fields: { name: string; info: string; img: string | null }
+  fields: {
+    name: string;
+    info: string;
+    img: string | null;
+    pinType: "submap" | "lore";
+    targetMapId: number | null;
+    entryId: number | null;
+    iconType: string;
+  }
 ) {
   await db.update(mapLocations).set(fields).where(eq(mapLocations.id, id));
   revalidateAll();
