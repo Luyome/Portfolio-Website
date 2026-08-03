@@ -892,9 +892,15 @@ a.arv-row:hover{background:var(--bg2)}
 .wa-viewport{
   position:relative;width:100%;max-height:70vh;aspect-ratio:16/9;overflow:hidden;
   background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
-  padding:4%;
 }
-.wa-transition{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+/* margin (not padding on .wa-viewport) because an absolutely positioned
+   child's inset:0 fills its ancestor's *padding* box -- i.e. it would sit
+   flush past the padding, covering it entirely. margin subtracted from an
+   inset:0 box shrinks it inward instead, and -- like padding -- percentage
+   margins resolve against the container's width on every side, so one value
+   gives pixel-equal gaps on all four edges regardless of the box's own
+   aspect ratio. */
+.wa-transition{position:absolute;inset:0;margin:4%;display:flex;align-items:center;justify-content:center}
 .wa-canvas{position:absolute;inset:0}
 .wa-img{width:100%;height:100%;object-fit:contain;display:block;user-select:none}
 .wa-img-empty{
