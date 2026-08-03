@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDragZoom } from "@/hooks/useDragZoom";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
@@ -18,13 +18,20 @@ export default function WorldbuildingAtlas({
   const [currentMapId, setCurrentMapId] = useState<number | null>(rootMap?.id ?? null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const { zoom, pan, zoomBy, reset, onWheel, onMouseDown, onMouseMove, onMouseUp, wasDragging, minZoom } = useDragZoom(
+  const { zoom, pan, zoomBy, reset, onMouseDown, onMouseMove, onMouseUp, wasDragging, minZoom } = useDragZoom(
     { viewportRef, contentRef },
     { minZoom: 1, maxZoom: 4 }
   );
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
 
   const mapsById = useMemo(() => new Map(maps.map((m) => [m.id, m])), [maps]);
   const currentMap = currentMapId !== null ? mapsById.get(currentMapId) ?? null : null;
+
+  // Reset so the previous map's ratio never gets briefly applied to a new,
+  // differently-shaped one before its own <img onLoad> fires.
+  useEffect(() => {
+    setAspectRatio(null);
+  }, [currentMapId]);
 
   const pins = useMemo(
     () => (currentMapId === null ? [] : locations.filter((l) => l.mapId === currentMapId)),
@@ -91,12 +98,11 @@ export default function WorldbuildingAtlas({
       <div
         className="wa-viewport"
         ref={viewportRef}
-        onWheel={onWheel}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
-        style={{ cursor: zoom > minZoom ? "grab" : "default" }}
+        style={{ cursor: zoom > minZoom ? "grab" : "default", aspectRatio: aspectRatio ?? undefined }}
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -113,7 +119,16 @@ export default function WorldbuildingAtlas({
               style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
             >
               {currentMap.imageUrl ? (
-                <img src={currentMap.imageUrl} alt={currentMap.title} className="wa-img" draggable={false} />
+                <img
+                  src={currentMap.imageUrl}
+                  alt={currentMap.title}
+                  className="wa-img"
+                  draggable={false}
+                  onLoad={(e) => {
+                    const img = e.currentTarget;
+                    if (img.naturalWidth && img.naturalHeight) setAspectRatio(img.naturalWidth / img.naturalHeight);
+                  }}
+                />
               ) : (
                 <div className="wa-img-empty">No map image uploaded yet.</div>
               )}

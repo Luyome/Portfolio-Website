@@ -14,7 +14,7 @@ export default function ImageZoomOverlay({
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLImageElement>(null);
-  const { zoom, pan, zoomBy, reset, onWheel, onMouseDown, onMouseMove, onMouseUp, minZoom } = useDragZoom({ viewportRef, contentRef });
+  const { zoom, pan, zoomBy, reset, onMouseDown, onMouseMove, onMouseUp, minZoom } = useDragZoom({ viewportRef, contentRef });
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -49,7 +49,6 @@ export default function ImageZoomOverlay({
       <div
         className="iz-viewport"
         ref={viewportRef}
-        onWheel={onWheel}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}

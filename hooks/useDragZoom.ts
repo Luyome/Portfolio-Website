@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
 
 const DRAG_THRESHOLD = 3;
@@ -60,10 +60,23 @@ export function useDragZoom(
     });
   }
 
-  function onWheel(e: React.WheelEvent) {
-    e.preventDefault();
-    zoomBy(e.deltaY > 0 ? -step : step);
-  }
+  // Attached as a native, non-passive listener rather than JSX `onWheel` —
+  // React attaches wheel listeners passively at the root by default, so
+  // `e.preventDefault()` inside a synthetic onWheel handler is silently
+  // ignored and the page scrolls underneath the zoomed content. zoomBy only
+  // reads state through functional updaters / stable refs, so it stays
+  // correct even though this effect subscribes once on mount.
+  useEffect(() => {
+    const vp = refs.viewportRef.current;
+    if (!vp) return;
+    function handleWheel(e: WheelEvent) {
+      e.preventDefault();
+      zoomBy(e.deltaY > 0 ? -step : step);
+    }
+    vp.addEventListener("wheel", handleWheel, { passive: false });
+    return () => vp.removeEventListener("wheel", handleWheel);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- zoomBy/step are stable in effect via functional updaters; see comment above
+  }, []);
 
   function onMouseDown(e: React.MouseEvent) {
     if (zoom <= minZoom) return;
@@ -97,5 +110,5 @@ export function useDragZoom(
     return justDraggedRef.current;
   }
 
-  return { zoom, pan, zoomBy, reset, onWheel, onMouseDown, onMouseMove, onMouseUp, wasDragging, minZoom, maxZoom };
+  return { zoom, pan, zoomBy, reset, onMouseDown, onMouseMove, onMouseUp, wasDragging, minZoom, maxZoom };
 }
