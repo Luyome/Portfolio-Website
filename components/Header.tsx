@@ -3,13 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { TwitterIcon, ArtStationIcon, GithubIcon } from "./SocialIcons";
+import { TwitterIcon, ArtStationIcon, GithubIcon, LinkedInIcon, InstagramIcon } from "./SocialIcons";
 
 type SiteSettings = {
   name: string;
   twitterUrl: string;
   artstationUrl: string;
   githubUrl: string;
+  linkedinUrl: string;
+  instagramUrl: string;
 };
 
 const WORK_LINKS: { href: string; label: string }[] = [
@@ -87,6 +89,16 @@ export default function Header({ settings }: { settings: SiteSettings }) {
               <TwitterIcon />
             </a>
           )}
+          {settings.linkedinUrl && (
+            <a href={settings.linkedinUrl} target="_blank" rel="noreferrer" className="hn-social" aria-label="LinkedIn">
+              <LinkedInIcon />
+            </a>
+          )}
+          {settings.instagramUrl && (
+            <a href={settings.instagramUrl} target="_blank" rel="noreferrer" className="hn-social" aria-label="Instagram">
+              <InstagramIcon />
+            </a>
+          )}
           {settings.githubUrl && (
             <a href={settings.githubUrl} target="_blank" rel="noreferrer" className="hn-social" aria-label="GitHub">
               <GithubIcon />
@@ -145,6 +157,16 @@ export default function Header({ settings }: { settings: SiteSettings }) {
             {settings.twitterUrl && (
               <a href={settings.twitterUrl} target="_blank" rel="noreferrer" aria-label="Twitter / X">
                 <TwitterIcon />
+              </a>
+            )}
+            {settings.linkedinUrl && (
+              <a href={settings.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn">
+                <LinkedInIcon />
+              </a>
+            )}
+            {settings.instagramUrl && (
+              <a href={settings.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram">
+                <InstagramIcon />
               </a>
             )}
             {settings.githubUrl && (
