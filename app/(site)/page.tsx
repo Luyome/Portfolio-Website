@@ -6,6 +6,7 @@ import { getSiteSettings } from "@/lib/site-settings";
 import InlineBold from "@/components/InlineBold";
 import HeroCarousel from "@/components/HeroCarousel";
 import ShowcaseCarousel from "@/components/ShowcaseCarousel";
+import Reveal from "@/components/Reveal";
 import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
@@ -54,7 +55,7 @@ export default async function HomePage() {
           width={settings.homeBgWidth}
           height={settings.homeBgHeight}
         />
-        <div className="home-hero">
+        <Reveal className="home-hero">
           <div className="home-glow" />
           <div className="h-eyebrow" style={fieldStyle(settings.styles, "heroEyebrow")}>{settings.heroEyebrow}</div>
           <h1 className="h-name">{settings.name.toLocaleUpperCase("tr-TR")}</h1>
@@ -70,11 +71,11 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
-        </div>
+        </Reveal>
       </div>
 
       {settings.narrativeImage && settings.narrativeText && (
-        <div className="home-narrative">
+        <Reveal className="home-narrative">
           <div className="narr-grid">
             <div className="narr-frame">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -86,19 +87,19 @@ export default async function HomePage() {
               <p className="narr-text">{settings.narrativeText}</p>
             </div>
           </div>
-        </div>
+        </Reveal>
       )}
 
       {showcaseRows.length > 0 && (
-        <div className="home-showcase">
+        <Reveal className="home-showcase">
           <div className="sc-heading">
             <div className="sc-title">Selected Work</div>
           </div>
           <ShowcaseCarousel items={showcaseRows} />
-        </div>
+        </Reveal>
       )}
 
-      <div className="home-pillars">
+      <Reveal className="home-pillars">
         <div className="pillar-grid">
           {pillars.map((p) => (
             <Link key={p.href} href={p.href} className="pillar-card">
@@ -112,11 +113,11 @@ export default async function HomePage() {
             </Link>
           ))}
         </div>
-      </div>
+      </Reveal>
 
-      <div className="home-services">
-        <div className="hs-title">Services</div>
-        <div className="hs-sub">Professional 3D character creation &amp; game design services</div>
+      <Reveal className="home-services">
+        <div className="hs-title">Focus Areas</div>
+        <div className="hs-sub">Environment design, hardsurface modeling, and worldbuilding — where my practice is focused</div>
         <div className="hs-grid">
           {servicesList.map((s) => (
             <div className="hs-card" key={s.id}>
@@ -126,9 +127,9 @@ export default async function HomePage() {
             </div>
           ))}
         </div>
-      </div>
+      </Reveal>
 
-      <div className="home-contact">
+      <Reveal className="home-contact">
         {settings.contactBgImage && (
           <div
             className="contact-bg-image"
@@ -142,7 +143,7 @@ export default async function HomePage() {
         <a href={`mailto:${settings.contactEmail}`} className="hbtn hbtn-p">
           Get in Touch
         </a>
-      </div>
+      </Reveal>
     </div>
   );
 }

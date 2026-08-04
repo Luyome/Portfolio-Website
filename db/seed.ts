@@ -15,12 +15,9 @@ async function seed() {
   console.log("Seeding database with current site content...");
 
   await db.insert(services).values([
-    { icon: "◆", title: "Character Modeling", desc: "High-quality 3D character models optimized for games and animation.", sortOrder: 0 },
-    { icon: "◈", title: "Texturing & Shading", desc: "Detailed texturing and material creation for realistic or stylized looks.", sortOrder: 1 },
-    { icon: "◬", title: "Character Rigging", desc: "Professional rigging for animation-ready game characters.", sortOrder: 2 },
-    { icon: "▶", title: "Animation", desc: "Dynamic character animations for games and cinematics.", sortOrder: 3 },
-    { icon: "△", title: "Concept to 3D", desc: "Transforming 2D concept art into fully realized 3D characters.", sortOrder: 4 },
-    { icon: "■", title: "Game-Ready Assets", desc: "Optimized characters ready for integration into Unreal Engine 5.", sortOrder: 5 },
+    { icon: "▲", title: "Environment Design", desc: "Atmospheric, narrative-driven environments built in Unreal Engine 5 — spaces that carry story through light, scale, and detail.", sortOrder: 0 },
+    { icon: "◆", title: "Hardsurface Prop Modeling", desc: "Detailed hardsurface prop modeling in Blender, built for close-up readability and game-ready topology.", sortOrder: 1 },
+    { icon: "✦", title: "Worldbuilding", desc: "KRUPNI — an original sci-fi universe set in the year 2770, ruled by megacorporations, home to DNA-modified human-animal hybrids.", sortOrder: 2 },
   ]);
 
   await db.insert(portfolioItems).values([
