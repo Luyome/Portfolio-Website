@@ -8,7 +8,7 @@ export default async function AdminSettingsPage() {
   return (
     <div>
       <div className="adm-title">Site Settings</div>
-      <p className="adm-sub">Sidebar brand, footer, and social links.</p>
+      <p className="adm-sub">Nav bar brand, footer, and social links.</p>
       <form action={updateSiteSettings} className="adm-form">
         <div className="adm-field">
           <label htmlFor="name">Name</label>
@@ -46,6 +46,10 @@ export default async function AdminSettingsPage() {
         <div className="adm-field">
           <label htmlFor="instagramUrl">Instagram URL</label>
           <input id="instagramUrl" name="instagramUrl" defaultValue={settings.instagramUrl} />
+        </div>
+        <div className="adm-field">
+          <label htmlFor="githubUrl">GitHub URL</label>
+          <input id="githubUrl" name="githubUrl" defaultValue={settings.githubUrl} />
         </div>
         <SaveButton />
       </form>

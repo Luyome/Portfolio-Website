@@ -18,6 +18,7 @@ export async function updateSiteSettings(formData: FormData) {
     artstationUrl: str(formData.get("artstationUrl")),
     linkedinUrl: str(formData.get("linkedinUrl")),
     instagramUrl: str(formData.get("instagramUrl")),
+    githubUrl: str(formData.get("githubUrl")),
   };
 
   const [existing] = await db.select().from(siteSettings).limit(1);

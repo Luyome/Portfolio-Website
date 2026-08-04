@@ -36,6 +36,8 @@ export default function HomeHeroForm({
     homeBgHeight: number | null;
     contactBgImage: string;
     contactBgOpacity: number;
+    narrativeImage: string;
+    narrativeText: string;
     styles: StylesMap;
   };
   pageVars?: CSSProperties;
@@ -121,6 +123,12 @@ export default function HomeHeroForm({
         <div className="adm-field">
           <label htmlFor="contactBgOpacity">Let&apos;s Work Together Background Opacity ({settings.contactBgOpacity}%)</label>
           <input id="contactBgOpacity" name="contactBgOpacity" type="range" min={0} max={100} defaultValue={settings.contactBgOpacity} />
+        </div>
+        <ImageUploadField name="narrativeImage" initialUrl={settings.narrativeImage} label="Editorial Narrative Image" />
+        <div className="adm-field">
+          <label htmlFor="narrativeText">Editorial Narrative Text</label>
+          <textarea id="narrativeText" name="narrativeText" defaultValue={settings.narrativeText} style={{ minHeight: 110 }} />
+          <div className="adm-hint">Shown next to the narrative image, below the hero. Leave the image empty to hide this section.</div>
         </div>
         <SaveButton />
       </form>

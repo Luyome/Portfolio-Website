@@ -1,35 +1,59 @@
 import Link from "next/link";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { services, heroButtons } from "@/db/schema";
+import { services, heroButtons, homeHeroSlides, homeShowcase, worldbuildingEntries, games, models3d } from "@/db/schema";
 import { getSiteSettings } from "@/lib/site-settings";
 import InlineBold from "@/components/InlineBold";
+import HeroCarousel from "@/components/HeroCarousel";
+import ShowcaseCarousel from "@/components/ShowcaseCarousel";
 import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 export default async function HomePage() {
-  const [servicesList, settings, buttons, appearance] = await Promise.all([
+  const [
+    servicesList,
+    settings,
+    buttons,
+    appearance,
+    heroSlideRows,
+    showcaseRows,
+    wbFeatured,
+    gameFeatured,
+    modelFeatured,
+  ] = await Promise.all([
     db.select().from(services).orderBy(services.sortOrder),
     getSiteSettings(),
     db.select().from(heroButtons).orderBy(asc(heroButtons.sortOrder)),
     getPageAppearance("home"),
+    db.select().from(homeHeroSlides).orderBy(asc(homeHeroSlides.sortOrder)),
+    db.select().from(homeShowcase).orderBy(asc(homeShowcase.sortOrder)).limit(12),
+    db.select().from(worldbuildingEntries).orderBy(asc(worldbuildingEntries.sortOrder)).limit(1),
+    db.select().from(games).orderBy(asc(games.sortOrder)).limit(1),
+    db.select().from(models3d).orderBy(asc(models3d.sortOrder)).limit(1),
   ]);
+
+  const heroSlides =
+    heroSlideRows.length > 0
+      ? heroSlideRows
+      : settings.homeBgImage
+        ? [{ id: -1, url: settings.homeBgImage, title: null, subtitle: null, linkUrl: null }]
+        : [];
+
+  const pillars = [
+    { label: "Worldbuilding Chronicles", href: "/worldbuilding", img: wbFeatured[0]?.img ?? "" },
+    { label: "Game Projects", href: "/games", img: gameFeatured[0]?.img ?? "" },
+    { label: "3D Renders & Environments", href: "/3d", img: modelFeatured[0]?.img ?? "" },
+  ];
 
   return (
     <div className="page home-page" style={pageAppearanceVars(appearance)}>
       <div className="home-hero-band">
-        {settings.homeBgImage && (
-          <div
-            className="home-bg-image"
-            style={{
-              backgroundImage: `url(${settings.homeBgImage})`,
-              opacity: settings.homeBgOpacity / 100,
-              ...(settings.homeBgWidth && settings.homeBgHeight
-                ? { backgroundSize: `${settings.homeBgWidth}px ${settings.homeBgHeight}px`, backgroundRepeat: "no-repeat" }
-                : {}),
-            }}
-          />
-        )}
+        <HeroCarousel
+          slides={heroSlides}
+          opacity={settings.homeBgOpacity}
+          width={settings.homeBgWidth}
+          height={settings.homeBgHeight}
+        />
         <div className="home-hero">
           <div className="home-glow" />
           <div className="h-eyebrow" style={fieldStyle(settings.styles, "heroEyebrow")}>{settings.heroEyebrow}</div>
@@ -46,6 +70,47 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
+        </div>
+      </div>
+
+      {settings.narrativeImage && settings.narrativeText && (
+        <div className="home-narrative">
+          <div className="narr-grid">
+            <div className="narr-frame">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={settings.narrativeImage} alt="" />
+            </div>
+            <div>
+              <div className="narr-eyebrow">Creative Vision</div>
+              <div className="narr-title">Building Worlds From The Ground Up</div>
+              <p className="narr-text">{settings.narrativeText}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showcaseRows.length > 0 && (
+        <div className="home-showcase">
+          <div className="sc-heading">
+            <div className="sc-title">Selected Work</div>
+          </div>
+          <ShowcaseCarousel items={showcaseRows} />
+        </div>
+      )}
+
+      <div className="home-pillars">
+        <div className="pillar-grid">
+          {pillars.map((p) => (
+            <Link key={p.href} href={p.href} className="pillar-card">
+              {p.img && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.img} alt="" />
+              )}
+              <div className="pillar-label">
+                {p.label} <span className="pillar-arrow">→</span>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
 

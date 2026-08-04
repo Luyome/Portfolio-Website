@@ -1,4 +1,5 @@
-import Sidebar from "@/components/Sidebar";
+import Header from "@/components/Header";
+import SiteFooter from "@/components/SiteFooter";
 import { getSiteSettings } from "@/lib/site-settings";
 
 export default async function SiteLayout({
@@ -10,8 +11,9 @@ export default async function SiteLayout({
 
   return (
     <>
-      <Sidebar settings={settings} />
+      <Header settings={settings} />
       <div className="main">{children}</div>
+      <SiteFooter settings={settings} />
     </>
   );
 }

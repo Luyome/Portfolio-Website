@@ -22,6 +22,10 @@ export const DEFAULT_SITE_SETTINGS = {
   homeBgHeight: null as number | null,
   contactBgImage: "",
   contactBgOpacity: 30,
+  githubUrl: "",
+  narrativeImage: "",
+  narrativeText:
+    "Every project starts as a fragment of a larger world — a ruin, a rumor, a half-remembered myth. I build outward from there: environments that hold history, characters that carry it, and systems that let players uncover it at their own pace.",
   forceDarkMode: false,
   styles: {} as StylesMap,
 };

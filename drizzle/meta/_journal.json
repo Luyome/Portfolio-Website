@@ -120,6 +120,13 @@
       "when": 1785769330200,
       "tag": "0016_worldbuilding_atlas",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1785844852403,
+      "tag": "0017_grey_bishop",
+      "breakpoints": true
     }
   ]
 }

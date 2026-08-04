@@ -12,7 +12,7 @@ export default async function AdminCvPage() {
   return (
     <div>
       <div className="adm-title">CV</div>
-      <p className="adm-sub">Upload your CV as an image or a PDF. Shown full-screen at /cv with a Download button.</p>
+      <p className="adm-sub">Upload your CV as an image or a PDF. Powers the &quot;Download CV (PDF)&quot; button on /about.</p>
       {current && (
         isPdf ? (
           <div className="adm-hint">📄 PDF uploaded — {current.split("/").pop()}</div>

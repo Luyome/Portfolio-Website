@@ -9,8 +9,7 @@ const PAGE_OPTIONS = [
   { label: "3D", href: "/3d" },
   { label: "Worldbuilding", href: "/worldbuilding" },
   { label: "Games", href: "/games" },
-  { label: "About", href: "/about" },
-  { label: "CV", href: "/cv" },
+  { label: "About & Credentials", href: "/about" },
   { label: "Archive", href: "/archive" },
 ];
 

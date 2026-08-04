@@ -1,15 +1,28 @@
 import Link from "next/link";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { heroButtons, services } from "@/db/schema";
+import { heroButtons, services, homeHeroSlides, homeShowcase } from "@/db/schema";
 import { getSiteSettings } from "@/lib/site-settings";
-import { updateHomeSettings, createHeroButton, updateHeroButton, deleteHeroButton } from "@/lib/actions/home";
+import {
+  updateHomeSettings,
+  createHeroButton,
+  updateHeroButton,
+  deleteHeroButton,
+  createHomeHeroSlide,
+  updateHomeHeroSlide,
+  deleteHomeHeroSlide,
+  createHomeShowcaseItem,
+  updateHomeShowcaseItem,
+  deleteHomeShowcaseItem,
+} from "@/lib/actions/home";
 import DeleteButton from "@/components/admin/DeleteButton";
 import HeroLinkPicker from "@/components/admin/HeroLinkPicker";
 import OptionPicker from "@/components/admin/OptionPicker";
 import NumberPicker from "@/components/admin/NumberPicker";
 import ResizableTh from "@/components/admin/ResizableTh";
 import HomeHeroForm from "@/components/admin/HomeHeroForm";
+import HeroSlidesPanel from "@/components/admin/HeroSlidesPanel";
+import ShowcaseImagesPanel from "@/components/admin/ShowcaseImagesPanel";
 import SaveButton from "@/components/admin/SaveButton";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
@@ -19,11 +32,13 @@ const STYLE_OPTIONS = [
 ];
 
 export default async function AdminHomePage() {
-  const [settings, buttons, serviceRows, appearance] = await Promise.all([
+  const [settings, buttons, serviceRows, appearance, heroSlideRows, showcaseRows] = await Promise.all([
     getSiteSettings(),
     db.select().from(heroButtons).orderBy(asc(heroButtons.sortOrder)),
     db.select().from(services),
     getPageAppearance("home"),
+    db.select().from(homeHeroSlides).orderBy(asc(homeHeroSlides.sortOrder)),
+    db.select().from(homeShowcase).orderBy(asc(homeShowcase.sortOrder)),
   ]);
 
   return (
@@ -92,6 +107,20 @@ export default async function AdminHomePage() {
         </div>
         <button type="submit" className="adm-btn">Add Button</button>
       </form>
+
+      <HeroSlidesPanel
+        slides={heroSlideRows}
+        createAction={createHomeHeroSlide}
+        updateAction={updateHomeHeroSlide}
+        deleteAction={deleteHomeHeroSlide}
+      />
+
+      <ShowcaseImagesPanel
+        items={showcaseRows}
+        createAction={createHomeShowcaseItem}
+        updateAction={updateHomeShowcaseItem}
+        deleteAction={deleteHomeShowcaseItem}
+      />
 
       <p className="adm-sub" style={{ marginTop: 48 }}>Other Home Sections</p>
       <div className="adm-dash-cols" style={{ gridTemplateColumns: "1fr" }}>

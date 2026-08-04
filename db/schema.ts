@@ -274,6 +274,9 @@ export const siteSettings = pgTable("site_settings", {
   homeBgHeight: integer("home_bg_height"),
   contactBgImage: text("contact_bg_image").notNull().default(""),
   contactBgOpacity: integer("contact_bg_opacity").notNull().default(30),
+  githubUrl: text("github_url").notNull().default(""),
+  narrativeImage: text("narrative_image").notNull().default(""),
+  narrativeText: text("narrative_text").notNull().default(""),
   forceDarkMode: boolean("force_dark_mode").notNull().default(false),
   styles: stylesColumn(),
 });
@@ -284,6 +287,25 @@ export const heroButtons = pgTable("hero_buttons", {
   href: text("href").notNull(),
   style: text("style").notNull().default("primary"),
   sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const homeHeroSlides = pgTable("home_hero_slides", {
+  id: serial("id").primaryKey(),
+  url: text("url").notNull(),
+  title: text("title"),
+  subtitle: text("subtitle"),
+  linkUrl: text("link_url"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const homeShowcase = pgTable("home_showcase", {
+  id: serial("id").primaryKey(),
+  url: text("url").notNull(),
+  title: text("title").notNull().default(""),
+  linkHref: text("link_href").notNull().default(""),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const pageAppearance = pgTable("page_appearance", {
