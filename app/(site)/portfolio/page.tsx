@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { portfolioItems, portfolioImages, portfolioLinks, portfolioVideos } from "@/db/schema";
@@ -5,6 +6,12 @@ import PortfolioBrowser from "@/components/PortfolioBrowser";
 import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
+
+export const metadata: Metadata = {
+  title: "Portfolio",
+  description: "3D character and concept art — professional visual work by Ege Demir Ünal (TETSUNARU).",
+  alternates: { canonical: "/portfolio" },
+};
 
 export default async function PortfolioPage({
   searchParams,

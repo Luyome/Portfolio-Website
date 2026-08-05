@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { sketches, sketchImages, sketchLinks, sketchVideos } from "@/db/schema";
@@ -5,6 +6,12 @@ import SketchGrid from "@/components/SketchGrid";
 import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
+
+export const metadata: Metadata = {
+  title: "Sketches",
+  description: "Personal sketches and studies by Ege Demir Ünal — unfiltered work outside the curated portfolio.",
+  alternates: { canonical: "/sketches" },
+};
 
 export default async function SketchesPage({
   searchParams,

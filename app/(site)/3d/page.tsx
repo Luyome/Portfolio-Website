@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { models3d, model3dImages, model3dLinks, model3dVideos } from "@/db/schema";
@@ -5,6 +6,12 @@ import Model3DGrid from "@/components/Model3DGrid";
 import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
+
+export const metadata: Metadata = {
+  title: "3D",
+  description: "Personal 3D studies and props by Ege Demir Ünal — unfiltered work outside the curated portfolio.",
+  alternates: { canonical: "/3d" },
+};
 
 export default async function Model3DPage({
   searchParams,

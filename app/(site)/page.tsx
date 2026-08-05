@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
@@ -10,6 +11,10 @@ import Reveal from "@/components/Reveal";
 import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function HomePage() {
   const [

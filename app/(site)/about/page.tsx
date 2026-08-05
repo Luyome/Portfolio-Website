@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
 import { aboutContent, timelineEntries, cvContent } from "@/db/schema";
@@ -6,6 +7,12 @@ import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { downloadUrl } from "@/lib/download-url";
 import PageHeader from "@/components/PageHeader";
 import ActionLink from "@/components/ActionLink";
+
+export const metadata: Metadata = {
+  title: "About",
+  description: "Profile, experience and CV for Ege Demir Ünal (TETSUNARU) — game designer, storyteller and worldbuilder.",
+  alternates: { canonical: "/about" },
+};
 
 export default async function AboutPage() {
   const [aboutRows, timeline, appearance, cvRows] = await Promise.all([

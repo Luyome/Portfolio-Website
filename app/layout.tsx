@@ -1,11 +1,29 @@
 import type { Metadata } from "next";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getSiteSettings } from "@/lib/site-settings";
+import { SITE_NAME, SITE_TITLE, SITE_DESCRIPTION, siteUrl, baseOpenGraph } from "@/lib/site-metadata";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TETSUNARU — Ege Demir Ünal",
-  description: "Game Designer & worldbuilder. Personal archive of games, 3D art, sketches and worldbuilding.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: SITE_TITLE,
+    template: `%s — ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: "Ege Demir Ünal" }],
+  creator: "Ege Demir Ünal",
+  openGraph: {
+    ...baseOpenGraph,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    url: "/",
+  },
+  twitter: {
+    card: "summary",
+    creator: "@TetsuUnaru",
+  },
 };
 
 const THEME_INIT_SCRIPT_NORMAL = `

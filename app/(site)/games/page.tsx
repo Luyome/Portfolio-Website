@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
 import { games, gameLinks, gameImages, gameVideos } from "@/db/schema";
@@ -5,6 +6,12 @@ import GamesBrowser from "@/components/GamesBrowser";
 import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
+
+export const metadata: Metadata = {
+  title: "Games",
+  description: "Current and in-progress game design work by Ege Demir Ünal — solo and group projects built in Unreal Engine 5.",
+  alternates: { canonical: "/games" },
+};
 
 export default async function GamesPage() {
   const [rows, linkRows, imageRows, videoRows, appearance] = await Promise.all([

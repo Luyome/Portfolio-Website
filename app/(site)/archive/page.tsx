@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
 import { portfolioItems, sketches, models3d, worldbuildingEntries, games, archiveCategories } from "@/db/schema";
@@ -5,6 +6,12 @@ import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import ArchiveList from "@/components/ArchiveList";
 import type { ArchiveItem } from "@/components/ArchiveList";
 import PageHeader from "@/components/PageHeader";
+
+export const metadata: Metadata = {
+  title: "Archive",
+  description: "A chronological catalog of every project, sketch, 3D piece, world and game published on the site.",
+  alternates: { canonical: "/archive" },
+};
 
 export default async function ArchivePage() {
   const [port, sk, m3, wb, gm, categories, appearance] = await Promise.all([

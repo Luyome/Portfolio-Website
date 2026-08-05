@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingVideos, worldMaps, mapLocations } from "@/db/schema";
@@ -5,6 +6,12 @@ import WorldbuildingBrowser from "@/components/WorldbuildingBrowser";
 import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
+
+export const metadata: Metadata = {
+  title: "Worldbuilding",
+  description: "KRUPNI — an original sci-fi universe. Explore its stories, lore and characters.",
+  alternates: { canonical: "/worldbuilding" },
+};
 
 export default async function WorldbuildingPage() {
   const [items, imageRows, linkRows, videoRows, mapRows, locationRows, appearance] = await Promise.all([
