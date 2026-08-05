@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import EmptyState from "./EmptyState";
+import { yearOptions } from "@/lib/search";
 
 export type ArchiveItemType = "Portfolio" | "Sketches" | "3D" | "Worldbuilding" | "Games";
 
@@ -22,10 +23,7 @@ export default function ArchiveList({ items, categories }: { items: ArchiveItem[
   const [type, setType] = useState("all");
   const [cat, setCat] = useState("all");
 
-  const years = useMemo(
-    () => ["all", ...Array.from(new Set(items.map((i) => i.year))).sort((a, b) => b - a).map(String)],
-    [items]
-  );
+  const years = useMemo(() => yearOptions(items, (i) => i.year), [items]);
 
   const filtered = items.filter(
     (i) =>

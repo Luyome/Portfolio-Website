@@ -6,6 +6,7 @@ import GalleryModal, { GalleryItem } from "./GalleryModal";
 import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
+import { resolveYearParam, yearOptions } from "@/lib/search";
 
 export type PortfolioItem = {
   id: number;
@@ -31,14 +32,11 @@ export default function PortfolioBrowser({
   items: PortfolioItem[];
   initialYear?: string;
 }) {
-  const [year, setYear] = useState<string>(initialYear ?? "all");
+  const years = useMemo(() => yearOptions(items, (p) => p.year), [items]);
+  const [year, setYear] = useState<string>(() => resolveYearParam(initialYear, years));
   const [cat, setCat] = useState<string>("all");
   const [modalIndex, setModalIndex] = useState<number | null>(null);
 
-  const years = useMemo(
-    () => ["all", ...Array.from(new Set(items.map((p) => p.year))).sort((a, b) => b - a).map(String)],
-    [items]
-  );
   const cats = useMemo(
     () => ["all", ...Array.from(new Set(items.map((p) => p.cat)))],
     [items]

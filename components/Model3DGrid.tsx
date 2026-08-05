@@ -6,6 +6,7 @@ import GalleryModal, { GalleryItem } from "./GalleryModal";
 import { fieldStyle, remapStyles } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
+import { resolveYearParam, yearOptions } from "@/lib/search";
 
 export type Model3D = {
   id: number;
@@ -22,13 +23,10 @@ export type Model3D = {
 };
 
 export default function Model3DGrid({ items, initialYear }: { items: Model3D[]; initialYear?: string }) {
-  const [year, setYear] = useState<string>(initialYear ?? "all");
+  const years = useMemo(() => yearOptions(items, (s) => s.year), [items]);
+  const [year, setYear] = useState<string>(() => resolveYearParam(initialYear, years));
   const [modalIndex, setModalIndex] = useState<number | null>(null);
 
-  const years = useMemo(
-    () => ["all", ...Array.from(new Set(items.map((s) => s.year))).sort((a, b) => b - a).map(String)],
-    [items]
-  );
 
   const filtered = items.filter((s) => year === "all" || String(s.year) === year);
 
