@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
@@ -11,6 +12,7 @@ import Reveal from "@/components/Reveal";
 import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import { isOptimizableImageUrl } from "@/lib/image-host";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -54,6 +56,14 @@ export default async function HomePage() {
 
   return (
     <div className="page home-page" style={pageAppearanceVars(appearance)}>
+      {heroSlides.length > 0 && (
+        // The hero background is a CSS background-image (HeroCarousel), so it
+        // can't use next/image's own preload prop -- this is the equivalent
+        // resource hint for the one slide that's actually the initial LCP
+        // candidate (index 0, per HeroCarousel's useState(0)). React 19 hoists
+        // <link> tags to <head> regardless of where they render in the tree.
+        <link rel="preload" as="image" href={heroSlides[0].url} fetchPriority="high" />
+      )}
       <div className="home-hero-band">
         <HeroCarousel
           slides={heroSlides}
@@ -84,8 +94,13 @@ export default async function HomePage() {
         <Reveal className="home-narrative">
           <div className="narr-grid">
             <div className="narr-frame">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={settings.narrativeImage} alt="" />
+              <Image
+                src={settings.narrativeImage}
+                alt=""
+                fill
+                sizes="(max-width: 820px) 100vw, 50vw"
+                unoptimized={!isOptimizableImageUrl(settings.narrativeImage)}
+              />
             </div>
             <div>
               <div className="narr-eyebrow">Creative Vision</div>
@@ -110,8 +125,13 @@ export default async function HomePage() {
           {pillars.map((p) => (
             <Link key={p.href} href={p.href} className="pillar-card">
               {p.img && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.img} alt="" />
+                <Image
+                  src={p.img}
+                  alt=""
+                  fill
+                  sizes="(max-width: 820px) 100vw, (max-width: 1060px) 50vw, 33vw"
+                  unoptimized={!isOptimizableImageUrl(p.img)}
+                />
               )}
               <div className="pillar-label">
                 {p.label} <span className="pillar-arrow">→</span>

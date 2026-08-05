@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
 import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
+import { isOptimizableImageUrl } from "@/lib/image-host";
 
 export type GameLink = { id: number; label: string; href: string; kind: string };
 
@@ -67,7 +69,13 @@ export default function GamesBrowser({ items }: { items: Game[] }) {
                 }
               }}
             >
-              <img src={g.img} alt={g.title} />
+              <Image
+                src={g.img}
+                alt={g.title}
+                fill
+                sizes="(max-width: 820px) 100vw, 50vw"
+                unoptimized={!isOptimizableImageUrl(g.img)}
+              />
             </div>
             <div className="game-row-content">
               <div className="gr-index">{String(i + 1).padStart(2, "0")}</div>

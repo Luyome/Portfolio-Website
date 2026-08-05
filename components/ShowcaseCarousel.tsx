@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { isOptimizableImageUrl } from "@/lib/image-host";
 
 export type ShowcaseItem = {
   id: number;
@@ -37,8 +39,13 @@ export default function ShowcaseCarousel({ items }: { items: ShowcaseItem[] }) {
     <div className="sc-track" ref={trackRef} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
       {items.map((item) => (
         <Link key={item.id} href={item.linkHref || "#"} className="sc-item">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={item.url} alt={item.title} />
+          <Image
+            src={item.url}
+            alt={item.title}
+            fill
+            sizes="(max-width: 820px) 200px, 260px"
+            unoptimized={!isOptimizableImageUrl(item.url)}
+          />
           {item.title && (
             <div className="sc-item-title">
               <span>{item.title}</span>

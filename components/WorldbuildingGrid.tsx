@@ -1,8 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import EmptyState from "./EmptyState";
 import { fieldStyle } from "@/lib/style-fields";
+import { isOptimizableImageUrl } from "@/lib/image-host";
 import type { LoreEntry, ViewMode } from "@/types/worldbuilding";
 
 export default function WorldbuildingGrid({
@@ -49,7 +51,13 @@ export default function WorldbuildingGrid({
                 }
               }}
             >
-              <img src={w.img} alt={w.title} loading="lazy" />
+              <Image
+                src={w.img}
+                alt={w.title}
+                fill
+                sizes="(max-width: 480px) 45vw, 192px"
+                unoptimized={!isOptimizableImageUrl(w.img)}
+              />
               <div className="wb-square-overlay">
                 <span className="wb-square-cat">{w.cat}</span>
                 <span className="wb-square-title">{w.title}</span>
@@ -84,7 +92,13 @@ export default function WorldbuildingGrid({
             }}
           >
             <div className="wb-card-img">
-              <img src={w.img} alt={w.title} loading="lazy" />
+              <Image
+                src={w.img}
+                alt={w.title}
+                fill
+                sizes="(max-width: 640px) 100vw, 320px"
+                unoptimized={!isOptimizableImageUrl(w.img)}
+              />
               <div className="wb-card-date">{w.date}</div>
             </div>
             <div className="wb-card-body">

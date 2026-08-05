@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import EmptyState from "./EmptyState";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
 import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
 import { resolveYearParam, yearOptions } from "@/lib/search";
+import { isOptimizableImageUrl } from "@/lib/image-host";
 
 export type PortfolioItem = {
   id: number;
@@ -103,7 +105,13 @@ export default function PortfolioBrowser({
                 }
               }}
             >
-              <img src={p.img} alt={p.title} loading="lazy" />
+              <Image
+                src={p.img}
+                alt={p.title}
+                fill
+                sizes="(max-width: 820px) 100vw, 320px"
+                unoptimized={!isOptimizableImageUrl(p.img)}
+              />
               <div className="port-yr-badge">{p.year}</div>
               <div className="port-img-open">View Full →</div>
             </div>

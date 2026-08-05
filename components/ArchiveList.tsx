@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import EmptyState from "./EmptyState";
 import { yearOptions } from "@/lib/search";
+import { isOptimizableImageUrl } from "@/lib/image-host";
 
 export type ArchiveItemType = "Portfolio" | "Sketches" | "3D" | "Worldbuilding" | "Games";
 
@@ -72,7 +74,17 @@ export default function ArchiveList({ items, categories }: { items: ArchiveItem[
         {filtered.map((item) => (
           <a className="arv-row" href={item.href} key={item.id}>
             <span className="arv-col-thumb">
-              {item.img ? <img src={item.img} alt={item.title} /> : <span className="arv-thumb-empty" />}
+              {item.img ? (
+                <Image
+                  src={item.img}
+                  alt={item.title}
+                  width={56}
+                  height={40}
+                  unoptimized={!isOptimizableImageUrl(item.img)}
+                />
+              ) : (
+                <span className="arv-thumb-empty" />
+              )}
             </span>
             <span className="arv-col-title">{item.title}</span>
             <span className="arv-col-type">{item.type}</span>
