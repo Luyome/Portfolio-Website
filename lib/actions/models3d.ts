@@ -5,20 +5,20 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { models3d, model3dImages, model3dLinks, model3dVideos } from "@/db/schema";
-import { num, str } from "@/lib/form-utils";
+import { num, parseLinkFields } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
+import { requiredInt, requiredText, optionalText, nullableText, nullableUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
+
+type ActionState = { error?: string } | undefined;
 
 function readFields(formData: FormData) {
-  const img = str(formData.get("img"));
-  const link = str(formData.get("link"));
-  const colorHex = str(formData.get("colorHex"));
   return {
-    year: num(formData.get("year")),
-    label: str(formData.get("label")),
-    desc: str(formData.get("desc")),
-    img: img || null,
-    link: link || null,
-    colorHex: colorHex || null,
+    year: requiredInt(formData.get("year"), "Year"),
+    label: requiredText(formData.get("label"), "Label"),
+    desc: optionalText(formData.get("desc")),
+    img: nullableUrl(formData.get("img"), "Image"),
+    link: nullableUrl(formData.get("link"), "Link"),
+    colorHex: nullableText(formData.get("colorHex")),
     sortOrder: num(formData.get("sortOrder")),
     styles: readStyles(formData, ["label", "desc"]),
   };
@@ -30,14 +30,26 @@ function revalidateAll() {
   revalidatePath("/admin/3d");
 }
 
-export async function createModel3D(formData: FormData) {
-  await db.insert(models3d).values(readFields(formData));
+export async function createModel3D(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.insert(models3d).values(fields);
   revalidateAll();
   redirect("/admin/3d");
 }
 
-export async function updateModel3D(id: number, formData: FormData) {
-  await db.update(models3d).set(readFields(formData)).where(eq(models3d.id, id));
+export async function updateModel3D(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.update(models3d).set(fields).where(eq(models3d.id, id));
   revalidateAll();
   redirect("/admin/3d");
 }
@@ -49,8 +61,12 @@ export async function deleteModel3D(formData: FormData) {
 }
 
 export async function createModel3DImage(modelId: number, formData: FormData) {
-  const url = str(formData.get("url"));
-  if (!url) return;
+  let url: string;
+  try {
+    url = requiredUrl(formData.get("url"), "Image");
+  } catch {
+    return;
+  }
   await db.insert(model3dImages).values({ modelId, url, sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
@@ -67,8 +83,12 @@ export async function deleteModel3DImage(formData: FormData) {
 }
 
 export async function createModel3DVideo(modelId: number, formData: FormData) {
-  const url = str(formData.get("url"));
-  if (!url) return;
+  let url: string;
+  try {
+    url = requiredUrl(formData.get("url"), "Video");
+  } catch {
+    return;
+  }
   await db.insert(model3dVideos).values({ modelId, url, sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
@@ -84,22 +104,25 @@ export async function deleteModel3DVideo(formData: FormData) {
   revalidateAll();
 }
 
-function readLinkFields(formData: FormData) {
-  return {
-    label: str(formData.get("label")),
-    href: str(formData.get("href")),
-    kind: str(formData.get("kind")) || "link",
-    sortOrder: num(formData.get("sortOrder")),
-  };
-}
-
 export async function createModel3DLink(modelId: number, formData: FormData) {
-  await db.insert(model3dLinks).values({ modelId, ...readLinkFields(formData) });
+  let fields;
+  try {
+    fields = parseLinkFields(formData);
+  } catch {
+    return;
+  }
+  await db.insert(model3dLinks).values({ modelId, ...fields });
   revalidateAll();
 }
 
 export async function updateModel3DLink(id: number, formData: FormData) {
-  await db.update(model3dLinks).set(readLinkFields(formData)).where(eq(model3dLinks.id, id));
+  let fields;
+  try {
+    fields = parseLinkFields(formData);
+  } catch {
+    return;
+  }
+  await db.update(model3dLinks).set(fields).where(eq(model3dLinks.id, id));
   revalidateAll();
 }
 

@@ -5,7 +5,24 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { worldMaps, mapLocations } from "@/db/schema";
-import { num, numOrNull, str } from "@/lib/form-utils";
+import { num, numOrNull } from "@/lib/form-utils";
+import {
+  coordinate,
+  nullableId,
+  nullableUrl,
+  oneOf,
+  optionalText,
+  optionalUrl,
+  requiredId,
+  requiredText,
+  safeErrorMessage,
+} from "@/lib/validation";
+import type { IconType, PinType } from "@/lib/map-types";
+
+const PIN_TYPES: readonly PinType[] = ["submap", "lore"];
+const ICON_TYPES: readonly IconType[] = ["default", "city", "character", "landmark", "hazard"];
+
+type ActionState = { error?: string } | undefined;
 
 function revalidateAll() {
   revalidatePath("/worldbuilding");
@@ -15,22 +32,34 @@ function revalidateAll() {
 
 function readMapFields(formData: FormData) {
   return {
-    title: str(formData.get("title")),
+    title: requiredText(formData.get("title"), "Title"),
     parentMapId: numOrNull(formData.get("parentMapId")),
-    imageUrl: str(formData.get("imageUrl")),
-    description: str(formData.get("description")),
+    imageUrl: optionalUrl(formData.get("imageUrl"), "Map Image"),
+    description: optionalText(formData.get("description")),
     sortOrder: num(formData.get("sortOrder")),
   };
 }
 
-export async function createWorldMap(formData: FormData) {
-  await db.insert(worldMaps).values(readMapFields(formData));
+export async function createWorldMap(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readMapFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.insert(worldMaps).values(fields);
   revalidateAll();
   redirect("/admin/worldbuilding/maps");
 }
 
-export async function updateWorldMap(id: number, formData: FormData) {
-  await db.update(worldMaps).set(readMapFields(formData)).where(eq(worldMaps.id, id));
+export async function updateWorldMap(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readMapFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.update(worldMaps).set(fields).where(eq(worldMaps.id, id));
   revalidateAll();
   redirect("/admin/worldbuilding/maps");
 }
@@ -41,13 +70,36 @@ export async function deleteWorldMap(formData: FormData) {
   revalidateAll();
 }
 
+// createMapLocation/updateMapLocationPosition/updateMapLocationInfo are called
+// directly from client components (MapEditor/MapPinEditPanel) with typed
+// arguments, not through a <form>. There is no error-display UI wired to
+// these calls, so — like the other secondary sub-resource actions in this
+// codebase (e.g. createPortfolioImage) — invalid input is rejected by
+// silently skipping the write rather than throwing. MapEditor already
+// guards its `createMapLocation` call on a truthy return (`if (row) ...`),
+// so returning `undefined` on invalid input is a pre-existing, handled case.
 export async function createMapLocation(mapId: number, name: string, x: number, y: number) {
-  const [row] = await db.insert(mapLocations).values({ mapId, name, x, y }).returning();
+  try {
+    requiredId(mapId, "Map");
+    requiredText(name, "Name");
+    coordinate(x, "X");
+    coordinate(y, "Y");
+  } catch {
+    return undefined;
+  }
+  const [row] = await db.insert(mapLocations).values({ mapId, name: name.trim(), x, y }).returning();
   revalidateAll();
   return row;
 }
 
 export async function updateMapLocationPosition(id: number, x: number, y: number) {
+  try {
+    requiredId(id, "Location");
+    coordinate(x, "X");
+    coordinate(y, "Y");
+  } catch {
+    return;
+  }
   await db.update(mapLocations).set({ x, y }).where(eq(mapLocations.id, id));
   revalidateAll();
 }
@@ -64,7 +116,22 @@ export async function updateMapLocationInfo(
     iconType: string;
   }
 ) {
-  await db.update(mapLocations).set(fields).where(eq(mapLocations.id, id));
+  let parsed;
+  try {
+    requiredId(id, "Location");
+    parsed = {
+      name: requiredText(fields.name, "Name"),
+      info: optionalText(fields.info),
+      img: nullableUrl(fields.img, "Image"),
+      pinType: oneOf(fields.pinType, PIN_TYPES, "Pin type"),
+      targetMapId: nullableId(fields.targetMapId, "Target map"),
+      entryId: nullableId(fields.entryId, "Lore entry"),
+      iconType: oneOf(fields.iconType, ICON_TYPES, "Icon type"),
+    };
+  } catch {
+    return;
+  }
+  await db.update(mapLocations).set(parsed).where(eq(mapLocations.id, id));
   revalidateAll();
 }
 

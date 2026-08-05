@@ -5,18 +5,24 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingVideos } from "@/db/schema";
-import { num, parseCsv, str } from "@/lib/form-utils";
+import { num, parseCsv, parseLinkFields, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
+import { requiredInt, requiredText, optionalUrl, oneOf, requiredUrl, safeErrorMessage } from "@/lib/validation";
+import { CATEGORIES } from "@/types/worldbuilding";
+
+type ActionState = { error?: string } | undefined;
 
 function readFields(formData: FormData) {
   return {
-    year: num(formData.get("year")),
-    date: str(formData.get("date")),
-    cat: str(formData.get("cat")),
-    title: str(formData.get("title")),
-    excerpt: str(formData.get("excerpt")),
+    year: requiredInt(formData.get("year"), "Year"),
+    date: requiredText(formData.get("date"), "Display Date"),
+    cat: oneOf(formData.get("cat"), CATEGORIES, "Category"),
+    title: requiredText(formData.get("title"), "Title"),
+    excerpt: requiredText(formData.get("excerpt"), "Excerpt"),
     chips: parseCsv(formData.get("chips")),
-    img: str(formData.get("img")),
+    img: optionalUrl(formData.get("img"), "Image"),
+    // Rich content block — left untouched (no trim/validation) so authored
+    // markdown/structured content is never altered, per docs/02_CONTENT_ARCHITECTURE.md.
     content: str(formData.get("content")),
     contentOrder: num(formData.get("contentOrder")),
     sortOrder: num(formData.get("sortOrder")),
@@ -30,14 +36,26 @@ function revalidateAll() {
   revalidatePath("/admin/worldbuilding");
 }
 
-export async function createWorldbuildingEntry(formData: FormData) {
-  await db.insert(worldbuildingEntries).values(readFields(formData));
+export async function createWorldbuildingEntry(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.insert(worldbuildingEntries).values(fields);
   revalidateAll();
   redirect("/admin/worldbuilding");
 }
 
-export async function updateWorldbuildingEntry(id: number, formData: FormData) {
-  await db.update(worldbuildingEntries).set(readFields(formData)).where(eq(worldbuildingEntries.id, id));
+export async function updateWorldbuildingEntry(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.update(worldbuildingEntries).set(fields).where(eq(worldbuildingEntries.id, id));
   revalidateAll();
   redirect("/admin/worldbuilding");
 }
@@ -49,8 +67,12 @@ export async function deleteWorldbuildingEntry(formData: FormData) {
 }
 
 export async function createWorldbuildingImage(entryId: number, formData: FormData) {
-  const url = str(formData.get("url"));
-  if (!url) return;
+  let url: string;
+  try {
+    url = requiredUrl(formData.get("url"), "Image");
+  } catch {
+    return;
+  }
   await db.insert(worldbuildingImages).values({ entryId, url, sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
@@ -67,8 +89,12 @@ export async function deleteWorldbuildingImage(formData: FormData) {
 }
 
 export async function createWorldbuildingVideo(entryId: number, formData: FormData) {
-  const url = str(formData.get("url"));
-  if (!url) return;
+  let url: string;
+  try {
+    url = requiredUrl(formData.get("url"), "Video");
+  } catch {
+    return;
+  }
   await db.insert(worldbuildingVideos).values({ entryId, url, sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
@@ -84,22 +110,25 @@ export async function deleteWorldbuildingVideo(formData: FormData) {
   revalidateAll();
 }
 
-function readLinkFields(formData: FormData) {
-  return {
-    label: str(formData.get("label")),
-    href: str(formData.get("href")),
-    kind: str(formData.get("kind")) || "link",
-    sortOrder: num(formData.get("sortOrder")),
-  };
-}
-
 export async function createWorldbuildingLink(entryId: number, formData: FormData) {
-  await db.insert(worldbuildingLinks).values({ entryId, ...readLinkFields(formData) });
+  let fields;
+  try {
+    fields = parseLinkFields(formData);
+  } catch {
+    return;
+  }
+  await db.insert(worldbuildingLinks).values({ entryId, ...fields });
   revalidateAll();
 }
 
 export async function updateWorldbuildingLink(id: number, formData: FormData) {
-  await db.update(worldbuildingLinks).set(readLinkFields(formData)).where(eq(worldbuildingLinks.id, id));
+  let fields;
+  try {
+    fields = parseLinkFields(formData);
+  } catch {
+    return;
+  }
+  await db.update(worldbuildingLinks).set(fields).where(eq(worldbuildingLinks.id, id));
   revalidateAll();
 }
 

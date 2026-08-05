@@ -5,20 +5,20 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { sketches, sketchImages, sketchLinks, sketchVideos } from "@/db/schema";
-import { num, str } from "@/lib/form-utils";
+import { num, parseLinkFields } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
+import { requiredInt, requiredText, optionalText, nullableText, nullableUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
+
+type ActionState = { error?: string } | undefined;
 
 function readFields(formData: FormData) {
-  const img = str(formData.get("img"));
-  const link = str(formData.get("link"));
-  const colorHex = str(formData.get("colorHex"));
   return {
-    year: num(formData.get("year")),
-    label: str(formData.get("label")),
-    desc: str(formData.get("desc")),
-    img: img || null,
-    link: link || null,
-    colorHex: colorHex || null,
+    year: requiredInt(formData.get("year"), "Year"),
+    label: requiredText(formData.get("label"), "Label"),
+    desc: optionalText(formData.get("desc")),
+    img: nullableUrl(formData.get("img"), "Image"),
+    link: nullableUrl(formData.get("link"), "Link"),
+    colorHex: nullableText(formData.get("colorHex")),
     sortOrder: num(formData.get("sortOrder")),
     styles: readStyles(formData, ["label", "desc"]),
   };
@@ -30,14 +30,26 @@ function revalidateAll() {
   revalidatePath("/admin/sketches");
 }
 
-export async function createSketch(formData: FormData) {
-  await db.insert(sketches).values(readFields(formData));
+export async function createSketch(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.insert(sketches).values(fields);
   revalidateAll();
   redirect("/admin/sketches");
 }
 
-export async function updateSketch(id: number, formData: FormData) {
-  await db.update(sketches).set(readFields(formData)).where(eq(sketches.id, id));
+export async function updateSketch(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.update(sketches).set(fields).where(eq(sketches.id, id));
   revalidateAll();
   redirect("/admin/sketches");
 }
@@ -49,8 +61,12 @@ export async function deleteSketch(formData: FormData) {
 }
 
 export async function createSketchImage(sketchId: number, formData: FormData) {
-  const url = str(formData.get("url"));
-  if (!url) return;
+  let url: string;
+  try {
+    url = requiredUrl(formData.get("url"), "Image");
+  } catch {
+    return;
+  }
   await db.insert(sketchImages).values({ sketchId, url, sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
@@ -67,8 +83,12 @@ export async function deleteSketchImage(formData: FormData) {
 }
 
 export async function createSketchVideo(sketchId: number, formData: FormData) {
-  const url = str(formData.get("url"));
-  if (!url) return;
+  let url: string;
+  try {
+    url = requiredUrl(formData.get("url"), "Video");
+  } catch {
+    return;
+  }
   await db.insert(sketchVideos).values({ sketchId, url, sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
@@ -84,22 +104,25 @@ export async function deleteSketchVideo(formData: FormData) {
   revalidateAll();
 }
 
-function readLinkFields(formData: FormData) {
-  return {
-    label: str(formData.get("label")),
-    href: str(formData.get("href")),
-    kind: str(formData.get("kind")) || "link",
-    sortOrder: num(formData.get("sortOrder")),
-  };
-}
-
 export async function createSketchLink(sketchId: number, formData: FormData) {
-  await db.insert(sketchLinks).values({ sketchId, ...readLinkFields(formData) });
+  let fields;
+  try {
+    fields = parseLinkFields(formData);
+  } catch {
+    return;
+  }
+  await db.insert(sketchLinks).values({ sketchId, ...fields });
   revalidateAll();
 }
 
 export async function updateSketchLink(id: number, formData: FormData) {
-  await db.update(sketchLinks).set(readLinkFields(formData)).where(eq(sketchLinks.id, id));
+  let fields;
+  try {
+    fields = parseLinkFields(formData);
+  } catch {
+    return;
+  }
+  await db.update(sketchLinks).set(fields).where(eq(sketchLinks.id, id));
   revalidateAll();
 }
 

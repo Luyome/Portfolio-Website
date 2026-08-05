@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionState } from "react";
 import ImageUploadField from "./ImageUploadField";
 import OrderPicker from "./OrderPicker";
 import SaveButton from "./SaveButton";
@@ -10,12 +11,14 @@ export default function WorldMapForm({
   item,
   otherMaps,
 }: {
-  action: (formData: FormData) => void | Promise<void>;
+  action: (prevState: { error?: string } | undefined, formData: FormData) => Promise<{ error?: string } | undefined>;
   item?: WorldMap;
   otherMaps: WorldMap[];
 }) {
+  const [actionState, formAction] = useActionState(action, undefined);
   return (
-    <form action={action} className="adm-form">
+    <form action={formAction} className="adm-form">
+      {actionState?.error && <div className="adm-error">{actionState.error}</div>}
       <div className="adm-field">
         <label htmlFor="title">Title</label>
         <input id="title" name="title" defaultValue={item?.title} required placeholder="Krupni Central Realm" />

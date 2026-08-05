@@ -5,20 +5,23 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { portfolioItems, portfolioImages, portfolioLinks, portfolioVideos } from "@/db/schema";
-import { num, parseCsv, str } from "@/lib/form-utils";
+import { num, parseCsv, parseLinkFields } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
+import { requiredInt, requiredText, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
+
+type ActionState = { error?: string } | undefined;
 
 function readFields(formData: FormData) {
   return {
-    title: str(formData.get("title")),
-    cat: str(formData.get("cat")),
-    year: num(formData.get("year")),
-    desc: str(formData.get("desc")),
+    title: requiredText(formData.get("title"), "Title"),
+    cat: requiredText(formData.get("cat"), "Category"),
+    year: requiredInt(formData.get("year"), "Year"),
+    desc: requiredText(formData.get("desc"), "Description"),
     tags: parseCsv(formData.get("tags")),
-    medium: str(formData.get("medium")),
-    software: str(formData.get("software")),
-    link: str(formData.get("link")),
-    img: str(formData.get("img")),
+    medium: requiredText(formData.get("medium"), "Medium"),
+    software: requiredText(formData.get("software"), "Software"),
+    link: optionalUrl(formData.get("link"), "External Link"),
+    img: optionalUrl(formData.get("img"), "Image"),
     sortOrder: num(formData.get("sortOrder")),
     styles: readStyles(formData, ["title", "desc"]),
   };
@@ -30,14 +33,26 @@ function revalidateAll() {
   revalidatePath("/admin/portfolio");
 }
 
-export async function createPortfolioItem(formData: FormData) {
-  await db.insert(portfolioItems).values(readFields(formData));
+export async function createPortfolioItem(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.insert(portfolioItems).values(fields);
   revalidateAll();
   redirect("/admin/portfolio");
 }
 
-export async function updatePortfolioItem(id: number, formData: FormData) {
-  await db.update(portfolioItems).set(readFields(formData)).where(eq(portfolioItems.id, id));
+export async function updatePortfolioItem(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.update(portfolioItems).set(fields).where(eq(portfolioItems.id, id));
   revalidateAll();
   redirect("/admin/portfolio");
 }
@@ -49,8 +64,12 @@ export async function deletePortfolioItem(formData: FormData) {
 }
 
 export async function createPortfolioImage(portfolioId: number, formData: FormData) {
-  const url = str(formData.get("url"));
-  if (!url) return;
+  let url: string;
+  try {
+    url = requiredUrl(formData.get("url"), "Image");
+  } catch {
+    return;
+  }
   await db.insert(portfolioImages).values({ portfolioId, url, sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
@@ -67,8 +86,12 @@ export async function deletePortfolioImage(formData: FormData) {
 }
 
 export async function createPortfolioVideo(portfolioId: number, formData: FormData) {
-  const url = str(formData.get("url"));
-  if (!url) return;
+  let url: string;
+  try {
+    url = requiredUrl(formData.get("url"), "Video");
+  } catch {
+    return;
+  }
   await db.insert(portfolioVideos).values({ portfolioId, url, sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
@@ -84,22 +107,25 @@ export async function deletePortfolioVideo(formData: FormData) {
   revalidateAll();
 }
 
-function readLinkFields(formData: FormData) {
-  return {
-    label: str(formData.get("label")),
-    href: str(formData.get("href")),
-    kind: str(formData.get("kind")) || "link",
-    sortOrder: num(formData.get("sortOrder")),
-  };
-}
-
 export async function createPortfolioLink(portfolioId: number, formData: FormData) {
-  await db.insert(portfolioLinks).values({ portfolioId, ...readLinkFields(formData) });
+  let fields;
+  try {
+    fields = parseLinkFields(formData);
+  } catch {
+    return;
+  }
+  await db.insert(portfolioLinks).values({ portfolioId, ...fields });
   revalidateAll();
 }
 
 export async function updatePortfolioLink(id: number, formData: FormData) {
-  await db.update(portfolioLinks).set(readLinkFields(formData)).where(eq(portfolioLinks.id, id));
+  let fields;
+  try {
+    fields = parseLinkFields(formData);
+  } catch {
+    return;
+  }
+  await db.update(portfolioLinks).set(fields).where(eq(portfolioLinks.id, id));
   revalidateAll();
 }
 

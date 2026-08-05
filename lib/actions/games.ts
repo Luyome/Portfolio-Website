@@ -5,20 +5,25 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { games, gameLinks, gameImages, gameVideos } from "@/db/schema";
-import { num, parseCsv, parseLines, str } from "@/lib/form-utils";
+import { num, parseCsv, parseLines, parseLinkFields, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
+import { requiredInt, requiredText, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
+
+type ActionState = { error?: string } | undefined;
 
 function readFields(formData: FormData) {
   return {
-    title: str(formData.get("title")),
-    status: str(formData.get("status")),
-    engine: str(formData.get("engine")),
-    desc: str(formData.get("desc")),
+    title: requiredText(formData.get("title"), "Title"),
+    status: requiredText(formData.get("status"), "Status"),
+    engine: requiredText(formData.get("engine"), "Engine"),
+    desc: requiredText(formData.get("desc"), "Description"),
     tags: parseCsv(formData.get("tags")),
     feats: parseLines(formData.get("feats")),
-    target: str(formData.get("target")),
-    img: str(formData.get("img")),
-    year: num(formData.get("year")),
+    target: requiredText(formData.get("target"), "Target"),
+    img: optionalUrl(formData.get("img"), "Image"),
+    year: requiredInt(formData.get("year"), "Year"),
+    // Rich content block — left untouched (no trim/validation) so authored
+    // markdown/structured content is never altered, per docs/02_CONTENT_ARCHITECTURE.md.
     content: str(formData.get("content")),
     contentOrder: num(formData.get("contentOrder")),
     sortOrder: num(formData.get("sortOrder")),
@@ -31,14 +36,26 @@ function revalidateAll() {
   revalidatePath("/admin/games");
 }
 
-export async function createGame(formData: FormData) {
-  await db.insert(games).values(readFields(formData));
+export async function createGame(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.insert(games).values(fields);
   revalidateAll();
   redirect("/admin/games");
 }
 
-export async function updateGame(id: number, formData: FormData) {
-  await db.update(games).set(readFields(formData)).where(eq(games.id, id));
+export async function updateGame(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  let fields;
+  try {
+    fields = readFields(formData);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  await db.update(games).set(fields).where(eq(games.id, id));
   revalidateAll();
   redirect("/admin/games");
 }
@@ -49,22 +66,25 @@ export async function deleteGame(formData: FormData) {
   revalidateAll();
 }
 
-function readLinkFields(formData: FormData) {
-  return {
-    label: str(formData.get("label")),
-    href: str(formData.get("href")),
-    kind: str(formData.get("kind")) || "link",
-    sortOrder: num(formData.get("sortOrder")),
-  };
-}
-
 export async function createGameLink(gameId: number, formData: FormData) {
-  await db.insert(gameLinks).values({ gameId, ...readLinkFields(formData) });
+  let fields;
+  try {
+    fields = parseLinkFields(formData);
+  } catch {
+    return;
+  }
+  await db.insert(gameLinks).values({ gameId, ...fields });
   revalidateAll();
 }
 
 export async function updateGameLink(id: number, formData: FormData) {
-  await db.update(gameLinks).set(readLinkFields(formData)).where(eq(gameLinks.id, id));
+  let fields;
+  try {
+    fields = parseLinkFields(formData);
+  } catch {
+    return;
+  }
+  await db.update(gameLinks).set(fields).where(eq(gameLinks.id, id));
   revalidateAll();
 }
 
@@ -75,8 +95,12 @@ export async function deleteGameLink(formData: FormData) {
 }
 
 export async function createGameImage(gameId: number, formData: FormData) {
-  const url = str(formData.get("url"));
-  if (!url) return;
+  let url: string;
+  try {
+    url = requiredUrl(formData.get("url"), "Image");
+  } catch {
+    return;
+  }
   await db.insert(gameImages).values({ gameId, url, sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
@@ -93,8 +117,12 @@ export async function deleteGameImage(formData: FormData) {
 }
 
 export async function createGameVideo(gameId: number, formData: FormData) {
-  const url = str(formData.get("url"));
-  if (!url) return;
+  let url: string;
+  try {
+    url = requiredUrl(formData.get("url"), "Video");
+  } catch {
+    return;
+  }
   await db.insert(gameVideos).values({ gameId, url, sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }

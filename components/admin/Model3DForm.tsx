@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import type { CSSProperties } from "react";
 import ImageUploadField from "./ImageUploadField";
 import YearPicker from "./YearPicker";
@@ -26,10 +26,11 @@ export default function Model3DForm({
   item,
   pageVars = {},
 }: {
-  action: (formData: FormData) => void;
+  action: (prevState: { error?: string } | undefined, formData: FormData) => Promise<{ error?: string } | undefined>;
   item?: Model3DRow;
   pageVars?: CSSProperties;
 }) {
+  const [actionState, formAction] = useActionState(action, undefined);
   const [state, setState] = useState<PreviewState>({
     label: item?.label ?? "",
     desc: item?.desc ?? "",
@@ -64,7 +65,8 @@ export default function Model3DForm({
 
   return (
     <PreviewToggle renderPreview={() => <Model3DPreviewCard state={state} pageVars={pageVars} />}>
-      <form action={action} className="adm-form" onChange={handleFormChange}>
+      <form action={formAction} className="adm-form" onChange={handleFormChange}>
+        {actionState?.error && <div className="adm-error">{actionState.error}</div>}
         <div className="adm-field">
           <div className="adm-field-label-row">
             <label htmlFor="label">Label</label>
