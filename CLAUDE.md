@@ -4,13 +4,21 @@
 
 This repository contains the development and maintenance of my personal website.
 
-Before implementing any task:
+## Context Loading
 
-1. Read AGENTS.md
-2. Read every document inside the docs folder.
-3. Treat the documentation as the single source of truth.
+Before implementing a task:
 
-Priority order:
+1. Read `AGENTS.md`.
+2. Read `docs/08_ROADMAP.md`.
+3. Read only the documentation directly relevant to the current task.
+4. Consult additional documents only when a conflict, structural decision, or missing requirement appears.
+5. Read every document inside `/docs` only for project-wide planning, architecture, scope-alignment, or documentation-consistency tasks.
+
+Treat applicable documentation as the single source of truth.
+
+## Documentation Priority
+
+When multiple documents apply, use this priority order:
 
 1. AGENTS.md
 2. docs/AI_RULES.md
@@ -24,23 +32,60 @@ Priority order:
 10. docs/07_TECHNICAL_ARCHITECTURE.md
 11. docs/08_ROADMAP.md
 
-Never violate these documents.
+Never violate an applicable documented rule.
 
-If documentation conflicts with a request,
-explain the conflict before writing code.
+If documentation conflicts with a request, explain the conflict before writing code.
 
-Before coding:
+## Implementation Workflow
 
-- Explain your implementation plan.
-- Mention which files will change.
-- Keep components reusable.
+Before editing, silently inspect:
+
+- Git status
+- Existing implementation
+- Relevant files
+- Available scripts
+- Version-sensitive local documentation when required by AGENTS.md
+
+Stop before implementation only when:
+
+- Unrelated uncommitted changes may be endangered
+- Documentation conflicts
+- A dependency, schema, or migration change requires approval
+- An owner decision is genuinely required
+
+Otherwise proceed directly with implementation.
+
+During implementation:
+
+- Preserve working systems.
+- Keep components reusable where reuse is confirmed.
 - Preserve the design system.
-- Prefer maintainable solutions without speculative over-engineering.
-- Never redesign unrelated sections.
+- Prefer the simplest maintainable solution.
+- Avoid speculative over-engineering.
+- Never redesign or refactor unrelated sections.
 
-After finishing:
+## Validation
 
-- Summarize the changes.
-- Mention modified files.
-- Suggest future improvements.
-- Wait for the next task.
+Run the relevant available checks:
+
+- Type-check
+- Lint
+- Production build
+
+Inspect the final diff and confirm that no unrelated files changed.
+
+Update `docs/08_ROADMAP.md` only after successful validation.
+
+## Final Response
+
+Keep the final response concise and include only:
+
+1. Modified files
+2. Implemented result
+3. Validation results
+4. Remaining limitations, if any
+5. Roadmap status
+
+Do not repeat the task, project summary, documentation summaries, preflight process, or unchanged behaviour.
+
+Wait for the next task after reporting the result.

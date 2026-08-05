@@ -92,23 +92,34 @@ Stories, characters, maps, companies, continents, projects, and game design may 
 
 ## BEFORE EVERY TASK
 
-Before starting any implementation:
+Before starting implementation:
 
-- Read every file inside `/docs`.
-- Follow them.
-- Never ignore them.
+- Read `CLAUDE.md`, `AGENTS.md`, and `docs/08_ROADMAP.md`.
+- Read only the documentation directly relevant to the current task.
+- Consult additional documents only when a conflict or structural decision appears.
+- Read every file inside `/docs` only for project-wide scope, architecture, or documentation-alignment tasks.
+- Never ignore a documented rule that applies to the current task.
 
-If documentation is missing, ask for clarification instead of making assumptions.
+If required documentation is missing, ask for clarification instead of making assumptions..
 
 ## RESPONSE FORMAT
 
-Whenever a new task is given:
+For implementation tasks:
 
-1. Explain the implementation plan.
-2. Mention which files will change.
-3. Implement.
-4. Summarize what changed.
-5. Mention possible improvements for later.
+- Inspect the repository silently before editing.
+- Stop before implementation only when there is a documentation conflict, risky unrelated change, or owner decision is required.
+- Otherwise proceed directly with implementation and validation.
+- Keep the final response concise.
+
+Final response should include only:
+
+1. Modified files.
+2. Implemented result.
+3. Validation results.
+4. Remaining limitations, if any.
+5. Roadmap status.
+
+Do not repeat the prompt, project summary, documentation summary, or unchanged behaviour.
 
 # Documentation Rules
 
