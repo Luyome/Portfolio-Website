@@ -50,6 +50,29 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);color:var(--text);font-family:var(--B);font-size:16px;line-height:1.8;overflow-x:hidden}
+
+/* ══ REDUCED MOTION ══════════════════════
+   Targeted overrides only — see docs/06_MOTION_SYSTEM.md, section 5. These
+   rules apply from the very first paint (before hydration/JS), which is
+   what guarantees reduced-motion visitors never see a flash of hidden
+   Reveal content regardless of any component's own JS timing. They must
+   never widen into a blanket `*` rule: that would also strip loading
+   indicators, focus states, and functional feedback transitions, which is
+   explicitly disallowed. */
+@media (prefers-reduced-motion: reduce) {
+  html{scroll-behavior:auto}
+  /* Reveal (components/Reveal.tsx): entrance animation neutralized —
+     content renders in its final visible state immediately, with no
+     opacity/translate motion and no dependency on viewport intersection. */
+  .reveal{opacity:1 !important;transform:none !important;transition:none !important}
+  /* The shared `fi` page/overlay entrance keyframe (.page mount, gallery
+     and image-zoom overlays opening) — these become an immediate state
+     change instead of a timed fade+slide. */
+  .page,
+  .gm-overlay.open,
+  .iz-overlay,
+  .mz-overlay{animation:none !important}
+}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--red)}
 a{color:inherit;text-decoration:none}img{display:block;max-width:100%}
 button{cursor:pointer;background:none;border:none;font-family:inherit;color:inherit}

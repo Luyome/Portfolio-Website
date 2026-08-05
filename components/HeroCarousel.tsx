@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 export type HeroSlide = {
   id: number;
@@ -26,12 +27,15 @@ export default function HeroCarousel({
   height?: number | null;
 }) {
   const [index, setIndex] = useState(0);
+  const reduceMotion = usePrefersReducedMotion();
 
   useEffect(() => {
-    if (slides.length <= 1) return;
+    // Reduced motion: never auto-advance — the visitor drives slide changes
+    // manually via the arrows/dots below, which stay fully functional.
+    if (slides.length <= 1 || reduceMotion) return;
     const id = setInterval(() => setIndex((i) => (i + 1) % slides.length), AUTO_ADVANCE_MS);
     return () => clearInterval(id);
-  }, [slides.length]);
+  }, [slides.length, reduceMotion]);
 
   const goTo = useCallback(
     (i: number) => setIndex(((i % slides.length) + slides.length) % slides.length),
@@ -56,7 +60,11 @@ export default function HeroCarousel({
           initial={{ opacity: 0 }}
           animate={{ opacity: opacity / 100 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.9, ease: "easeInOut" }}
+          // Reduced motion: crossfade becomes an immediate state change
+          // instead of a timed transition. The slide is already a plain
+          // opacity swap (no spatial movement), so this is the only
+          // adjustment needed here.
+          transition={{ duration: reduceMotion ? 0 : 0.9, ease: "easeInOut" }}
         />
       </AnimatePresence>
 
