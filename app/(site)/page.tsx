@@ -7,6 +7,7 @@ import InlineBold from "@/components/InlineBold";
 import HeroCarousel from "@/components/HeroCarousel";
 import ShowcaseCarousel from "@/components/ShowcaseCarousel";
 import Reveal from "@/components/Reveal";
+import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
@@ -66,9 +67,9 @@ export default async function HomePage() {
           </p>
           <div className="h-btns">
             {buttons.map((b) => (
-              <Link key={b.id} className={`hbtn ${b.style === "primary" ? "hbtn-p" : "hbtn-g"}`} href={b.href}>
+              <ActionLink key={b.id} href={b.href} variant={b.style === "primary" ? "primary" : "ghost"}>
                 {b.label}
-              </Link>
+              </ActionLink>
             ))}
           </div>
         </Reveal>
@@ -140,9 +141,7 @@ export default async function HomePage() {
         <p className="hc-sub">
           Interested in collaborating on your next project? Let&apos;s create something together.
         </p>
-        <a href={`mailto:${settings.contactEmail}`} className="hbtn hbtn-p">
-          Get in Touch
-        </a>
+        <ActionLink href={`mailto:${settings.contactEmail}`}>Get in Touch</ActionLink>
       </Reveal>
     </div>
   );

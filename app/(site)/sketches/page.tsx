@@ -2,6 +2,7 @@ import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { sketches, sketchImages, sketchLinks, sketchVideos } from "@/db/schema";
 import SketchGrid from "@/components/SketchGrid";
+import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
 
@@ -29,12 +30,12 @@ export default async function SketchesPage({
 
   return (
     <div className="page" style={pageAppearanceVars(appearance)}>
-      <div className="ph">
-        <div className="ph-wm">落書き</div>
-        <div className="ph-eyebrow">Raw Drawings</div>
-        <h2 className="ph-title">Sketches</h2>
-        <p className="ph-sub">Personal sketches and studies — unfiltered.</p>
-      </div>
+      <PageHeader
+        watermark="落書き"
+        eyebrow="Raw Drawings"
+        title="Sketches"
+        subtitle="Personal sketches and studies — unfiltered."
+      />
       <SketchGrid items={itemsWithImages} initialYear={year} />
     </div>
   );

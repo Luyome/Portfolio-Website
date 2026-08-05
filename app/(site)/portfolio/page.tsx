@@ -2,6 +2,7 @@ import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { portfolioItems, portfolioImages, portfolioLinks, portfolioVideos } from "@/db/schema";
 import PortfolioBrowser from "@/components/PortfolioBrowser";
+import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
 
@@ -29,12 +30,7 @@ export default async function PortfolioPage({
 
   return (
     <div className="page" style={pageAppearanceVars(appearance)}>
-      <div className="ph">
-        <div className="ph-wm">作品</div>
-        <div className="ph-eyebrow">Works</div>
-        <h2 className="ph-title">Portfolio</h2>
-        <p className="ph-sub">3D characters and concept art.</p>
-      </div>
+      <PageHeader watermark="作品" eyebrow="Works" title="Portfolio" subtitle="3D characters and concept art." />
       <PortfolioBrowser items={itemsWithImages} initialYear={year} />
     </div>
   );

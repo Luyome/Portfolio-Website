@@ -2,6 +2,7 @@ import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { models3d, model3dImages, model3dLinks, model3dVideos } from "@/db/schema";
 import Model3DGrid from "@/components/Model3DGrid";
+import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
 
@@ -29,12 +30,12 @@ export default async function Model3DPage({
 
   return (
     <div className="page" style={pageAppearanceVars(appearance)}>
-      <div className="ph">
-        <div className="ph-wm">立体</div>
-        <div className="ph-eyebrow">Raw Models</div>
-        <h2 className="ph-title">3D</h2>
-        <p className="ph-sub">Personal 3D studies and props — unfiltered.</p>
-      </div>
+      <PageHeader
+        watermark="立体"
+        eyebrow="Raw Models"
+        title="3D"
+        subtitle="Personal 3D studies and props — unfiltered."
+      />
       <Model3DGrid items={itemsWithImages} initialYear={year} />
     </div>
   );

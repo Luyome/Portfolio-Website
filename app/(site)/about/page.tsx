@@ -4,6 +4,8 @@ import { aboutContent, timelineEntries, cvContent } from "@/db/schema";
 import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { downloadUrl } from "@/lib/download-url";
+import PageHeader from "@/components/PageHeader";
+import ActionLink from "@/components/ActionLink";
 
 export default async function AboutPage() {
   const [aboutRows, timeline, appearance, cvRows] = await Promise.all([
@@ -17,12 +19,12 @@ export default async function AboutPage() {
 
   return (
     <div className="page" style={pageAppearanceVars(appearance)}>
-      <div className="ph">
-        <div className="ph-wm">自己</div>
-        <div className="ph-eyebrow">Profile &amp; Credentials</div>
-        <h2 className="ph-title">About</h2>
-        <p className="ph-sub">Designer, storyteller, worldbuilder.</p>
-      </div>
+      <PageHeader
+        watermark="自己"
+        eyebrow="Profile & Credentials"
+        title="About"
+        subtitle="Designer, storyteller, worldbuilder."
+      />
 
       <div className="mx-auto max-w-7xl px-6 py-16 md:px-12">
         <section className="mb-20">
@@ -60,9 +62,9 @@ export default async function AboutPage() {
             </div>
           )}
           {cv?.img && (
-            <a href={downloadUrl(cv.img, "CV")} className="hbtn hbtn-p" style={{ display: "inline-block", marginTop: 28 }}>
+            <ActionLink href={downloadUrl(cv.img, "CV")} style={{ display: "inline-block", marginTop: 28 }}>
               Download CV (PDF)
-            </a>
+            </ActionLink>
           )}
         </section>
       </div>

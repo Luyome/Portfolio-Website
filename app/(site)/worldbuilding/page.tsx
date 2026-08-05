@@ -2,6 +2,7 @@ import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingVideos, worldMaps, mapLocations } from "@/db/schema";
 import WorldbuildingBrowser from "@/components/WorldbuildingBrowser";
+import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
 
@@ -26,12 +27,12 @@ export default async function WorldbuildingPage() {
 
   return (
     <div className="page" style={pageAppearanceVars(appearance)}>
-      <div className="ph">
-        <div className="ph-wm">世界観</div>
-        <div className="ph-eyebrow">Lore &amp; Stories</div>
-        <h2 className="ph-title">Worldbuilding Chronicles</h2>
-        <p className="ph-sub">Explore stories, lore and characters from created worlds.</p>
-      </div>
+      <PageHeader
+        watermark="世界観"
+        eyebrow="Lore & Stories"
+        title="Worldbuilding Chronicles"
+        subtitle="Explore stories, lore and characters from created worlds."
+      />
       <WorldbuildingBrowser items={itemsWithImages} maps={mapRows} locations={locationRows} />
     </div>
   );

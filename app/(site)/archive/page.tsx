@@ -4,6 +4,7 @@ import { portfolioItems, sketches, models3d, worldbuildingEntries, games, archiv
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import ArchiveList from "@/components/ArchiveList";
 import type { ArchiveItem } from "@/components/ArchiveList";
+import PageHeader from "@/components/PageHeader";
 
 export default async function ArchivePage() {
   const [port, sk, m3, wb, gm, categories, appearance] = await Promise.all([
@@ -66,12 +67,12 @@ export default async function ArchivePage() {
 
   return (
     <div className="page" style={pageAppearanceVars(appearance)}>
-      <div className="ph">
-        <div className="ph-wm">記録</div>
-        <div className="ph-eyebrow">Year by Year</div>
-        <h2 className="ph-title">Archive</h2>
-        <p className="ph-sub">Every project, sketch, world, and game — in one place.</p>
-      </div>
+      <PageHeader
+        watermark="記録"
+        eyebrow="Year by Year"
+        title="Archive"
+        subtitle="Every project, sketch, world, and game — in one place."
+      />
       <ArchiveList items={items} categories={categories.map((c) => c.label)} />
     </div>
   );
