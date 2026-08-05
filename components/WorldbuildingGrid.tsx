@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import EmptyState from "./EmptyState";
 import { fieldStyle } from "@/lib/style-fields";
 import type { LoreEntry, ViewMode } from "@/types/worldbuilding";
 
@@ -8,13 +9,21 @@ export default function WorldbuildingGrid({
   items,
   viewMode,
   onSelect,
+  hasEntries,
 }: {
   items: LoreEntry[];
   viewMode: ViewMode;
   onSelect: (id: number) => void;
+  /** Whether any entry exists before search/category filtering — distinguishes
+   * "nothing published yet" from "filtered down to nothing". */
+  hasEntries: boolean;
 }) {
   if (items.length === 0) {
-    return <div className="wb-empty">No entries match your search.</div>;
+    return hasEntries ? (
+      <EmptyState title="No entries match your search." />
+    ) : (
+      <EmptyState title="No worldbuilding entries have been published yet." />
+    );
   }
 
   if (viewMode === "grid") {

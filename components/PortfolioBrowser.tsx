@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import EmptyState from "./EmptyState";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
 import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
@@ -84,6 +85,12 @@ export default function PortfolioBrowser({
         </div>
       </div>
       <div className="port-list">
+        {filtered.length === 0 &&
+          (items.length === 0 ? (
+            <EmptyState title="No portfolio pieces have been published yet." />
+          ) : (
+            <EmptyState title="No pieces match the selected year and category." />
+          ))}
         {filtered.map((p, i) => (
           <div className="port-card" key={p.id}>
             <div

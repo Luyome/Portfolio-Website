@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import EmptyState from "./EmptyState";
 
 export type ArchiveItemType = "Portfolio" | "Sketches" | "3D" | "Worldbuilding" | "Games";
 
@@ -82,7 +83,12 @@ export default function ArchiveList({ items, categories }: { items: ArchiveItem[
             <span className="arv-col-action">View →</span>
           </a>
         ))}
-        {filtered.length === 0 && <div className="arv-empty">No items match these filters.</div>}
+        {filtered.length === 0 &&
+          (items.length === 0 ? (
+            <EmptyState title="No archive items have been published yet." />
+          ) : (
+            <EmptyState title="No items match these filters." />
+          ))}
       </div>
     </div>
   );

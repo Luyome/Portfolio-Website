@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import EmptyState from "./EmptyState";
 import GalleryModal, { GalleryItem } from "./GalleryModal";
 import { fieldStyle, remapStyles } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
@@ -55,69 +56,77 @@ export default function SketchGrid({ items, initialYear }: { items: Sketch[]; in
           ))}
         </div>
       </div>
-      <div className="sk-grid">
-        {filtered.map((s, i) =>
-          s.img ? (
-            <div
-              className="sk-item"
-              key={s.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => setModalIndex(i)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setModalIndex(i);
-                }
-              }}
-            >
-              <div className="sk-thumb">
-                <img src={s.img} alt={s.label} loading="lazy" />
-              </div>
-              <div className="sk-lbl" style={fieldStyle(s.styles, "label")}>{s.label}</div>
-            </div>
-          ) : (
-            <div
-              className="sk-item"
-              key={s.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => setModalIndex(i)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setModalIndex(i);
-                }
-              }}
-              style={{
-                background: s.colorHex ?? "#151010",
-                minHeight: 160,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 20,
-              }}
-            >
+      {filtered.length === 0 ? (
+        items.length === 0 ? (
+          <EmptyState title="No sketches have been published yet." />
+        ) : (
+          <EmptyState title="No sketches match the selected year." />
+        )
+      ) : (
+        <div className="sk-grid">
+          {filtered.map((s, i) =>
+            s.img ? (
               <div
-                style={{
-                  fontFamily: "var(--M)",
-                  fontSize: "0.55rem",
-                  color: "var(--muted)",
-                  letterSpacing: ".15em",
-                  textTransform: "uppercase",
-                  textAlign: "center",
-                  lineHeight: 1.6,
-                  ...fieldStyle(s.styles, "label"),
+                className="sk-item"
+                key={s.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => setModalIndex(i)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setModalIndex(i);
+                  }
                 }}
               >
-                {s.label}
+                <div className="sk-thumb">
+                  <img src={s.img} alt={s.label} loading="lazy" />
+                </div>
+                <div className="sk-lbl" style={fieldStyle(s.styles, "label")}>{s.label}</div>
               </div>
-              <div style={{ marginTop: 12, fontSize: "2rem", opacity: 0.1 }}>✎</div>
-            </div>
-          )
-        )}
-      </div>
+            ) : (
+              <div
+                className="sk-item"
+                key={s.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => setModalIndex(i)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setModalIndex(i);
+                  }
+                }}
+                style={{
+                  background: s.colorHex ?? "#151010",
+                  minHeight: 160,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 20,
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: "var(--M)",
+                    fontSize: "0.55rem",
+                    color: "var(--muted)",
+                    letterSpacing: ".15em",
+                    textTransform: "uppercase",
+                    textAlign: "center",
+                    lineHeight: 1.6,
+                    ...fieldStyle(s.styles, "label"),
+                  }}
+                >
+                  {s.label}
+                </div>
+                <div style={{ marginTop: 12, fontSize: "2rem", opacity: 0.1 }}>✎</div>
+              </div>
+            )
+          )}
+        </div>
+      )}
       <GalleryModal
         items={galleryItems}
         index={modalIndex}

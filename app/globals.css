@@ -220,6 +220,10 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .ph-title{font-family:var(--T);font-size:clamp(2.6rem,5.5vw,4.5rem);font-weight:900;line-height:.95;letter-spacing:-.01em;color:var(--text)}
 .ph-sub{margin-top:14px;font-family:var(--B);font-size:1.05rem;font-style:italic;color:var(--text2);max-width:500px}
 
+/* ══ EMPTY STATE ══════════════════════════ */
+.empty-state{padding:var(--space-2xl) var(--space-xl);text-align:center;color:var(--muted);font-family:var(--M);font-size:0.8rem;letter-spacing:.06em}
+.empty-state-desc{margin-top:8px;font-family:var(--B);font-size:0.85rem;letter-spacing:normal}
+
 /* ══ HOME — full centered ══════════════════ */
 .home-page{
   display:flex;align-items:center;justify-content:center;
@@ -396,7 +400,6 @@ a.arv-row:hover{background:var(--bg2)}
 .arv-col-year{font-family:var(--T);font-weight:700;color:var(--red)}
 .arv-col-action{font-family:var(--M);font-size:0.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:right;opacity:0;transition:opacity .18s}
 .arv-row:hover .arv-col-action{opacity:1;color:var(--red)}
-.arv-empty{padding:40px 16px;text-align:center;color:var(--muted);font-family:var(--B)}
 
 /* ══ PORTFOLIO ══════════════════════════════ */
 .port-ctrl{padding:var(--space-md) var(--space-xl);border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:14px}
@@ -476,7 +479,6 @@ a.arv-row:hover{background:var(--bg2)}
 .wb-pill{font-family:var(--M);font-size:0.6rem;letter-spacing:.18em;text-transform:uppercase;padding:7px 18px;border:1px solid var(--border);color:var(--muted);border-radius:999px;transition:all .18s}
 .wb-pill:hover{color:var(--text);border-color:rgba(var(--red-rgb),.4)}
 .wb-pill.on{background:var(--red);color:var(--on-red);border-color:var(--red)}
-.wb-empty{padding:var(--space-2xl) var(--space-xl);text-align:center;color:var(--muted);font-family:var(--M);font-size:0.8rem;letter-spacing:.06em}
 
 /* ══ WORLDBUILDING — card grid (Default view) ══════════════════ */
 .wb-grid{padding:40px var(--space-xl) var(--space-2xl);display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:var(--space-sm)}

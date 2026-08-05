@@ -101,7 +101,7 @@ export default function WorldbuildingBrowser({
         viewMode={viewMode}
         onViewModeChange={setViewMode}
       />
-      <WorldbuildingGrid items={loreEntries} viewMode={viewMode} onSelect={setOpenEntryId} />
+      <WorldbuildingGrid items={loreEntries} viewMode={viewMode} onSelect={setOpenEntryId} hasEntries={items.length > 0} />
       <GalleryModal
         items={galleryItems}
         index={modalIndex === -1 ? null : modalIndex}

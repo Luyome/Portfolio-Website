@@ -32,7 +32,8 @@ The personal website of Ege Demir Ünal, combining Worldbuilding, Game Design, P
 - Task 1.4 — Spacing Tokens Alignment: **Complete.**
 - Task 1.5 — Typography Tokens Alignment: **Complete.**
 - Task 1.6 — Shared Public UI Primitives: **Complete.**
-- Task 1.7 — Loading, Empty & Error States: next.
+- Task 1.7 — Loading, Empty & Error States: **Complete.**
+- Task 1.8 — Error Boundaries & Fallback Behaviour: next.
 
 Existing systems confirmed and to be preserved (Task 1.1): root and site layouts, Header, Footer, owner-only Admin authentication, Admin dashboard, existing CRUD systems, Home Page foundation, Portfolio, Worldbuilding browser, public map foundation, Admin Map Editor, Archive, About page.
 
@@ -106,7 +107,8 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 1.4 — Spacing Tokens Alignment: Complete.
 - Task 1.5 — Typography Tokens Alignment: Complete.
 - Task 1.6 — Shared Public UI Primitives: Complete.
-- Next task: Task 1.7 — Loading, Empty & Error States.
+- Task 1.7 — Loading, Empty & Error States: Complete.
+- Next task: Task 1.8 — Error Boundaries & Fallback Behaviour.
 - The Admin Panel, CRUD systems, and public map foundation already exist and are being extended, not built from zero.
 - No second Worldbuilding universe is planned scope.
 
