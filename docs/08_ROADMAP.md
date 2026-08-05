@@ -37,7 +37,8 @@ The personal website of Ege Demir Ünal, combining Worldbuilding, Game Design, P
 - Task 1.9 — Content Validation Foundation: **Complete.**
 - Task 1.10 — Search, Tags, Categories & Archive Foundation: **Complete.**
 - Task 1.11 — SEO Metadata Foundation: **Complete.**
-- Task 1.12 — Sitemap, Robots & Indexing Rules: next.
+- Task 1.12 — Sitemap, Robots & Indexing Rules: **Complete.**
+- Task 1.13 — Media Optimization Foundation: next.
 
 Existing systems confirmed and to be preserved (Task 1.1): root and site layouts, Header, Footer, owner-only Admin authentication, Admin dashboard, existing CRUD systems, Home Page foundation, Portfolio, Worldbuilding browser, public map foundation, Admin Map Editor, Archive, About page.
 
@@ -116,7 +117,8 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 1.9 — Content Validation Foundation: Complete.
 - Task 1.10 — Search, Tags, Categories & Archive Foundation: Complete.
 - Task 1.11 — SEO Metadata Foundation: Complete.
-- Next task: Task 1.12 — Sitemap, Robots & Indexing Rules.
+- Task 1.12 — Sitemap, Robots & Indexing Rules: Complete.
+- Next task: Task 1.13 — Media Optimization Foundation.
 - The Admin Panel, CRUD systems, and public map foundation already exist and are being extended, not built from zero.
 - No second Worldbuilding universe is planned scope.
 
