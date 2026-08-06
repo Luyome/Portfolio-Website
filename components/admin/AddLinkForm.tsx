@@ -34,7 +34,7 @@ export default function AddLinkForm({
           <input id="link-href" name="href" type="text" placeholder="https://..." required />
         </div>
       ) : (
-        <FileUploadField name="href" label="File" hideUrlInput />
+        <FileUploadField name="href" label="File" hideUrlInput category="gameBuild" />
       )}
       <div className="adm-field">
         <label>Order</label>

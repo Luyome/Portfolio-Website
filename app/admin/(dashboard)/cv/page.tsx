@@ -21,7 +21,7 @@ export default async function AdminCvPage() {
         )
       )}
       <form action={updateCvContent} className="adm-form">
-        <FileUploadField name="img" initialUrl={current} label="CV File" accept="image/*,application/pdf" />
+        <FileUploadField name="img" initialUrl={current} label="CV File" category="document" />
         <SaveButton />
       </form>
     </div>

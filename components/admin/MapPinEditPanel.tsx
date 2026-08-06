@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { upload } from "@vercel/blob/client";
 import { updateMapLocationInfo, deleteMapLocation } from "@/lib/actions/map";
+import { acceptAttrFor, checkUpload } from "@/lib/upload-policy";
 import type { IconType, MapLocation, PinType, WorldMap } from "@/lib/map-types";
 
 const NO_IMAGE_SVG =
@@ -33,17 +34,32 @@ export default function MapPinEditPanel({
   const [entryId, setEntryId] = useState<number | null>(location.entryId);
   const [iconType, setIconType] = useState<IconType>(location.iconType as IconType);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const uploadErrorId = useId();
 
   const otherMaps = maps.filter((m) => m.id !== location.mapId);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
+    setUploadError(null);
+    const check = checkUpload("image", file.name, file.size);
+    if (!check.ok) {
+      setUploadError(check.error);
+      return;
+    }
     setUploading(true);
     try {
-      const blob = await upload(file.name, file, { access: "public", handleUploadUrl: "/api/admin/blob-upload" });
+      const blob = await upload(check.fileName, file, {
+        access: "public",
+        handleUploadUrl: "/api/admin/blob-upload",
+        contentType: check.contentType,
+      });
       setImg(blob.url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setUploading(false);
     }
@@ -142,11 +158,18 @@ export default function MapPinEditPanel({
           </div>
           <div className="adm-field">
             <label>Image</label>
-            <input type="file" accept="image/*" onChange={handleFile} disabled={uploading} />
+            <input
+              type="file"
+              accept={acceptAttrFor("image")}
+              onChange={handleFile}
+              disabled={uploading}
+              aria-describedby={uploadError ? uploadErrorId : undefined}
+            />
             {uploading && <div className="adm-hint">Uploading…</div>}
+            {uploadError && <div id={uploadErrorId} className="adm-error" role="alert">{uploadError}</div>}
           </div>
           <div className="adm-actions" style={{ marginTop: 20 }}>
-            <button type="button" className="adm-btn" onClick={handleSave} disabled={saving}>
+            <button type="button" className="adm-btn" onClick={handleSave} disabled={saving || uploading}>
               {saving ? "Saving…" : "Save"}
             </button>
             <button type="button" className="danger" onClick={handleDelete}>Delete Pin</button>

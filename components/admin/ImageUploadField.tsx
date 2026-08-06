@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { upload } from "@vercel/blob/client";
 import NumberPicker from "./NumberPicker";
+import { acceptAttrFor, checkUpload, describeUploadPolicy } from "@/lib/upload-policy";
 
 export default function ImageUploadField({
   name,
@@ -22,6 +23,7 @@ export default function ImageUploadField({
   const [url, setUrlState] = useState(initialUrl ?? "");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const errorId = useId();
 
   function setUrl(v: string) {
     setUrlState(v);
@@ -30,13 +32,21 @@ export default function ImageUploadField({
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    // Allow re-selecting the same file after a failed attempt.
+    e.target.value = "";
     if (!file) return;
-    setUploading(true);
     setError(null);
+    const check = checkUpload("image", file.name, file.size);
+    if (!check.ok) {
+      setError(check.error);
+      return;
+    }
+    setUploading(true);
     try {
-      const blob = await upload(file.name, file, {
+      const blob = await upload(check.fileName, file, {
         access: "public",
         handleUploadUrl: "/api/admin/blob-upload",
+        contentType: check.contentType,
       });
       setUrl(blob.url);
     } catch (err) {
@@ -50,9 +60,16 @@ export default function ImageUploadField({
     <div className="adm-field">
       <label>{label}</label>
       <input type="hidden" name={name} value={url} />
-      <input type="file" accept="image/*" onChange={handleFile} disabled={uploading} />
+      <input
+        type="file"
+        accept={acceptAttrFor("image")}
+        onChange={handleFile}
+        disabled={uploading}
+        aria-describedby={error ? errorId : undefined}
+      />
+      <div className="adm-hint">{describeUploadPolicy("image")}</div>
       {uploading && <div className="adm-hint">Uploading…</div>}
-      {error && <div className="adm-error">{error}</div>}
+      {error && <div id={errorId} className="adm-error" role="alert">{error}</div>}
       <div className="adm-hint">…or paste an image URL directly:</div>
       <input
         type="text"

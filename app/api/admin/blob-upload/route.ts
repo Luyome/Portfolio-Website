@@ -2,6 +2,7 @@ import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth";
+import { allowedContentTypesForPathname, maxBytesFor } from "@/lib/upload-policy";
 
 export async function POST(request: Request): Promise<NextResponse> {
   const cookieStore = await cookies();
@@ -17,16 +18,21 @@ export async function POST(request: Request): Promise<NextResponse> {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async () => ({
-        allowedContentTypes: ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"],
-        addRandomSuffix: true,
-      }),
+      onBeforeGenerateToken: async (pathname) => {
+        const allowedContentTypes = allowedContentTypesForPathname("image", pathname);
+        if (!allowedContentTypes) {
+          throw new Error("Unsupported file type.");
+        }
+        return {
+          allowedContentTypes: [...allowedContentTypes],
+          maximumSizeInBytes: maxBytesFor("image"),
+          addRandomSuffix: true,
+        };
+      },
     });
     return NextResponse.json(jsonResponse);
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Upload failed" },
-      { status: 400 }
-    );
+    const message = error instanceof Error ? error.message : "Upload failed";
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }
