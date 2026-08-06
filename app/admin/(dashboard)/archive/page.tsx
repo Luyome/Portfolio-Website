@@ -5,6 +5,7 @@ import { createArchiveCategory, updateArchiveCategory, deleteArchiveCategory } f
 import DeleteButton from "@/components/admin/DeleteButton";
 import NumberPicker from "@/components/admin/NumberPicker";
 import SaveButton from "@/components/admin/SaveButton";
+import Field from "@/components/admin/Field";
 
 export default async function AdminArchivePage() {
   const categories = await db.select().from(archiveCategories).orderBy(asc(archiveCategories.sortOrder));
@@ -59,15 +60,14 @@ export default async function AdminArchivePage() {
 
       <p className="adm-sub" style={{ marginTop: 32 }}>Add Category Chip</p>
       <form action={createArchiveCategory} className="adm-form">
-        <div className="adm-field">
-          <label htmlFor="label">Label</label>
-          <input id="label" name="label" placeholder="Character Design" required />
-        </div>
+        <Field id="label" label="Label" required>
+          <input name="label" placeholder="Character Design" required />
+        </Field>
         <div className="adm-field">
           <label>Sort Order</label>
           <NumberPicker name="sortOrder" defaultValue={categories.length} />
         </div>
-        <button type="submit" className="adm-btn">Add Category</button>
+        <SaveButton>Add Category</SaveButton>
       </form>
     </div>
   );

@@ -730,9 +730,20 @@ a.arv-row:hover{background:var(--bg2)}
 .adm-error{font-family:var(--M);font-size:0.72rem;color:var(--red2);margin-top:10px}
 .adm-img-preview{max-width:200px;margin-top:10px;border:1px solid var(--border)}
 
+/* ══ SHARED FIELD REQUIRED/OPTIONAL INDICATOR (Field component) ══ */
+.adm-field-req{
+  font-family:var(--M);font-size:0.56rem;letter-spacing:.1em;font-weight:400;
+  color:var(--muted);margin-left:2px;
+}
+
+/* ══ SHARED FORM ACTION ROW (FormActions component) ══ */
+.adm-form-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.adm-form-cancel{font-family:var(--M);font-size:0.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .18s}
+.adm-form-cancel:hover{color:var(--text)}
+
 /* ══ FIELD STYLE CONTROLS (color + font-size, per-field) ══ */
 .adm-field-label-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap}
-.adm-field-label-row label{margin-bottom:0}
+.adm-field-label-row label{margin-bottom:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .fsc{display:flex;gap:8px;flex-shrink:0;align-items:center;flex-wrap:wrap}
 .fsc-color-pair{display:flex;gap:6px}
 .fsc .hlp,.fsc .cp{width:auto}

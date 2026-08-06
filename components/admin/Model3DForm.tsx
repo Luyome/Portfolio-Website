@@ -7,7 +7,9 @@ import YearPicker from "./YearPicker";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import Model3DPreviewCard from "./Model3DPreviewCard";
-import SaveButton from "./SaveButton";
+import Field from "./Field";
+import FormError from "./FormError";
+import FormActions from "./FormActions";
 import type { models3d } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
@@ -66,39 +68,38 @@ export default function Model3DForm({
   return (
     <PreviewToggle renderPreview={() => <Model3DPreviewCard state={state} pageVars={pageVars} />}>
       <form action={formAction} className="adm-form" onChange={handleFormChange}>
-        {actionState?.error && <div className="adm-error">{actionState.error}</div>}
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="label">Label</label>
-            <FieldStyleControls fieldKey="label" current={item?.styles?.label} onStyleChange={(p) => updateStyle("label", p)} />
-          </div>
-          <input id="label" name="label" defaultValue={item?.label} required placeholder="2026.02 — prop study" />
-        </div>
+        <FormError message={actionState?.error} />
+        <Field
+          id="label"
+          label="Label"
+          required
+          labelExtra={<FieldStyleControls fieldKey="label" current={item?.styles?.label} onStyleChange={(p) => updateStyle("label", p)} />}
+        >
+          <input name="label" defaultValue={item?.label} required placeholder="2026.02 — prop study" />
+        </Field>
         <div className="adm-field">
           <label htmlFor="year">Year</label>
           <YearPicker id="year" name="year" defaultValue={item?.year} />
         </div>
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="desc">Description</label>
-            <FieldStyleControls fieldKey="desc" current={item?.styles?.desc} onStyleChange={(p) => updateStyle("desc", p)} />
-          </div>
-          <textarea id="desc" name="desc" defaultValue={item?.desc} />
-        </div>
+        <Field
+          id="desc"
+          label="Description"
+          required={false}
+          labelExtra={<FieldStyleControls fieldKey="desc" current={item?.styles?.desc} onStyleChange={(p) => updateStyle("desc", p)} />}
+        >
+          <textarea name="desc" defaultValue={item?.desc} />
+        </Field>
         <ImageUploadField name="img" initialUrl={item?.img ?? undefined} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
-        <div className="adm-field">
-          <label htmlFor="link">Link (optional — e.g. social media / source)</label>
-          <input id="link" name="link" type="text" defaultValue={item?.link ?? ""} placeholder="https://..." />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="colorHex">Placeholder Color (used when no image)</label>
-          <input id="colorHex" name="colorHex" type="text" defaultValue={item?.colorHex ?? "#151010"} />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="sortOrder">Sort Order</label>
-          <input id="sortOrder" name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
-        </div>
-        <SaveButton />
+        <Field id="link" label="Link — e.g. social media / source" required={false}>
+          <input name="link" type="text" defaultValue={item?.link ?? ""} placeholder="https://..." />
+        </Field>
+        <Field id="colorHex" label="Placeholder Color (used when no image)" required={false}>
+          <input name="colorHex" type="text" defaultValue={item?.colorHex ?? "#151010"} />
+        </Field>
+        <Field id="sortOrder" label="Sort Order" required={false}>
+          <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
+        </Field>
+        <FormActions cancelHref="/admin/3d" />
       </form>
     </PreviewToggle>
   );

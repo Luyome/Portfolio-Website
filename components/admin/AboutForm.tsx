@@ -6,6 +6,7 @@ import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import AboutPreviewCard from "./AboutPreviewCard";
 import SaveButton from "./SaveButton";
+import Field from "./Field";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
 export default function AboutForm({
@@ -61,24 +62,18 @@ export default function AboutForm({
   return (
     <PreviewToggle renderPreview={() => <AboutPreviewCard state={state} tools={toolsList} timeline={timeline} pageVars={pageVars} />}>
       <form action={action} className="adm-form" onChange={handleFormChange}>
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="whoIAmParagraphs">Who I Am (paragraphs)</label>
-            <FieldStyleControls fieldKey="whoIAmParagraphs" current={styles?.whoIAmParagraphs} onStyleChange={(p) => updateStyle("whoIAmParagraphs", p)} />
-          </div>
-          <textarea
-            id="whoIAmParagraphs"
-            name="whoIAmParagraphs"
-            defaultValue={whoIAmParagraphs}
-            style={{ minHeight: 160 }}
-          />
-          <div className="adm-hint">One paragraph per line.</div>
-        </div>
-        <div className="adm-field">
-          <label htmlFor="tools">Tools</label>
-          <input id="tools" name="tools" defaultValue={tools} />
-          <div className="adm-hint">Comma separated, e.g. Unreal Engine 5, Blender, ZBrush</div>
-        </div>
+        <Field
+          id="whoIAmParagraphs"
+          label="Who I Am (paragraphs)"
+          required={false}
+          hint="One paragraph per line."
+          labelExtra={<FieldStyleControls fieldKey="whoIAmParagraphs" current={styles?.whoIAmParagraphs} onStyleChange={(p) => updateStyle("whoIAmParagraphs", p)} />}
+        >
+          <textarea name="whoIAmParagraphs" defaultValue={whoIAmParagraphs} style={{ minHeight: 160 }} />
+        </Field>
+        <Field id="tools" label="Tools" required={false} hint="Comma separated, e.g. Unreal Engine 5, Blender, ZBrush">
+          <input name="tools" defaultValue={tools} />
+        </Field>
         <SaveButton />
       </form>
     </PreviewToggle>

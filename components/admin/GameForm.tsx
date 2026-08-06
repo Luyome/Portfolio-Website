@@ -9,7 +9,9 @@ import OrderPicker from "./OrderPicker";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import GamePreviewCard from "./GamePreviewCard";
-import SaveButton from "./SaveButton";
+import Field from "./Field";
+import FormError from "./FormError";
+import FormActions from "./FormActions";
 import type { games } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
@@ -74,57 +76,58 @@ export default function GameForm({
   return (
     <PreviewToggle renderPreview={() => <GamePreviewCard state={state} pageVars={pageVars} />}>
       <form action={formAction} className="adm-form" onChange={handleFormChange}>
-        {actionState?.error && <div className="adm-error">{actionState.error}</div>}
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="title">Title</label>
-            <FieldStyleControls fieldKey="title" current={item?.styles?.title} onStyleChange={(p) => updateStyle("title", p)} />
-          </div>
-          <input id="title" name="title" defaultValue={item?.title} required />
-        </div>
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="status">Status</label>
-            <FieldStyleControls fieldKey="status" current={item?.styles?.status} onStyleChange={(p) => updateStyle("status", p)} />
-          </div>
-          <input id="status" name="status" defaultValue={item?.status} required placeholder="In Development — Solo" />
-        </div>
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="engine">Engine</label>
-            <FieldStyleControls fieldKey="engine" current={item?.styles?.engine} onStyleChange={(p) => updateStyle("engine", p)} />
-          </div>
-          <input id="engine" name="engine" defaultValue={item?.engine} required placeholder="Unreal Engine 5" />
-        </div>
+        <FormError message={actionState?.error} />
+        <Field
+          id="title"
+          label="Title"
+          required
+          labelExtra={<FieldStyleControls fieldKey="title" current={item?.styles?.title} onStyleChange={(p) => updateStyle("title", p)} />}
+        >
+          <input name="title" defaultValue={item?.title} required />
+        </Field>
+        <Field
+          id="status"
+          label="Status"
+          required
+          labelExtra={<FieldStyleControls fieldKey="status" current={item?.styles?.status} onStyleChange={(p) => updateStyle("status", p)} />}
+        >
+          <input name="status" defaultValue={item?.status} required placeholder="In Development — Solo" />
+        </Field>
+        <Field
+          id="engine"
+          label="Engine"
+          required
+          labelExtra={<FieldStyleControls fieldKey="engine" current={item?.styles?.engine} onStyleChange={(p) => updateStyle("engine", p)} />}
+        >
+          <input name="engine" defaultValue={item?.engine} required placeholder="Unreal Engine 5" />
+        </Field>
         <div className="adm-field">
           <label htmlFor="year">Year</label>
           <YearPicker id="year" name="year" defaultValue={item?.year} />
         </div>
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="desc">Description</label>
-            <FieldStyleControls fieldKey="desc" current={item?.styles?.desc} onStyleChange={(p) => updateStyle("desc", p)} />
-          </div>
-          <textarea id="desc" name="desc" defaultValue={item?.desc} required />
-          <div className="adm-hint">Short summary shown on the Games list card.</div>
-        </div>
-        <div className="adm-field">
-          <label htmlFor="tags">Tags</label>
-          <input id="tags" name="tags" defaultValue={item?.tags.join(", ")} />
-          <div className="adm-hint">Comma separated, e.g. Horror, First-Person, Solo Dev</div>
-        </div>
-        <div className="adm-field">
-          <label htmlFor="feats">Features</label>
-          <textarea id="feats" name="feats" defaultValue={item?.feats.join("\n")} />
-          <div className="adm-hint">One feature per line</div>
-        </div>
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="target">Target</label>
-            <FieldStyleControls fieldKey="target" current={item?.styles?.target} onStyleChange={(p) => updateStyle("target", p)} />
-          </div>
-          <input id="target" name="target" defaultValue={item?.target} required placeholder="Steam — June 2026" />
-        </div>
+        <Field
+          id="desc"
+          label="Description"
+          required
+          hint="Short summary shown on the Games list card."
+          labelExtra={<FieldStyleControls fieldKey="desc" current={item?.styles?.desc} onStyleChange={(p) => updateStyle("desc", p)} />}
+        >
+          <textarea name="desc" defaultValue={item?.desc} required />
+        </Field>
+        <Field id="tags" label="Tags" required={false} hint="Comma separated, e.g. Horror, First-Person, Solo Dev">
+          <input name="tags" defaultValue={item?.tags.join(", ")} />
+        </Field>
+        <Field id="feats" label="Features" required={false} hint="One feature per line">
+          <textarea name="feats" defaultValue={item?.feats.join("\n")} />
+        </Field>
+        <Field
+          id="target"
+          label="Target"
+          required
+          labelExtra={<FieldStyleControls fieldKey="target" current={item?.styles?.target} onStyleChange={(p) => updateStyle("target", p)} />}
+        >
+          <input name="target" defaultValue={item?.target} required placeholder="Steam — June 2026" />
+        </Field>
         <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
         <ContentEditor name="content" defaultValue={item?.content} />
         <div className="adm-field">
@@ -134,11 +137,10 @@ export default function GameForm({
           </div>
           <OrderPicker name="contentOrder" defaultValue={item?.contentOrder ?? 0} />
         </div>
-        <div className="adm-field">
-          <label htmlFor="sortOrder">Sort Order</label>
-          <input id="sortOrder" name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
-        </div>
-        <SaveButton />
+        <Field id="sortOrder" label="Sort Order" required={false}>
+          <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
+        </Field>
+        <FormActions cancelHref="/admin/games" />
       </form>
     </PreviewToggle>
   );

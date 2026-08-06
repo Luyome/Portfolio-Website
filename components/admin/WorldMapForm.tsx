@@ -4,6 +4,9 @@ import { useActionState } from "react";
 import ImageUploadField from "./ImageUploadField";
 import OrderPicker from "./OrderPicker";
 import SaveButton from "./SaveButton";
+import Field from "./Field";
+import FormError from "./FormError";
+import FormActions from "./FormActions";
 import type { WorldMap } from "@/lib/map-types";
 
 export default function WorldMapForm({
@@ -18,31 +21,34 @@ export default function WorldMapForm({
   const [actionState, formAction] = useActionState(action, undefined);
   return (
     <form action={formAction} className="adm-form">
-      {actionState?.error && <div className="adm-error">{actionState.error}</div>}
-      <div className="adm-field">
-        <label htmlFor="title">Title</label>
-        <input id="title" name="title" defaultValue={item?.title} required placeholder="Krupni Central Realm" />
-      </div>
-      <div className="adm-field">
-        <label htmlFor="parentMapId">Parent Map</label>
-        <select id="parentMapId" name="parentMapId" defaultValue={item?.parentMapId ?? ""}>
+      <FormError message={actionState?.error} />
+      <Field id="title" label="Title" required>
+        <input name="title" defaultValue={item?.title} required placeholder="Krupni Central Realm" />
+      </Field>
+      <Field
+        id="parentMapId"
+        label="Parent Map"
+        required={false}
+        hint="Leave empty for the main map. Otherwise this becomes a sub-map reached via a pin."
+      >
+        <select name="parentMapId" defaultValue={item?.parentMapId ?? ""}>
           <option value="">— none (root / main map) —</option>
           {otherMaps.map((m) => (
             <option key={m.id} value={m.id}>{m.title}</option>
           ))}
         </select>
-        <div className="adm-hint">Leave empty for the main map. Otherwise this becomes a sub-map reached via a pin.</div>
-      </div>
+      </Field>
       <ImageUploadField name="imageUrl" initialUrl={item?.imageUrl} label="Map Image" />
-      <div className="adm-field">
-        <label htmlFor="description">Description</label>
-        <textarea id="description" name="description" defaultValue={item?.description} />
-      </div>
+      <Field id="description" label="Description" required={false}>
+        <textarea name="description" defaultValue={item?.description} />
+      </Field>
       <div className="adm-field">
         <label>Sort Order</label>
         <OrderPicker name="sortOrder" defaultValue={item?.sortOrder ?? 1} />
       </div>
-      <SaveButton>{item ? "Save Map" : "Create Map"}</SaveButton>
+      <FormActions cancelHref="/admin/worldbuilding/maps">
+        <SaveButton>{item ? "Save Map" : "Create Map"}</SaveButton>
+      </FormActions>
     </form>
   );
 }

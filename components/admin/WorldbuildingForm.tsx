@@ -10,7 +10,9 @@ import OrderPicker from "./OrderPicker";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import WorldbuildingPreviewCard from "./WorldbuildingPreviewCard";
-import SaveButton from "./SaveButton";
+import Field from "./Field";
+import FormError from "./FormError";
+import FormActions from "./FormActions";
 import type { worldbuildingEntries } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 import { CATEGORIES } from "@/types/worldbuilding";
@@ -74,22 +76,22 @@ export default function WorldbuildingForm({
   return (
     <PreviewToggle renderPreview={() => <WorldbuildingPreviewCard state={state} pageVars={pageVars} />}>
       <form action={formAction} className="adm-form" onChange={handleFormChange}>
-        {actionState?.error && <div className="adm-error">{actionState.error}</div>}
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="title">Title</label>
-            <FieldStyleControls fieldKey="title" current={item?.styles?.title} onStyleChange={(p) => updateStyle("title", p)} />
-          </div>
-          <input id="title" name="title" defaultValue={item?.title} required />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="cat">Category</label>
-          <select id="cat" name="cat" defaultValue={item?.cat ?? CATEGORIES[0]} required>
+        <FormError message={actionState?.error} />
+        <Field
+          id="title"
+          label="Title"
+          required
+          labelExtra={<FieldStyleControls fieldKey="title" current={item?.styles?.title} onStyleChange={(p) => updateStyle("title", p)} />}
+        >
+          <input name="title" defaultValue={item?.title} required />
+        </Field>
+        <Field id="cat" label="Category" required>
+          <select name="cat" defaultValue={item?.cat ?? CATEGORIES[0]} required>
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
-        </div>
+        </Field>
         <div className="adm-field">
           <label htmlFor="year">Year</label>
           <YearPicker id="year" name="year" defaultValue={item?.year} />
@@ -98,18 +100,17 @@ export default function WorldbuildingForm({
           <label htmlFor="date">Display Date</label>
           <DatePicker id="date" name="date" defaultValue={item?.date} onValueChange={(v) => setState((s) => ({ ...s, date: v }))} />
         </div>
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="excerpt">Excerpt</label>
-            <FieldStyleControls fieldKey="excerpt" current={item?.styles?.excerpt} onStyleChange={(p) => updateStyle("excerpt", p)} />
-          </div>
-          <textarea id="excerpt" name="excerpt" defaultValue={item?.excerpt} required />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="chips">Chips</label>
-          <input id="chips" name="chips" defaultValue={item?.chips.join(", ")} />
-          <div className="adm-hint">Comma separated, e.g. Aethermoor, Lore, Cities</div>
-        </div>
+        <Field
+          id="excerpt"
+          label="Excerpt"
+          required
+          labelExtra={<FieldStyleControls fieldKey="excerpt" current={item?.styles?.excerpt} onStyleChange={(p) => updateStyle("excerpt", p)} />}
+        >
+          <textarea name="excerpt" defaultValue={item?.excerpt} required />
+        </Field>
+        <Field id="chips" label="Chips" required={false} hint="Comma separated, e.g. Aethermoor, Lore, Cities">
+          <input name="chips" defaultValue={item?.chips.join(", ")} />
+        </Field>
         <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
         <ContentEditor name="content" defaultValue={item?.content} />
         <div className="adm-field">
@@ -119,11 +120,10 @@ export default function WorldbuildingForm({
           </div>
           <OrderPicker name="contentOrder" defaultValue={item?.contentOrder ?? 0} />
         </div>
-        <div className="adm-field">
-          <label htmlFor="sortOrder">Sort Order</label>
-          <input id="sortOrder" name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
-        </div>
-        <SaveButton />
+        <Field id="sortOrder" label="Sort Order" required={false}>
+          <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
+        </Field>
+        <FormActions cancelHref="/admin/worldbuilding" />
       </form>
     </PreviewToggle>
   );

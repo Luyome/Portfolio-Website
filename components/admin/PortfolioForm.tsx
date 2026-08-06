@@ -7,7 +7,9 @@ import YearPicker from "./YearPicker";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import PortfolioPreviewCard from "./PortfolioPreviewCard";
-import SaveButton from "./SaveButton";
+import Field from "./Field";
+import FormError from "./FormError";
+import FormActions from "./FormActions";
 import type { portfolioItems } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
@@ -70,52 +72,47 @@ export default function PortfolioForm({
   return (
     <PreviewToggle renderPreview={() => <PortfolioPreviewCard state={state} pageVars={pageVars} />}>
       <form action={formAction} className="adm-form" onChange={handleFormChange}>
-        {actionState?.error && <div className="adm-error">{actionState.error}</div>}
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="title">Title</label>
-            <FieldStyleControls fieldKey="title" current={item?.styles?.title} onStyleChange={(p) => updateStyle("title", p)} />
-          </div>
-          <input id="title" name="title" defaultValue={item?.title} required />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="cat">Category</label>
-          <input id="cat" name="cat" defaultValue={item?.cat} required />
-        </div>
+        <FormError message={actionState?.error} />
+        <Field
+          id="title"
+          label="Title"
+          required
+          labelExtra={<FieldStyleControls fieldKey="title" current={item?.styles?.title} onStyleChange={(p) => updateStyle("title", p)} />}
+        >
+          <input name="title" defaultValue={item?.title} required />
+        </Field>
+        <Field id="cat" label="Category" required>
+          <input name="cat" defaultValue={item?.cat} required />
+        </Field>
         <div className="adm-field">
           <label htmlFor="year">Year</label>
           <YearPicker id="year" name="year" defaultValue={item?.year} onValueChange={(v) => setState((s) => ({ ...s, year: v }))} />
         </div>
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="desc">Description</label>
-            <FieldStyleControls fieldKey="desc" current={item?.styles?.desc} onStyleChange={(p) => updateStyle("desc", p)} />
-          </div>
-          <textarea id="desc" name="desc" defaultValue={item?.desc} required />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="tags">Tags</label>
-          <input id="tags" name="tags" defaultValue={item?.tags.join(", ")} />
-          <div className="adm-hint">Comma separated, e.g. ZBrush, Substance, Game Ready</div>
-        </div>
-        <div className="adm-field">
-          <label htmlFor="medium">Medium</label>
-          <input id="medium" name="medium" defaultValue={item?.medium} required />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="software">Software</label>
-          <input id="software" name="software" defaultValue={item?.software} required />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="link">External Link</label>
-          <input id="link" name="link" defaultValue={item?.link} placeholder="https://www.artstation.com/..." />
-        </div>
+        <Field
+          id="desc"
+          label="Description"
+          required
+          labelExtra={<FieldStyleControls fieldKey="desc" current={item?.styles?.desc} onStyleChange={(p) => updateStyle("desc", p)} />}
+        >
+          <textarea name="desc" defaultValue={item?.desc} required />
+        </Field>
+        <Field id="tags" label="Tags" required={false} hint="Comma separated, e.g. ZBrush, Substance, Game Ready">
+          <input name="tags" defaultValue={item?.tags.join(", ")} />
+        </Field>
+        <Field id="medium" label="Medium" required>
+          <input name="medium" defaultValue={item?.medium} required />
+        </Field>
+        <Field id="software" label="Software" required>
+          <input name="software" defaultValue={item?.software} required />
+        </Field>
+        <Field id="link" label="External Link" required={false}>
+          <input name="link" defaultValue={item?.link} placeholder="https://www.artstation.com/..." />
+        </Field>
         <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
-        <div className="adm-field">
-          <label htmlFor="sortOrder">Sort Order</label>
-          <input id="sortOrder" name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
-        </div>
-        <SaveButton />
+        <Field id="sortOrder" label="Sort Order" required={false}>
+          <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
+        </Field>
+        <FormActions cancelHref="/admin/portfolio" />
       </form>
     </PreviewToggle>
   );

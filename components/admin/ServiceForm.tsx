@@ -4,7 +4,8 @@ import { useState } from "react";
 import type { CSSProperties } from "react";
 import PreviewToggle from "./PreviewToggle";
 import ServicePreviewCard from "./ServicePreviewCard";
-import SaveButton from "./SaveButton";
+import Field from "./Field";
+import FormActions from "./FormActions";
 import type { services } from "@/db/schema";
 
 type ServiceRow = typeof services.$inferSelect;
@@ -35,24 +36,19 @@ export default function ServiceForm({
   return (
     <PreviewToggle renderPreview={() => <ServicePreviewCard state={state} pageVars={pageVars} />}>
       <form action={action} className="adm-form" onChange={handleFormChange}>
-        <div className="adm-field">
-          <label htmlFor="icon">Icon</label>
-          <input id="icon" name="icon" defaultValue={item?.icon} required placeholder="◆" />
-          <div className="adm-hint">A single character/symbol, e.g. ◆ ◈ ◬ ▶ △ ■</div>
-        </div>
-        <div className="adm-field">
-          <label htmlFor="title">Title</label>
-          <input id="title" name="title" defaultValue={item?.title} required />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="desc">Description</label>
-          <textarea id="desc" name="desc" defaultValue={item?.desc} required />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="sortOrder">Sort Order</label>
-          <input id="sortOrder" name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
-        </div>
-        <SaveButton />
+        <Field id="icon" label="Icon" required hint="A single character/symbol, e.g. ◆ ◈ ◬ ▶ △ ■">
+          <input name="icon" defaultValue={item?.icon} required placeholder="◆" />
+        </Field>
+        <Field id="title" label="Title" required>
+          <input name="title" defaultValue={item?.title} required />
+        </Field>
+        <Field id="desc" label="Description" required>
+          <textarea name="desc" defaultValue={item?.desc} required />
+        </Field>
+        <Field id="sortOrder" label="Sort Order" required={false}>
+          <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
+        </Field>
+        <FormActions cancelHref="/admin/services" />
       </form>
     </PreviewToggle>
   );
