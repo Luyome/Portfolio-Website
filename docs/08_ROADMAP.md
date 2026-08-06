@@ -23,7 +23,7 @@ The personal website of Ege Demir Ünal, combining Worldbuilding, Game Design, P
 
 **Sprint 0 — Foundation** — *Complete.* Product, content, design, component, motion, and technical documentation (`AI_RULES.md` through this file).
 
-**Sprint 1 — Core Systems** — *Active.* Inspect, preserve, align, and complete the shared systems the site already has — this sprint is not a from-zero build.
+**Sprint 1 — Core Systems** — *Complete.* Inspected, preserved, aligned, and completed the shared systems the site already had — not a from-zero build. Delivered: public UI foundation, accessibility and responsive core, validation and search/filter infrastructure, SEO/sitemap/robots, media optimization, performance and Vercel/Neon usage QA, and local and production integration QA.
 
 - Task 1.1 — Existing Core Systems Audit: **Complete.**
 - Task 1.2 — Final Product Scope and Documentation Alignment: **Complete.**
@@ -42,7 +42,7 @@ The personal website of Ege Demir Ünal, combining Worldbuilding, Game Design, P
 - Task 1.14 — Accessibility & Responsive Core QA: **Complete.** — fixes implemented and validated (type-check/lint/build pass); desktop, keyboard/modal, and mobile/tablet viewport QA (390×844, 768×1024, via DevTools device emulation) all performed in-browser. Mobile viewport testing found and fixed a real overflow bug: `.sk-grid` (Sketches + 3D pages) used a fixed 4-column layout with no `min-width:0` on grid items, causing images to force horizontal overflow below ~540px; fixed with `min-width:0` on `.sk-item` and a 2-column override at the existing 820px breakpoint. Also fixed: MapZoomPanel toolbar/breadcrumb overlap at ~390px, GalleryModal's mobile single-column grid collapsing `.gm-img-side`'s row to 0px (image rendering on top of the info panel), and the tablet-only (768–1023px) header row overflowing its own viewport by ~50px (last nav/social links unreachable).
 - Task 1.15 — Performance & Vercel Usage QA: **Complete.** — code audit (client bundle, DB queries, rendering/cache, media transfer) plus read-only Vercel and Neon dashboard review found the site well within plan limits and free of N+1/duplicate-query patterns except one: `getSiteSettings()` was read 2-3x per request (root layout, site layout, and — on the Home Page — the page itself again). Fixed by wrapping it in React's `cache()`, per the local Next.js 16 docs' documented dedup pattern for non-`fetch` ORM reads (`node_modules/next/dist/docs/.../caching-without-cache-components.md`, "Deduplicating requests") — zero behavior change, one file (`lib/site-settings.ts`). No other verified low-risk fix met the bar; GalleryModal's `<img>` usage, the `.sk-grid` masonry thumbnails, and Archive's same-year ordering were reviewed and left alone (masonry/GalleryModal excluded by task scope and Task 1.14's recent a11y work; ordering has no perf benefit). Type-check, lint (0 new warnings), build, and diff-check all passed; 8-route smoke QA (including GalleryModal and the World Map panel) passed with no console errors.
 - Task 1.16 — Sprint 1 Integration QA: **Complete.** — resumed after an unrelated system crash mid-QA; git status was clean (no half-finished edits, no roadmap corruption), so this was a clean continuation, not a rebuild. Re-ran type-check/lint (0 errors, the same pre-existing 27 warnings)/build/`git diff --check`, all clean. 8-route smoke QA (console, header/footer, single `h1`, no page-level overflow), keyboard/ARIA checks (skip-to-content, Work menu open/Escape/focus-return, `aria-current`, mobile-menu toggle wiring, Archive's `aria-pressed` filters), GalleryModal + ImageZoomOverlay + MapZoomPanel (open/close/Escape-nesting/focus-return/zoom/reset), Worldbuilding search (trim + case-insensitive + empty-search no-op), Archive year/type filters and invalid-`year`-param fallback, 404 + its Home/Archive links, admin login `noindex,nofollow`, sitemap.xml/robots.txt (dev correctly disallows all; prod allows public routes and blocks `/admin/`+`/api/`), and the Task 1.15 `getSiteSettings()` cache all passed with no regressions. Production (`portfolio-website-eight-xi-79.vercel.app`) confirmed Ready on the latest deploy, aliased correctly, and `/`, `/portfolio`, `/worldbuilding`, `/about`, `/sitemap.xml`, `/robots.txt` all return 200 with unique titles and no error markers. **390px/768px responsive regressions — now verified in a follow-up session:** the browser extension's window resize still could not shrink the real viewport below desktop width (confirmed again, same root cause as before — OS/window-manager level, not fixable from the page-automation tool), so verification instead used a scripted headless Chrome session driven directly via the Chrome DevTools Protocol (`Emulation.setDeviceMetricsOverride`, the same primitive DevTools' own device toolbar uses), launched from the local Chrome install with no new project dependency. Checked `document.documentElement.scrollWidth` vs `clientWidth` plus visual screenshots on production for Home, Worldbuilding (including MapZoomPanel opened), Portfolio (including GalleryModal opened), and Archive, at both 390×844 and 768×1024: no page-level horizontal overflow on any of the 8 combinations, mobile hamburger menu and stacked layouts render correctly, GalleryModal's image/info stacking and MapZoomPanel's zoom toolbar both fit within viewport with no regressions from Task 1.14's fixes. One benign finding, not a bug: Worldbuilding's `.ph-wm` map-preview thumbnail measures 421px `scrollWidth` inside its 390px container (31px larger than its box) but is clipped by the container's own `overflow:hidden`, so it never affects page scrollWidth or visible layout — left as-is per scope (no visible defect to fix).
-- Task 1.17 — Roadmap Status Update / Sprint Close: **Next.**
+- Task 1.17 — Roadmap Status Update / Sprint Close: **Complete.**
 
 Existing systems confirmed and to be preserved (Task 1.1): root and site layouts, Header, Footer, owner-only Admin authentication, Admin dashboard, existing CRUD systems, Home Page foundation, Portfolio, Worldbuilding browser, public map foundation, Admin Map Editor, Archive, About page.
 
@@ -50,7 +50,7 @@ Confirmed Sprint 1 gaps to close: reduced-motion support, spacing tokens, typogr
 
 Comments, likes, bookmarks, notifications, and public accounts are not part of this sprint — see section 6, Explicitly Out of Scope.
 
-**Sprint 2 — Private Admin Panel and CMS Refinement** — Admin authentication, dashboard, CRUD, and a working Map Editor already exist. This sprint refines and extends them (media management polish, tag/category management, content relationship management, Map Manager improvements) rather than building an admin system from scratch.
+**Sprint 2 — Private Admin Panel and CMS Refinement** — *Next.* Admin authentication, dashboard, CRUD, and a working Map Editor already exist. This sprint refines and extends them (media management polish, tag/category management, content relationship management, Map Manager improvements) rather than building an admin system from scratch.
 
 **Sprint 3 — Home Page** — The Home Page already exists (hero, project stream, worldbuilding introduction, map preview, pillar previews, About/Contact entry points). This sprint aligns, improves, and completes it against the current documentation rather than building it new.
 
@@ -108,7 +108,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 
 ## 8. Current Status
 
-- Current sprint: Sprint 1 — Core Systems (Active).
+- Current sprint: Sprint 1 — Core Systems (Complete). Next sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Next).
 - Task 1.1 — Existing Core Systems Audit: Complete.
 - Task 1.2 — Final Product Scope and Documentation Alignment: Complete.
 - Task 1.2.1 — Documentation Consistency Patch: Complete.
@@ -126,7 +126,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 1.14 — Accessibility & Responsive Core QA: Complete.
 - Task 1.15 — Performance & Vercel Usage QA: Complete.
 - Task 1.16 — Sprint 1 Integration QA: Complete.
-- Task 1.17 — Roadmap Status Update / Sprint Close: Next.
+- Task 1.17 — Roadmap Status Update / Sprint Close: Complete.
 - The Admin Panel, CRUD systems, and public map foundation already exist and are being extended, not built from zero.
 - No second Worldbuilding universe is planned scope.
 
