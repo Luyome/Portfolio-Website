@@ -21,40 +21,42 @@ export default function ExtraVideosPanel({
         Content and Gallery Images (lower number = earlier).
       </p>
       {videos.length > 0 && (
-        <table className="adm-table" style={{ marginTop: 16 }}>
-          <thead>
-            <tr>
-              <th>URL</th>
-              <th>Order</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {videos.map((v) => {
-              const updateWithId = updateAction.bind(null, v.id);
-              const formId = `video-form-${v.id}`;
-              return (
-                <tr key={v.id}>
-                  <td>{v.url}</td>
-                  <td>
-                    <form id={formId} action={updateWithId}>
-                      <OrderPicker name="sortOrder" defaultValue={v.sortOrder} />
-                    </form>
-                  </td>
-                  <td>
-                    <div className="adm-actions">
-                      <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
-                      <form action={deleteAction}>
-                        <input type="hidden" name="id" value={v.id} />
-                        <DeleteButton confirmText="Delete this video?" />
+        <div className="adm-table-wrap" style={{ marginTop: 16 }}>
+          <table className="adm-table">
+            <thead>
+              <tr>
+                <th>URL</th>
+                <th>Order</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {videos.map((v) => {
+                const updateWithId = updateAction.bind(null, v.id);
+                const formId = `video-form-${v.id}`;
+                return (
+                  <tr key={v.id}>
+                    <td>{v.url}</td>
+                    <td>
+                      <form id={formId} action={updateWithId}>
+                        <OrderPicker name="sortOrder" defaultValue={v.sortOrder} />
                       </form>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                    <td>
+                      <div className="adm-actions">
+                        <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
+                        <form action={deleteAction}>
+                          <input type="hidden" name="id" value={v.id} />
+                          <DeleteButton confirmText="Delete this video?" />
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <p className="adm-sub" style={{ marginTop: 32 }}>Add Video</p>

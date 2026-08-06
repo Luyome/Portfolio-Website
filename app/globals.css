@@ -685,6 +685,8 @@ a.arv-row:hover{background:var(--bg2)}
 .adm-wrap:has(.adm-dashboard){max-width:none}
 .adm-title{font-family:var(--T);font-size:var(--text-heading-lg);font-weight:var(--text-heading-weight);color:var(--text);margin-bottom:8px}
 .adm-sub{font-family:var(--B);font-size:0.95rem;color:var(--text2);margin-bottom:36px}
+.adm-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:24px}
+.adm-table-wrap .adm-table{margin-bottom:0}
 .adm-table{width:100%;table-layout:fixed;border-collapse:collapse;margin-bottom:24px}
 .adm-table th{text-align:left;font-family:var(--M);font-size:0.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);padding:10px 14px;border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .adm-table td{font-family:var(--B);font-size:0.9rem;color:var(--text2);padding:12px 14px;border-bottom:1px solid rgba(var(--red-rgb),.08);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
@@ -729,7 +731,7 @@ a.arv-row:hover{background:var(--bg2)}
 .adm-img-preview{max-width:200px;margin-top:10px;border:1px solid var(--border)}
 
 /* ══ FIELD STYLE CONTROLS (color + font-size, per-field) ══ */
-.adm-field-label-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.adm-field-label-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap}
 .adm-field-label-row label{margin-bottom:0}
 .fsc{display:flex;gap:8px;flex-shrink:0;align-items:center;flex-wrap:wrap}
 .fsc-color-pair{display:flex;gap:6px}
@@ -812,6 +814,36 @@ a.arv-row:hover{background:var(--bg2)}
 .adm-sb-logout:hover{color:var(--red2)}
 
 .adm-main{margin-left:var(--asw);min-height:100vh;width:calc(100% - var(--asw))}
+
+/* ══ ADMIN MOBILE/TABLET TOP BAR + DRAWER ══
+   Replaces the sidebar (hidden below 820px, see the responsive block) with
+   an accessible top bar + slide-in drawer covering the same navigation,
+   Back to Site, and Log Out links. Hidden by default; shown only below the
+   same 820px breakpoint the sidebar disappears at, so desktop is unaffected. */
+.adm-topbar{
+  display:none;position:fixed;top:0;left:0;right:0;z-index:150;
+  align-items:center;gap:14px;height:56px;padding:0 var(--space-md);
+  background:var(--bg2);border-bottom:1px solid var(--border);
+}
+.adm-topbar-burger{width:26px;height:18px;position:relative;flex-shrink:0}
+.adm-topbar-burger::before{content:"";position:absolute;inset:-12px}
+.adm-topbar-burger span{position:absolute;left:0;right:0;height:2px;background:var(--red);transition:all .18s}
+.adm-topbar-burger span:nth-child(1){top:0}
+.adm-topbar-burger span:nth-child(2){top:8px}
+.adm-topbar-burger span:nth-child(3){top:16px}
+.adm-topbar-burger.open span:nth-child(1){top:8px;transform:rotate(45deg)}
+.adm-topbar-burger.open span:nth-child(2){opacity:0}
+.adm-topbar-burger.open span:nth-child(3){top:8px;transform:rotate(-45deg)}
+.adm-topbar-section{
+  font-family:var(--M);font-size:0.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.adm-drawer-backdrop{position:fixed;inset:0;background:rgba(10,8,8,.55);z-index:190}
+.adm-drawer{
+  position:fixed;top:0;left:0;bottom:0;width:min(280px,84vw);z-index:200;
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;
+}
 
 /* ══ THEME TOGGLE ══════════════════════════ */
 .theme-toggle{
@@ -1256,7 +1288,18 @@ a.arv-row:hover{background:var(--bg2)}
   :root{--asw:0px}
   .adm-sb{display:none}
   .adm-main{margin-left:0;width:100%}
+  .adm-topbar{display:flex}
+  .adm-wrap{padding:calc(56px + 24px) var(--space-md) var(--space-xl)}
   .adm-dash-cols{grid-template-columns:1fr}
+  /* Admin tables: fixed per-column pixel widths (base rules above) don't fit
+     narrow viewports once a table has 3+ non-first columns — switch to
+     content-driven sizing so Title/name stays readable, letting the
+     .adm-table-wrap container scroll horizontally when total width still
+     exceeds the viewport instead of the whole page overflowing. */
+  .adm-table{table-layout:auto}
+  .adm-table th:first-child,.adm-table td:first-child{max-width:220px}
+  .adm-table th:not(:first-child):not(:last-child),
+  .adm-table td:not(:first-child):not(:last-child){width:auto}
   .arv-row{grid-template-columns:44px 1fr 60px}
   .arv-col-type,.arv-col-cat,.arv-col-action{display:none}
   .port-card{grid-template-columns:1fr}

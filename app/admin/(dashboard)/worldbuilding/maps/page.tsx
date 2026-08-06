@@ -18,32 +18,34 @@ export default async function AdminMapsListPage() {
         <Link href="/admin/worldbuilding/maps/new" className="adm-btn">+ New Map</Link>
         <Link href="/admin/worldbuilding/map">Place Pins →</Link>
       </div>
-      <table className="adm-table">
-        <thead>
-          <tr>
-            <ResizableTh>Title</ResizableTh>
-            <ResizableTh>Parent Map</ResizableTh>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {maps.map((m) => (
-            <tr key={m.id}>
-              <td>{m.title}</td>
-              <td>{m.parentMapId ? titleById.get(m.parentMapId) ?? "—" : "— (root map)"}</td>
-              <td>
-                <div className="adm-actions">
-                  <Link href={`/admin/worldbuilding/maps/${m.id}/edit`}>Edit</Link>
-                  <form action={deleteWorldMap}>
-                    <input type="hidden" name="id" value={m.id} />
-                    <DeleteButton confirmText={`Delete "${m.title}"? Pins on it will also be removed.`} />
-                  </form>
-                </div>
-              </td>
+      <div className="adm-table-wrap">
+        <table className="adm-table">
+          <thead>
+            <tr>
+              <ResizableTh>Title</ResizableTh>
+              <ResizableTh>Parent Map</ResizableTh>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {maps.map((m) => (
+              <tr key={m.id}>
+                <td>{m.title}</td>
+                <td>{m.parentMapId ? titleById.get(m.parentMapId) ?? "—" : "— (root map)"}</td>
+                <td>
+                  <div className="adm-actions">
+                    <Link href={`/admin/worldbuilding/maps/${m.id}/edit`}>Edit</Link>
+                    <form action={deleteWorldMap}>
+                      <input type="hidden" name="id" value={m.id} />
+                      <DeleteButton confirmText={`Delete "${m.title}"? Pins on it will also be removed.`} />
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

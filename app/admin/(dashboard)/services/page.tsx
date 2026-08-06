@@ -14,32 +14,34 @@ export default async function AdminServicesListPage() {
       <div className="adm-title">Services</div>
       <p className="adm-sub">{items.length} item(s)</p>
       <Link href="/admin/services/new" className="adm-btn">+ New Service</Link>
-      <table className="adm-table" style={{ marginTop: 24 }}>
-        <thead>
-          <tr>
-            <ResizableTh>Icon</ResizableTh>
-            <ResizableTh>Title</ResizableTh>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item) => (
-            <tr key={item.id}>
-              <td>{item.icon}</td>
-              <td>{item.title}</td>
-              <td>
-                <div className="adm-actions">
-                  <Link href={`/admin/services/${item.id}/edit`}>Edit</Link>
-                  <form action={deleteService}>
-                    <input type="hidden" name="id" value={item.id} />
-                    <DeleteButton confirmText={`Delete "${item.title}"?`} />
-                  </form>
-                </div>
-              </td>
+      <div className="adm-table-wrap" style={{ marginTop: 24 }}>
+        <table className="adm-table">
+          <thead>
+            <tr>
+              <ResizableTh>Icon</ResizableTh>
+              <ResizableTh>Title</ResizableTh>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.id}>
+                <td>{item.icon}</td>
+                <td>{item.title}</td>
+                <td>
+                  <div className="adm-actions">
+                    <Link href={`/admin/services/${item.id}/edit`}>Edit</Link>
+                    <form action={deleteService}>
+                      <input type="hidden" name="id" value={item.id} />
+                      <DeleteButton confirmText={`Delete "${item.title}"?`} />
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -37,46 +37,48 @@ export default async function AdminAboutPage() {
       />
 
       <p className="adm-sub" style={{ marginTop: 48 }}>Timeline</p>
-      <table className="adm-table">
-        <thead>
-          <tr>
-            <th>Year</th>
-            <th>Text</th>
-            <th>Order</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {timeline.map((t) => {
-            const updateWithId = updateTimelineEntry.bind(null, t.id);
-            const formId = `timeline-form-${t.id}`;
-            return (
-              <tr key={t.id}>
-                <td>
-                  <form id={formId} action={updateWithId}>
-                    <TimelineYearPicker name="year" defaultValue={t.year} />
-                  </form>
-                </td>
-                <td>
-                  <input name="text" form={formId} defaultValue={t.text} />
-                </td>
-                <td>
-                  <NumberPicker name="sortOrder" defaultValue={t.sortOrder} formId={formId} />
-                </td>
-                <td>
-                  <div className="adm-actions">
-                    <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
-                    <form action={deleteTimelineEntry}>
-                      <input type="hidden" name="id" value={t.id} />
-                      <DeleteButton confirmText="Delete this timeline entry?" />
+      <div className="adm-table-wrap">
+        <table className="adm-table">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Text</th>
+              <th>Order</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {timeline.map((t) => {
+              const updateWithId = updateTimelineEntry.bind(null, t.id);
+              const formId = `timeline-form-${t.id}`;
+              return (
+                <tr key={t.id}>
+                  <td>
+                    <form id={formId} action={updateWithId}>
+                      <TimelineYearPicker name="year" defaultValue={t.year} />
                     </form>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  </td>
+                  <td>
+                    <input name="text" form={formId} defaultValue={t.text} />
+                  </td>
+                  <td>
+                    <NumberPicker name="sortOrder" defaultValue={t.sortOrder} formId={formId} />
+                  </td>
+                  <td>
+                    <div className="adm-actions">
+                      <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
+                      <form action={deleteTimelineEntry}>
+                        <input type="hidden" name="id" value={t.id} />
+                        <DeleteButton confirmText="Delete this timeline entry?" />
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
       <p className="adm-sub" style={{ marginTop: 32 }}>Add Timeline Entry</p>
       <form action={createTimelineEntry} className="adm-form">

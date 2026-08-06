@@ -21,34 +21,36 @@ export default async function AdminWorldbuildingListPage() {
         <Link href="/admin/worldbuilding/maps">Map Manager →</Link>
         <Link href="/admin/worldbuilding/map">Map Pins →</Link>
       </div>
-      <table className="adm-table" style={{ marginTop: 24 }}>
-        <thead>
-          <tr>
-            <ResizableTh>Title</ResizableTh>
-            <ResizableTh>Category</ResizableTh>
-            <ResizableTh>Year</ResizableTh>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item) => (
-            <tr key={item.id}>
-              <td>{item.title}</td>
-              <td>{item.cat}</td>
-              <td>{item.year}</td>
-              <td>
-                <div className="adm-actions">
-                  <Link href={`/admin/worldbuilding/${item.id}/edit`}>Edit</Link>
-                  <form action={deleteWorldbuildingEntry}>
-                    <input type="hidden" name="id" value={item.id} />
-                    <DeleteButton confirmText={`Delete "${item.title}"?`} />
-                  </form>
-                </div>
-              </td>
+      <div className="adm-table-wrap" style={{ marginTop: 24 }}>
+        <table className="adm-table">
+          <thead>
+            <tr>
+              <ResizableTh>Title</ResizableTh>
+              <ResizableTh>Category</ResizableTh>
+              <ResizableTh>Year</ResizableTh>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.id}>
+                <td>{item.title}</td>
+                <td>{item.cat}</td>
+                <td>{item.year}</td>
+                <td>
+                  <div className="adm-actions">
+                    <Link href={`/admin/worldbuilding/${item.id}/edit`}>Edit</Link>
+                    <form action={deleteWorldbuildingEntry}>
+                      <input type="hidden" name="id" value={item.id} />
+                      <DeleteButton confirmText={`Delete "${item.title}"?`} />
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -180,45 +180,47 @@ export default function MapEditor({
       {mapLocationsHere.length === 0 ? (
         <div className="adm-hint">No pins placed on this map yet.</div>
       ) : (
-        <table className="adm-table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Pin Type</th>
-              <th>Target</th>
-              <th>Icon</th>
-              <th>Coordinates</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mapLocationsHere.map((l) => (
-              <tr key={l.id}>
-                <td>{l.name}</td>
-                <td>{l.pinType === "submap" ? "Sub-Map" : "Lore Entry"}</td>
-                <td>
-                  {l.pinType === "submap"
-                    ? l.targetMapId !== null
-                      ? mapsById.get(l.targetMapId) ?? "—"
-                      : "—"
-                    : l.entryId !== null
-                      ? entriesById.get(l.entryId) ?? "—"
-                      : "—"}
-                </td>
-                <td>{l.iconType}</td>
-                <td>{l.x.toFixed(1)}%, {l.y.toFixed(1)}%</td>
-                <td>
-                  <div className="adm-actions">
-                    <button type="button" onClick={() => setEditing(l)}>Edit</button>
-                    <button type="button" className="danger" onClick={() => handleDeleteFromTable(l)}>
-                      Delete
-                    </button>
-                  </div>
-                </td>
+        <div className="adm-table-wrap">
+          <table className="adm-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Pin Type</th>
+                <th>Target</th>
+                <th>Icon</th>
+                <th>Coordinates</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {mapLocationsHere.map((l) => (
+                <tr key={l.id}>
+                  <td>{l.name}</td>
+                  <td>{l.pinType === "submap" ? "Sub-Map" : "Lore Entry"}</td>
+                  <td>
+                    {l.pinType === "submap"
+                      ? l.targetMapId !== null
+                        ? mapsById.get(l.targetMapId) ?? "—"
+                        : "—"
+                      : l.entryId !== null
+                        ? entriesById.get(l.entryId) ?? "—"
+                        : "—"}
+                  </td>
+                  <td>{l.iconType}</td>
+                  <td>{l.x.toFixed(1)}%, {l.y.toFixed(1)}%</td>
+                  <td>
+                    <div className="adm-actions">
+                      <button type="button" onClick={() => setEditing(l)}>Edit</button>
+                      <button type="button" className="danger" onClick={() => handleDeleteFromTable(l)}>
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {editing && (

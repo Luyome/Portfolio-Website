@@ -35,50 +35,52 @@ export default function ShowcaseImagesPanel({
         image links to the page you pick below.
       </p>
       {items.length > 0 && (
-        <table className="adm-table" style={{ marginTop: 16 }}>
-          <thead>
-            <tr>
-              <th>Preview</th>
-              <th>Title</th>
-              <th>Links To</th>
-              <th>Order</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item) => {
-              const updateWithId = updateAction.bind(null, item.id);
-              const formId = `showcase-form-${item.id}`;
-              return (
-                <tr key={item.id}>
-                  <td>
-                    <img src={item.url} alt="" className="adm-img-preview" style={{ maxHeight: 60 }} />
-                  </td>
-                  <td>
-                    <input name="title" defaultValue={item.title} placeholder="Title shown on hover" form={formId} />
-                  </td>
-                  <td>
-                    <form id={formId} action={updateWithId}>
-                      <HeroLinkPicker labelName="linkPickerLabel" hrefName="linkHref" defaultHref={item.linkHref} />
-                    </form>
-                  </td>
-                  <td>
-                    <OrderPicker name="sortOrder" defaultValue={item.sortOrder} formId={formId} />
-                  </td>
-                  <td>
-                    <div className="adm-actions">
-                      <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
-                      <form action={deleteAction}>
-                        <input type="hidden" name="id" value={item.id} />
-                        <DeleteButton confirmText="Delete this showcase image?" />
+        <div className="adm-table-wrap" style={{ marginTop: 16 }}>
+          <table className="adm-table">
+            <thead>
+              <tr>
+                <th>Preview</th>
+                <th>Title</th>
+                <th>Links To</th>
+                <th>Order</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => {
+                const updateWithId = updateAction.bind(null, item.id);
+                const formId = `showcase-form-${item.id}`;
+                return (
+                  <tr key={item.id}>
+                    <td>
+                      <img src={item.url} alt="" className="adm-img-preview" style={{ maxHeight: 60 }} />
+                    </td>
+                    <td>
+                      <input name="title" defaultValue={item.title} placeholder="Title shown on hover" form={formId} />
+                    </td>
+                    <td>
+                      <form id={formId} action={updateWithId}>
+                        <HeroLinkPicker labelName="linkPickerLabel" hrefName="linkHref" defaultHref={item.linkHref} />
                       </form>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                    <td>
+                      <OrderPicker name="sortOrder" defaultValue={item.sortOrder} formId={formId} />
+                    </td>
+                    <td>
+                      <div className="adm-actions">
+                        <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
+                        <form action={deleteAction}>
+                          <input type="hidden" name="id" value={item.id} />
+                          <DeleteButton confirmText="Delete this showcase image?" />
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {!atMax ? (

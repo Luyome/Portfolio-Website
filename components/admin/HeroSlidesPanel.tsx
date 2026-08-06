@@ -31,54 +31,56 @@ export default function HeroSlidesPanel({
         per slide.
       </p>
       {slides.length > 0 && (
-        <table className="adm-table" style={{ marginTop: 16 }}>
-          <thead>
-            <tr>
-              <th>Preview</th>
-              <th>Title</th>
-              <th>Subtitle</th>
-              <th>Link</th>
-              <th>Order</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {slides.map((slide) => {
-              const updateWithId = updateAction.bind(null, slide.id);
-              const formId = `hero-slide-form-${slide.id}`;
-              return (
-                <tr key={slide.id}>
-                  <td>
-                    <img src={slide.url} alt="" className="adm-img-preview" style={{ maxHeight: 60 }} />
-                  </td>
-                  <td>
-                    <form id={formId} action={updateWithId}>
-                      <input name="title" defaultValue={slide.title ?? ""} placeholder="Optional title" />
-                    </form>
-                  </td>
-                  <td>
-                    <input name="subtitle" defaultValue={slide.subtitle ?? ""} placeholder="Optional subtitle" form={formId} />
-                  </td>
-                  <td>
-                    <input name="linkUrl" defaultValue={slide.linkUrl ?? ""} placeholder="/portfolio" form={formId} />
-                  </td>
-                  <td>
-                    <OrderPicker name="sortOrder" defaultValue={slide.sortOrder} formId={formId} />
-                  </td>
-                  <td>
-                    <div className="adm-actions">
-                      <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
-                      <form action={deleteAction}>
-                        <input type="hidden" name="id" value={slide.id} />
-                        <DeleteButton confirmText="Delete this hero slide?" />
+        <div className="adm-table-wrap" style={{ marginTop: 16 }}>
+          <table className="adm-table">
+            <thead>
+              <tr>
+                <th>Preview</th>
+                <th>Title</th>
+                <th>Subtitle</th>
+                <th>Link</th>
+                <th>Order</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {slides.map((slide) => {
+                const updateWithId = updateAction.bind(null, slide.id);
+                const formId = `hero-slide-form-${slide.id}`;
+                return (
+                  <tr key={slide.id}>
+                    <td>
+                      <img src={slide.url} alt="" className="adm-img-preview" style={{ maxHeight: 60 }} />
+                    </td>
+                    <td>
+                      <form id={formId} action={updateWithId}>
+                        <input name="title" defaultValue={slide.title ?? ""} placeholder="Optional title" />
                       </form>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                    <td>
+                      <input name="subtitle" defaultValue={slide.subtitle ?? ""} placeholder="Optional subtitle" form={formId} />
+                    </td>
+                    <td>
+                      <input name="linkUrl" defaultValue={slide.linkUrl ?? ""} placeholder="/portfolio" form={formId} />
+                    </td>
+                    <td>
+                      <OrderPicker name="sortOrder" defaultValue={slide.sortOrder} formId={formId} />
+                    </td>
+                    <td>
+                      <div className="adm-actions">
+                        <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
+                        <form action={deleteAction}>
+                          <input type="hidden" name="id" value={slide.id} />
+                          <DeleteButton confirmText="Delete this hero slide?" />
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <p className="adm-sub" style={{ marginTop: 32 }}>Add Hero Slide</p>

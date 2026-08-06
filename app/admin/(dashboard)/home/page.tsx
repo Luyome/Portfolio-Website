@@ -50,46 +50,48 @@ export default async function AdminHomePage() {
       <HomeHeroForm action={updateHomeSettings} settings={settings} pageVars={pageAppearanceVars(appearance)} />
 
       <p className="adm-sub" style={{ marginTop: 48 }}>Hero Buttons</p>
-      <table className="adm-table">
-        <thead>
-          <tr>
-            <ResizableTh>Label / Link</ResizableTh>
-            <ResizableTh>Style</ResizableTh>
-            <ResizableTh>Order</ResizableTh>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {buttons.map((b) => {
-            const updateWithId = updateHeroButton.bind(null, b.id);
-            const formId = `hero-form-${b.id}`;
-            return (
-              <tr key={b.id}>
-                <td>
-                  <form id={formId} action={updateWithId}>
-                    <HeroLinkPicker labelName="label" hrefName="href" defaultLabel={b.label} defaultHref={b.href} />
-                  </form>
-                </td>
-                <td>
-                  <OptionPicker name="style" options={STYLE_OPTIONS} defaultValue={b.style} formId={formId} />
-                </td>
-                <td>
-                  <NumberPicker name="sortOrder" defaultValue={b.sortOrder} formId={formId} />
-                </td>
-                <td>
-                  <div className="adm-actions">
-                    <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
-                    <form action={deleteHeroButton}>
-                      <input type="hidden" name="id" value={b.id} />
-                      <DeleteButton confirmText={`Delete "${b.label}"?`} />
+      <div className="adm-table-wrap">
+        <table className="adm-table">
+          <thead>
+            <tr>
+              <ResizableTh>Label / Link</ResizableTh>
+              <ResizableTh>Style</ResizableTh>
+              <ResizableTh>Order</ResizableTh>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {buttons.map((b) => {
+              const updateWithId = updateHeroButton.bind(null, b.id);
+              const formId = `hero-form-${b.id}`;
+              return (
+                <tr key={b.id}>
+                  <td>
+                    <form id={formId} action={updateWithId}>
+                      <HeroLinkPicker labelName="label" hrefName="href" defaultLabel={b.label} defaultHref={b.href} />
                     </form>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  </td>
+                  <td>
+                    <OptionPicker name="style" options={STYLE_OPTIONS} defaultValue={b.style} formId={formId} />
+                  </td>
+                  <td>
+                    <NumberPicker name="sortOrder" defaultValue={b.sortOrder} formId={formId} />
+                  </td>
+                  <td>
+                    <div className="adm-actions">
+                      <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
+                      <form action={deleteHeroButton}>
+                        <input type="hidden" name="id" value={b.id} />
+                        <DeleteButton confirmText={`Delete "${b.label}"?`} />
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
       <p className="adm-sub" style={{ marginTop: 32 }}>Add Hero Button</p>
       <form action={createHeroButton} className="adm-form">

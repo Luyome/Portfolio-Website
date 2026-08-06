@@ -22,40 +22,42 @@ export default function ExtraImagesPanel({
         where each one lands relative to Content and Videos (lower number = earlier).
       </p>
       {images.length > 0 && (
-        <table className="adm-table" style={{ marginTop: 16 }}>
-          <thead>
-            <tr>
-              <th>Preview</th>
-              <th>Order</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {images.map((img) => {
-              const updateWithId = updateAction.bind(null, img.id);
-              const formId = `image-form-${img.id}`;
-              return (
-                <tr key={img.id}>
-                  <td><img src={img.url} alt="" className="adm-img-preview" style={{ maxHeight: 60 }} /></td>
-                  <td>
-                    <form id={formId} action={updateWithId}>
-                      <OrderPicker name="sortOrder" defaultValue={img.sortOrder} />
-                    </form>
-                  </td>
-                  <td>
-                    <div className="adm-actions">
-                      <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
-                      <form action={deleteAction}>
-                        <input type="hidden" name="id" value={img.id} />
-                        <DeleteButton confirmText="Delete this image?" />
+        <div className="adm-table-wrap" style={{ marginTop: 16 }}>
+          <table className="adm-table">
+            <thead>
+              <tr>
+                <th>Preview</th>
+                <th>Order</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {images.map((img) => {
+                const updateWithId = updateAction.bind(null, img.id);
+                const formId = `image-form-${img.id}`;
+                return (
+                  <tr key={img.id}>
+                    <td><img src={img.url} alt="" className="adm-img-preview" style={{ maxHeight: 60 }} /></td>
+                    <td>
+                      <form id={formId} action={updateWithId}>
+                        <OrderPicker name="sortOrder" defaultValue={img.sortOrder} />
                       </form>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                    <td>
+                      <div className="adm-actions">
+                        <SaveButton formId={formId} style={{ padding: "8px 14px" }} />
+                        <form action={deleteAction}>
+                          <input type="hidden" name="id" value={img.id} />
+                          <DeleteButton confirmText="Delete this image?" />
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <p className="adm-sub" style={{ marginTop: 32 }}>Add Image</p>
