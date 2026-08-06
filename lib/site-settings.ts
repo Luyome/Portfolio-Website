@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { db } from "@/db";
 import { siteSettings } from "@/db/schema";
 import type { StylesMap } from "@/db/schema";
@@ -30,11 +31,17 @@ export const DEFAULT_SITE_SETTINGS = {
   styles: {} as StylesMap,
 };
 
-export async function getSiteSettings() {
+// Read by the root layout, the site layout, and (on the Home Page) the page
+// itself within the same request. Wrapped in React's `cache()` so those
+// calls share one DB read per request instead of issuing it 2-3x — see
+// node_modules/next/dist/docs/01-app/02-guides/caching-without-cache-components.md,
+// "Deduplicating requests" (this project isn't on Cache Components, so React
+// cache is the documented dedup path for non-fetch/ORM reads).
+export const getSiteSettings = cache(async () => {
   try {
     const rows = await db.select().from(siteSettings).limit(1);
     return rows[0] ?? DEFAULT_SITE_SETTINGS;
   } catch {
     return DEFAULT_SITE_SETTINGS;
   }
-}
+});

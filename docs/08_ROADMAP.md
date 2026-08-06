@@ -40,7 +40,8 @@ The personal website of Ege Demir Ünal, combining Worldbuilding, Game Design, P
 - Task 1.12 — Sitemap, Robots & Indexing Rules: **Complete.**
 - Task 1.13 — Media Optimization Foundation: **Complete.**
 - Task 1.14 — Accessibility & Responsive Core QA: **Complete.** — fixes implemented and validated (type-check/lint/build pass); desktop, keyboard/modal, and mobile/tablet viewport QA (390×844, 768×1024, via DevTools device emulation) all performed in-browser. Mobile viewport testing found and fixed a real overflow bug: `.sk-grid` (Sketches + 3D pages) used a fixed 4-column layout with no `min-width:0` on grid items, causing images to force horizontal overflow below ~540px; fixed with `min-width:0` on `.sk-item` and a 2-column override at the existing 820px breakpoint. Also fixed: MapZoomPanel toolbar/breadcrumb overlap at ~390px, GalleryModal's mobile single-column grid collapsing `.gm-img-side`'s row to 0px (image rendering on top of the info panel), and the tablet-only (768–1023px) header row overflowing its own viewport by ~50px (last nav/social links unreachable).
-- Task 1.15 — Performance & Vercel Usage QA: **Next.**
+- Task 1.15 — Performance & Vercel Usage QA: **Complete.** — code audit (client bundle, DB queries, rendering/cache, media transfer) plus read-only Vercel and Neon dashboard review found the site well within plan limits and free of N+1/duplicate-query patterns except one: `getSiteSettings()` was read 2-3x per request (root layout, site layout, and — on the Home Page — the page itself again). Fixed by wrapping it in React's `cache()`, per the local Next.js 16 docs' documented dedup pattern for non-`fetch` ORM reads (`node_modules/next/dist/docs/.../caching-without-cache-components.md`, "Deduplicating requests") — zero behavior change, one file (`lib/site-settings.ts`). No other verified low-risk fix met the bar; GalleryModal's `<img>` usage, the `.sk-grid` masonry thumbnails, and Archive's same-year ordering were reviewed and left alone (masonry/GalleryModal excluded by task scope and Task 1.14's recent a11y work; ordering has no perf benefit). Type-check, lint (0 new warnings), build, and diff-check all passed; 8-route smoke QA (including GalleryModal and the World Map panel) passed with no console errors.
+- Task 1.16 — Sprint 1 Integration QA: **Next.**
 
 Existing systems confirmed and to be preserved (Task 1.1): root and site layouts, Header, Footer, owner-only Admin authentication, Admin dashboard, existing CRUD systems, Home Page foundation, Portfolio, Worldbuilding browser, public map foundation, Admin Map Editor, Archive, About page.
 
@@ -122,7 +123,8 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 1.12 — Sitemap, Robots & Indexing Rules: Complete.
 - Task 1.13 — Media Optimization Foundation: Complete.
 - Task 1.14 — Accessibility & Responsive Core QA: Complete.
-- Current task: Task 1.15 — Performance & Vercel Usage QA (Next).
+- Task 1.15 — Performance & Vercel Usage QA: Complete.
+- Current task: Task 1.16 — Sprint 1 Integration QA (Next).
 - The Admin Panel, CRUD systems, and public map foundation already exist and are being extended, not built from zero.
 - No second Worldbuilding universe is planned scope.
 
