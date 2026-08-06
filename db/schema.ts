@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb, boolean, uniqueIndex, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb, boolean, uniqueIndex, index, type AnyPgColumn } from "drizzle-orm/pg-core";
 
 export type ThemedColor = { dark?: string; light?: string };
 export type FieldStyle = { color?: ThemedColor; fontSize?: string };
@@ -347,5 +347,29 @@ export const metadataOptions = pgTable(
   (table) => [
     // Same slug may repeat across different type groups, but not within one.
     uniqueIndex("metadata_options_type_slug_idx").on(table.type, table.slug),
+  ]
+);
+
+// Portfolio's own junction table linking a Portfolio item to any number of
+// `metadataOptions` rows (Task 2.10). Deliberately Portfolio-specific — not
+// a polymorphic contentType/contentId table and not one junction table per
+// metadata type (Medium/Subject/Software/Tag). The option's own `type`
+// column already tells you which group a given relation belongs to, so no
+// `type` column is duplicated here. Other content types (Games, Worldbuilding,
+// ...) get their own equally-named junction table if/when they adopt
+// controlled metadata — not this task's scope.
+export const portfolioMetadataOptions = pgTable(
+  "portfolio_metadata_options",
+  {
+    id: serial("id").primaryKey(),
+    portfolioId: integer("portfolio_id").notNull().references(() => portfolioItems.id, { onDelete: "cascade" }),
+    metadataOptionId: integer("metadata_option_id").notNull().references(() => metadataOptions.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    // A Portfolio item can reference a given option at most once.
+    uniqueIndex("portfolio_metadata_options_unique_idx").on(table.portfolioId, table.metadataOptionId),
+    index("portfolio_metadata_options_portfolio_idx").on(table.portfolioId),
+    index("portfolio_metadata_options_option_idx").on(table.metadataOptionId),
   ]
 );

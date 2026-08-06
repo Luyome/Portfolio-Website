@@ -16,3 +16,15 @@ export const METADATA_TYPE_LABELS: Record<MetadataType, string> = {
 export function isMetadataType(value: string): value is MetadataType {
   return (METADATA_TYPES as readonly string[]).includes(value);
 }
+
+// The FormData field name each metadata type's Portfolio multi-select
+// submits under (Task 2.10) — matches the pre-existing `tags` column/field
+// naming for `tag`, and the type name itself for the other three. Pure
+// constants, safe to import from both server (`lib/portfolio-metadata.ts`)
+// and client (`PortfolioForm`) code.
+export const METADATA_FIELD_NAMES: Record<MetadataType, string> = {
+  medium: "medium",
+  subject: "subject",
+  software: "software",
+  tag: "tags",
+};

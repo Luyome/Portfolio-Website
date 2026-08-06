@@ -8,6 +8,7 @@ import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
 import { updatePortfolioItem, createPortfolioImage, updatePortfolioImage, deletePortfolioImage, createPortfolioLink, updatePortfolioLink, deletePortfolioLink, createPortfolioVideo, updatePortfolioVideo, deletePortfolioVideo } from "@/lib/actions/portfolio";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import { getActiveMetadataOptionsByType, getPortfolioMetadataSelections } from "@/lib/portfolio-metadata";
 import { requiredId } from "@/lib/validation";
 
 export default async function EditPortfolioItemPage({
@@ -22,12 +23,14 @@ export default async function EditPortfolioItemPage({
   } catch {
     notFound();
   }
-  const [item, images, links, videos, appearance] = await Promise.all([
+  const [item, images, links, videos, appearance, metadataOptions, metadataSelections] = await Promise.all([
     db.select().from(portfolioItems).where(eq(portfolioItems.id, portfolioId)).then((rows) => rows[0]),
     db.select().from(portfolioImages).where(eq(portfolioImages.portfolioId, portfolioId)).orderBy(asc(portfolioImages.sortOrder)),
     db.select().from(portfolioLinks).where(eq(portfolioLinks.portfolioId, portfolioId)).orderBy(asc(portfolioLinks.sortOrder)),
     db.select().from(portfolioVideos).where(eq(portfolioVideos.portfolioId, portfolioId)).orderBy(asc(portfolioVideos.sortOrder)),
     getPageAppearance("portfolio"),
+    getActiveMetadataOptionsByType(),
+    getPortfolioMetadataSelections(portfolioId),
   ]);
   if (!item) notFound();
 
@@ -39,7 +42,13 @@ export default async function EditPortfolioItemPage({
   return (
     <div>
       <div className="adm-title">Edit Portfolio Item</div>
-      <PortfolioForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
+      <PortfolioForm
+        action={updateWithId}
+        item={item}
+        pageVars={pageAppearanceVars(appearance)}
+        metadataOptions={metadataOptions}
+        metadataSelections={metadataSelections}
+      />
       <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updatePortfolioImage} deleteAction={deletePortfolioImage} />
       <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updatePortfolioVideo} deleteAction={deletePortfolioVideo} />
       <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updatePortfolioLink} deleteAction={deletePortfolioLink} />

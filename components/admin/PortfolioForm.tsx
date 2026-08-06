@@ -10,8 +10,11 @@ import PortfolioPreviewCard from "./PortfolioPreviewCard";
 import Field from "./Field";
 import FormError from "./FormError";
 import FormActions from "./FormActions";
+import MultiSelect, { type MultiSelectChip } from "./MultiSelect";
 import type { portfolioItems } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
+import { METADATA_TYPES, METADATA_TYPE_LABELS, METADATA_FIELD_NAMES as FIELD_NAMES, type MetadataType } from "@/lib/metadata";
+import type { MetadataOptionChoice } from "@/lib/portfolio-metadata";
 
 type PortfolioRow = typeof portfolioItems.$inferSelect;
 
@@ -25,14 +28,27 @@ type PreviewState = {
   styles: StylesMap;
 };
 
+const EMPTY_METADATA_GROUPS: Record<MetadataType, MetadataOptionChoice[]> = {
+  medium: [],
+  subject: [],
+  software: [],
+  tag: [],
+};
+
 export default function PortfolioForm({
   action,
   item,
   pageVars = {},
+  metadataOptions = EMPTY_METADATA_GROUPS,
+  metadataSelections = EMPTY_METADATA_GROUPS,
 }: {
   action: (prevState: { error?: string } | undefined, formData: FormData) => Promise<{ error?: string } | undefined>;
   item?: PortfolioRow;
   pageVars?: CSSProperties;
+  /** Active options per metadata type, offered to pick from. */
+  metadataOptions?: Record<MetadataType, MetadataOptionChoice[]>;
+  /** Already-selected options per metadata type (including inactive ones), for the edit form. */
+  metadataSelections?: Record<MetadataType, MetadataOptionChoice[]>;
 }) {
   const [actionState, formAction] = useActionState(action, undefined);
   const [state, setState] = useState<PreviewState>({
@@ -40,7 +56,7 @@ export default function PortfolioForm({
     cat: item?.cat ?? "",
     year: item?.year ?? new Date().getFullYear(),
     desc: item?.desc ?? "",
-    tags: item?.tags.join(", ") ?? "",
+    tags: metadataSelections.tag.map((o) => o.name).join(", "),
     img: item?.img ?? "",
     styles: item?.styles ?? {},
   });
@@ -48,9 +64,13 @@ export default function PortfolioForm({
   function handleFormChange(e: React.ChangeEvent<HTMLFormElement>) {
     const target = e.target as unknown as HTMLInputElement | HTMLTextAreaElement;
     const { name, value } = target;
-    if (name === "title" || name === "cat" || name === "desc" || name === "tags") {
+    if (name === "title" || name === "cat" || name === "desc") {
       setState((s) => ({ ...s, [name]: value }));
     }
+  }
+
+  function handleTagSelectionChange(selection: MultiSelectChip[]) {
+    setState((s) => ({ ...s, tags: selection.map((o) => o.name).join(", ") }));
   }
 
   function updateStyle(key: string, patch: Partial<{ colorDark: string; colorLight: string; fontSize: string }>) {
@@ -96,15 +116,23 @@ export default function PortfolioForm({
         >
           <textarea name="desc" defaultValue={item?.desc} required />
         </Field>
-        <Field id="tags" label="Tags" required={false} hint="Comma separated, e.g. ZBrush, Substance, Game Ready">
-          <input name="tags" defaultValue={item?.tags.join(", ")} />
-        </Field>
-        <Field id="medium" label="Medium" required>
-          <input name="medium" defaultValue={item?.medium} required />
-        </Field>
-        <Field id="software" label="Software" required>
-          <input name="software" defaultValue={item?.software} required />
-        </Field>
+        {METADATA_TYPES.map((type) => (
+          <Field
+            key={type}
+            id={`metadata-${type}`}
+            label={METADATA_TYPE_LABELS[type]}
+            required={false}
+            hint={`Select any number of ${METADATA_TYPE_LABELS[type]} options — managed under Admin → Metadata.`}
+          >
+            <MultiSelect
+              name={FIELD_NAMES[type]}
+              options={metadataOptions[type]}
+              initialSelected={metadataSelections[type]}
+              metadataType={type}
+              onSelectionChange={type === "tag" ? handleTagSelectionChange : undefined}
+            />
+          </Field>
+        ))}
         <Field id="link" label="External Link" required={false}>
           <input name="link" defaultValue={item?.link} placeholder="https://www.artstation.com/..." />
         </Field>
