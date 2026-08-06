@@ -76,6 +76,14 @@ Inspect the final diff and confirm that no unrelated files changed.
 
 Update `docs/08_ROADMAP.md` only after successful validation.
 
+## Responsive QA
+
+For responsive smoke QA, first use `npm run qa:responsive` (`scripts/responsive-qa.mjs`).
+
+- Do not install a temporary Puppeteer/Playwright dependency for this.
+- Never run a command that closes all Chrome processes — the script only closes the Chrome process it launched itself.
+- This script does not replace manual visual QA.
+
 ## Final Response
 
 Keep the final response concise and include only:
