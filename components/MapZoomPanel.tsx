@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDragZoom } from "@/hooks/useDragZoom";
+import { useModalFocus } from "@/hooks/useModalFocus";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 
 const NO_IMAGE_SVG =
@@ -28,11 +29,18 @@ export default function MapZoomPanel({
   const [currentMapId, setCurrentMapId] = useState(initialMapId);
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const pinPanelRef = useRef<HTMLDivElement>(null);
   const { zoom, pan, zoomBy, reset, onMouseDown, onMouseMove, onMouseUp, wasDragging, minZoom } = useDragZoom(
     { viewportRef, contentRef },
     { minZoom: 1, maxZoom: 4 }
   );
   const [pinDetail, setPinDetail] = useState<MapLocation | null>(null);
+
+  // Focus goes to the pin-detail panel while it's open (it visually and
+  // functionally sits on top), and back to the map panel once it closes.
+  useModalFocus(!pinDetail, overlayRef);
+  useModalFocus(!!pinDetail, pinPanelRef);
 
   const mapsById = useMemo(() => new Map(maps.map((m) => [m.id, m])), [maps]);
   const currentMap = mapsById.get(currentMapId) ?? null;
@@ -89,6 +97,10 @@ export default function MapZoomPanel({
   return (
     <div
       className="mz-overlay"
+      ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${currentMap.title} map`}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -109,9 +121,9 @@ export default function MapZoomPanel({
       </nav>
 
       <div className="iz-controls">
-        <button type="button" onClick={() => zoomBy(-0.25)}>−</button>
+        <button type="button" aria-label="Zoom out" onClick={() => zoomBy(-0.25)}>−</button>
         <span className="iz-zoom-label">{Math.round(zoom * 100)}%</span>
-        <button type="button" onClick={() => zoomBy(0.25)}>+</button>
+        <button type="button" aria-label="Zoom in" onClick={() => zoomBy(0.25)}>+</button>
         <button type="button" onClick={reset}>Reset</button>
         <button type="button" className="iz-close" onClick={onClose}>✕ Close</button>
       </div>
@@ -168,16 +180,16 @@ export default function MapZoomPanel({
             if (e.target === e.currentTarget) setPinDetail(null);
           }}
         >
-          <div className="pin-panel">
+          <div className="pin-panel" ref={pinPanelRef} role="dialog" aria-modal="true" aria-labelledby="pin-detail-title">
             <div className="pin-img-side">
-              <img src={pinDetail.img || NO_IMAGE_SVG} alt={pinDetail.name} />
+              <img src={pinDetail.img || NO_IMAGE_SVG} alt={pinDetail.img ? pinDetail.name : ""} />
             </div>
             <div className="gm-info pin-info-side">
               <div className="gm-bar">
                 <span className="gm-cat-lbl">Location</span>
                 <button type="button" className="gm-close" onClick={() => setPinDetail(null)}>✕ &nbsp; Close</button>
               </div>
-              <div className="gm-title">{pinDetail.name}</div>
+              <div className="gm-title" id="pin-detail-title">{pinDetail.name}</div>
               {pinDetail.info.trim() && (
                 <div className="gm-desc-wrap">
                   <div className="gm-desc">{pinDetail.info}</div>

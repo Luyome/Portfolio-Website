@@ -25,6 +25,7 @@ export default function WorldbuildingControls({
           type="search"
           className="wb-search"
           placeholder="Search the Codex…"
+          aria-label="Search the Codex"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
         />
@@ -56,7 +57,12 @@ export default function WorldbuildingControls({
         </div>
       </div>
       <div className="wb-pill-row">
-        <button type="button" className={`wb-pill ${category === "all" ? "on" : ""}`} onClick={() => onCategoryChange("all")}>
+        <button
+          type="button"
+          className={`wb-pill ${category === "all" ? "on" : ""}`}
+          aria-pressed={category === "all"}
+          onClick={() => onCategoryChange("all")}
+        >
           All
         </button>
         {CATEGORIES.map((c) => (
@@ -64,6 +70,7 @@ export default function WorldbuildingControls({
             key={c}
             type="button"
             className={`wb-pill ${category === c ? "on" : ""}`}
+            aria-pressed={category === c}
             onClick={() => onCategoryChange(c)}
           >
             {c}

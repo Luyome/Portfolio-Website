@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { TwitterIcon, ArtStationIcon, GithubIcon, LinkedInIcon, InstagramIcon } from "./SocialIcons";
@@ -35,34 +35,82 @@ export default function Header({ settings }: { settings: SiteSettings }) {
   const pathname = usePathname();
   const [workOpen, setWorkOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const workRef = useRef<HTMLDivElement>(null);
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const workActive = WORK_LINKS.some((l) => isActive(l.href));
 
+  // Work dropdown: closes on Escape (returning focus to its trigger) and on
+  // focus/click moving outside the dropdown, so it never opens on hover-only
+  // for mouse users but stays keyboard/click operable for everyone else.
+  useEffect(() => {
+    if (!workOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setWorkOpen(false);
+        workRef.current?.querySelector<HTMLButtonElement>(".hn-link")?.focus();
+      }
+    }
+    function onPointerDown(e: MouseEvent) {
+      if (workRef.current && !workRef.current.contains(e.target as Node)) setWorkOpen(false);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("mousedown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("mousedown", onPointerDown);
+    };
+  }, [workOpen]);
+
+  // Mobile menu: Escape closes it, matching the Work dropdown and every
+  // other overlay on the site.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setMobileOpen(false);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [mobileOpen]);
+
   return (
     <header className="site-header w-full">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-12">
+      <div className="hn-bar mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-12">
         <Link href="/" className="hn-brand shrink-0" onClick={() => setMobileOpen(false)}>
           {settings.name.toLocaleUpperCase("tr-TR")}
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
-          <Link href="/" className={`hn-link ${isActive("/") ? "on" : ""}`}>
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+          <Link href="/" className={`hn-link ${isActive("/") ? "on" : ""}`} aria-current={isActive("/") ? "page" : undefined}>
             Home
           </Link>
           <div
             className="relative"
+            ref={workRef}
             onMouseEnter={() => setWorkOpen(true)}
             onMouseLeave={() => setWorkOpen(false)}
           >
-            <button type="button" className={`hn-link ${workActive ? "on" : ""}`}>
+            <button
+              type="button"
+              className={`hn-link ${workActive ? "on" : ""}`}
+              aria-haspopup="true"
+              aria-expanded={workOpen}
+              aria-controls="hn-work-panel"
+              onClick={() => setWorkOpen((v) => !v)}
+            >
               Work
             </button>
             {workOpen && (
               <div className="absolute left-0 top-full pt-2">
-                <div className="hn-dropdown-panel">
+                <div className="hn-dropdown-panel" id="hn-work-panel">
                   {WORK_LINKS.map((l) => (
-                    <Link key={l.href} href={l.href} className={`hn-dropdown-link ${isActive(l.href) ? "on" : ""}`}>
+                    <Link
+                      key={l.href}
+                      href={l.href}
+                      className={`hn-dropdown-link ${isActive(l.href) ? "on" : ""}`}
+                      aria-current={isActive(l.href) ? "page" : undefined}
+                      onClick={() => setWorkOpen(false)}
+                    >
                       {l.label}
                     </Link>
                   ))}
@@ -70,15 +118,23 @@ export default function Header({ settings }: { settings: SiteSettings }) {
               </div>
             )}
           </div>
-          <Link href="/worldbuilding" className={`hn-link ${isActive("/worldbuilding") ? "on" : ""}`}>
+          <Link
+            href="/worldbuilding"
+            className={`hn-link ${isActive("/worldbuilding") ? "on" : ""}`}
+            aria-current={isActive("/worldbuilding") ? "page" : undefined}
+          >
             Worldbuilding
           </Link>
-          <Link href="/about" className={`hn-link ${isActive("/about") ? "on" : ""}`}>
+          <Link
+            href="/about"
+            className={`hn-link ${isActive("/about") ? "on" : ""}`}
+            aria-current={isActive("/about") ? "page" : undefined}
+          >
             About &amp; Credentials
           </Link>
         </nav>
 
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hn-socials hidden items-center gap-4 md:flex">
           {settings.artstationUrl && (
             <a href={settings.artstationUrl} target="_blank" rel="noreferrer" className="hn-social" aria-label="ArtStation">
               <ArtStationIcon />
@@ -112,8 +168,9 @@ export default function Header({ settings }: { settings: SiteSettings }) {
         <button
           type="button"
           className={`hn-burger md:hidden ${mobileOpen ? "open" : ""}`}
-          aria-label="Toggle menu"
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
+          aria-controls="hn-mobile-nav"
           onClick={() => setMobileOpen((v) => !v)}
         >
           <span />
@@ -123,8 +180,13 @@ export default function Header({ settings }: { settings: SiteSettings }) {
       </div>
 
       {mobileOpen && (
-        <div className="hn-mobile-panel md:hidden">
-          <Link href="/" onClick={() => setMobileOpen(false)} className={`hn-mobile-link ${isActive("/") ? "on" : ""}`}>
+        <nav className="hn-mobile-panel md:hidden" id="hn-mobile-nav" aria-label="Mobile">
+          <Link
+            href="/"
+            onClick={() => setMobileOpen(false)}
+            className={`hn-mobile-link ${isActive("/") ? "on" : ""}`}
+            aria-current={isActive("/") ? "page" : undefined}
+          >
             Home
           </Link>
           <div className="hn-mobile-group-label">Work</div>
@@ -134,6 +196,7 @@ export default function Header({ settings }: { settings: SiteSettings }) {
               href={l.href}
               onClick={() => setMobileOpen(false)}
               className={`hn-mobile-link sub ${isActive(l.href) ? "on" : ""}`}
+              aria-current={isActive(l.href) ? "page" : undefined}
             >
               {l.label}
             </Link>
@@ -142,10 +205,16 @@ export default function Header({ settings }: { settings: SiteSettings }) {
             href="/worldbuilding"
             onClick={() => setMobileOpen(false)}
             className={`hn-mobile-link ${isActive("/worldbuilding") ? "on" : ""}`}
+            aria-current={isActive("/worldbuilding") ? "page" : undefined}
           >
             Worldbuilding
           </Link>
-          <Link href="/about" onClick={() => setMobileOpen(false)} className={`hn-mobile-link ${isActive("/about") ? "on" : ""}`}>
+          <Link
+            href="/about"
+            onClick={() => setMobileOpen(false)}
+            className={`hn-mobile-link ${isActive("/about") ? "on" : ""}`}
+            aria-current={isActive("/about") ? "page" : undefined}
+          >
             About &amp; Credentials
           </Link>
           <div className="hn-mobile-social">
@@ -178,7 +247,7 @@ export default function Header({ settings }: { settings: SiteSettings }) {
               Admin Login
             </Link>
           </div>
-        </div>
+        </nav>
       )}
     </header>
   );

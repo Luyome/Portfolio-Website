@@ -35,7 +35,7 @@ export default async function AboutPage() {
 
       <div className="mx-auto max-w-7xl px-6 py-16 md:px-12">
         <section className="mb-20">
-          <div className="ab-t">Bio &amp; Vision</div>
+          <h2 className="ab-t">Bio &amp; Vision</h2>
           {about?.whoIAmParagraphs.map((p, i) => (
             <p className="ab-p" key={i} style={fieldStyle(about.styles, "whoIAmParagraphs")}>
               {p}
@@ -45,7 +45,7 @@ export default async function AboutPage() {
 
         {timeline.length > 0 && (
           <section className="mb-20">
-            <div className="ab-t">Experience &amp; Selected Projects</div>
+            <h2 className="ab-t">Experience &amp; Selected Projects</h2>
             <div className="tl">
               {timeline.map((t) => (
                 <div className="tl-row" key={t.id}>
@@ -58,7 +58,7 @@ export default async function AboutPage() {
         )}
 
         <section>
-          <div className="ab-t">Technical Stack &amp; Resume</div>
+          <h2 className="ab-t">Technical Stack &amp; Resume</h2>
           {about?.tools && about.tools.length > 0 && (
             <div className="ab-tools">
               {about.tools.map((t) => (

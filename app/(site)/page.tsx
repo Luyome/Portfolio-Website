@@ -104,7 +104,7 @@ export default async function HomePage() {
             </div>
             <div>
               <div className="narr-eyebrow">Creative Vision</div>
-              <div className="narr-title">Building Worlds From The Ground Up</div>
+              <h2 className="narr-title">Building Worlds From The Ground Up</h2>
               <p className="narr-text">{settings.narrativeText}</p>
             </div>
           </div>
@@ -114,7 +114,7 @@ export default async function HomePage() {
       {showcaseRows.length > 0 && (
         <Reveal className="home-showcase">
           <div className="sc-heading">
-            <div className="sc-title">Selected Work</div>
+            <h2 className="sc-title">Selected Work</h2>
           </div>
           <ShowcaseCarousel items={showcaseRows} />
         </Reveal>
@@ -142,7 +142,7 @@ export default async function HomePage() {
       </Reveal>
 
       <Reveal className="home-services">
-        <div className="hs-title">Focus Areas</div>
+        <h2 className="hs-title">Focus Areas</h2>
         <div className="hs-sub">Environment design, hardsurface modeling, and worldbuilding — where my practice is focused</div>
         <div className="hs-grid">
           {servicesList.map((s) => (
@@ -162,7 +162,7 @@ export default async function HomePage() {
             style={{ backgroundImage: `url(${settings.contactBgImage})`, opacity: settings.contactBgOpacity / 100 }}
           />
         )}
-        <div className="hc-title">Let&apos;s Work Together</div>
+        <h2 className="hc-title">Let&apos;s Work Together</h2>
         <p className="hc-sub">
           Interested in collaborating on your next project? Let&apos;s create something together.
         </p>

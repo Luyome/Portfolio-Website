@@ -39,22 +39,48 @@ export default function ArchiveList({ items, categories }: { items: ArchiveItem[
       <div className="arv-filters">
         <div className="arv-filter-row">
           {years.map((y) => (
-            <button key={y} className={`yr-btn ${year === y ? "on" : ""}`} onClick={() => setYear(y)}>
+            <button
+              key={y}
+              type="button"
+              className={`yr-btn ${year === y ? "on" : ""}`}
+              aria-pressed={year === y}
+              onClick={() => setYear(y)}
+            >
               {y === "all" ? "All Years" : y}
             </button>
           ))}
         </div>
         <div className="arv-filter-row">
-          <button className={`cat-btn ${type === "all" ? "on" : ""}`} onClick={() => setType("all")}>All Types</button>
+          <button type="button" className={`cat-btn ${type === "all" ? "on" : ""}`} aria-pressed={type === "all"} onClick={() => setType("all")}>
+            All Types
+          </button>
           {TYPES.map((t) => (
-            <button key={t} className={`cat-btn ${type === t ? "on" : ""}`} onClick={() => setType(t)}>{t}</button>
+            <button
+              key={t}
+              type="button"
+              className={`cat-btn ${type === t ? "on" : ""}`}
+              aria-pressed={type === t}
+              onClick={() => setType(t)}
+            >
+              {t}
+            </button>
           ))}
         </div>
         {categories.length > 0 && (
           <div className="arv-filter-row">
-            <button className={`wb-pill ${cat === "all" ? "on" : ""}`} onClick={() => setCat("all")}>All Categories</button>
+            <button type="button" className={`wb-pill ${cat === "all" ? "on" : ""}`} aria-pressed={cat === "all"} onClick={() => setCat("all")}>
+              All Categories
+            </button>
             {categories.map((c) => (
-              <button key={c} className={`wb-pill ${cat === c ? "on" : ""}`} onClick={() => setCat(c)}>{c}</button>
+              <button
+                key={c}
+                type="button"
+                className={`wb-pill ${cat === c ? "on" : ""}`}
+                aria-pressed={cat === c}
+                onClick={() => setCat(c)}
+              >
+                {c}
+              </button>
             ))}
           </div>
         )}

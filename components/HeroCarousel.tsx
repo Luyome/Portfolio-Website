@@ -94,6 +94,7 @@ export default function HeroCarousel({
                 type="button"
                 className={`hcar-dot ${i === index ? "on" : ""}`}
                 aria-label={`Go to slide ${i + 1}`}
+                aria-current={i === index ? "true" : undefined}
                 onClick={() => goTo(i)}
               />
             ))}

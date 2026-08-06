@@ -11,8 +11,13 @@ export default async function SiteLayout({
 
   return (
     <>
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
       <Header settings={settings} />
-      <div className="main">{children}</div>
+      <main id="main-content" className="main" tabIndex={-1}>
+        {children}
+      </main>
       <SiteFooter settings={settings} />
     </>
   );

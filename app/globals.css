@@ -117,6 +117,17 @@ body{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);color:var(-
 a{color:inherit;text-decoration:none}img{display:block;max-width:100%}
 button{cursor:pointer;background:none;border:none;font-family:inherit;color:inherit}
 
+/* Skip-to-content: off-screen until keyboard-focused, then pinned above the
+   fixed header so it never disrupts the default layout for anyone else. */
+.skip-link{
+  position:fixed;top:-100px;left:12px;z-index:100;
+  background:var(--red);color:var(--on-red);
+  font-family:var(--M);font-size:0.72rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:12px 20px;transition:top .18s;
+}
+.skip-link:focus{top:12px}
+.main:focus{outline:none}
+
 /* ══ TOP NAV ══════════════════════════════ */
 .site-header{
   position:fixed;top:0;left:0;right:0;z-index:50;
@@ -141,11 +152,16 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 }
 .hn-dropdown-link:hover{color:#fff;background:var(--red-dim)}
 .hn-dropdown-link.on{color:var(--red)}
-.hn-social{color:var(--text2);transition:color .18s}
+/* padding+matching negative margin expands the tappable box (~34px) without
+   shifting layout — gap between icons still reads as the original 16px. */
+.hn-social{color:var(--text2);transition:color .18s;padding:8px;margin:-8px;display:inline-flex}
 .hn-social:hover{color:var(--red)}
 .hn-burger{
   width:32px;height:24px;position:relative;flex-shrink:0;
 }
+/* Invisible hit-area expansion — the burger sits alone in the header's
+   corner, so this can't overlap any neighboring control. */
+.hn-burger::before{content:"";position:absolute;inset:-10px}
 .hn-burger span{
   position:absolute;left:0;right:0;height:2px;background:#fff;transition:all .22s;
 }
@@ -172,13 +188,13 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .hn-mobile-social{
   display:flex;align-items:center;gap:18px;padding-top:20px;color:var(--text2);
 }
-.hn-mobile-social a{color:var(--text2);transition:color .18s}
+.hn-mobile-social a{color:var(--text2);transition:color .18s;padding:8px;margin:-8px;display:inline-flex}
 .hn-mobile-social a:hover{color:var(--red)}
 
 /* ══ SITE FOOTER ══════════════════════════ */
 .site-footer{border-top:1px solid var(--border);background:var(--bg2)}
 .sf-line{font-family:var(--M);font-size:0.85rem;color:var(--text2);line-height:1.9;white-space:pre-line}
-.sf-social{color:var(--text2);transition:color .18s}
+.sf-social{color:var(--text2);transition:color .18s;padding:8px;margin:-8px;display:inline-flex}
 .sf-social:hover{color:var(--red)}
 .sf-bottom-row{
   display:flex;align-items:center;gap:18px;
@@ -252,9 +268,20 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .hcar-arrow.left{left:20px}
 .hcar-arrow.right{right:20px}
 .hcar-dots{position:absolute;left:0;right:0;bottom:28px;z-index:3;display:flex;justify-content:center;gap:9px}
-.hcar-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35);transition:all .18s}
-.hcar-dot:hover{background:rgba(255,255,255,.7)}
-.hcar-dot.on{background:var(--red);width:20px;border-radius:4px}
+/* The button is a larger, invisible touch target (32px) — this is the only
+   manual slide control left once the arrows hide on mobile (see the
+   max-width:640px block below); the visible dot itself is the ::after
+   pseudo-element and keeps its original 7px (20px active pill) size. */
+.hcar-dot{
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  background:none;
+}
+.hcar-dot::after{
+  content:"";width:7px;height:7px;border-radius:50%;
+  background:rgba(255,255,255,.35);transition:all .18s;
+}
+.hcar-dot:hover::after{background:rgba(255,255,255,.7)}
+.hcar-dot.on::after{background:var(--red);width:20px;border-radius:4px}
 @media(max-width:640px){
   .hcar-caption{display:none}
   .hcar-arrow{display:none}
@@ -439,7 +466,7 @@ a.arv-row:hover{background:var(--bg2)}
   gap:4px;
   align-items:start;
 }
-.sk-item{cursor:pointer;background:var(--bg3);display:flex;flex-direction:column}
+.sk-item{cursor:pointer;background:var(--bg3);display:flex;flex-direction:column;min-width:0}
 .sk-thumb{overflow:hidden;position:relative}
 .sk-thumb img{
   width:100%;height:auto;display:block;
@@ -481,7 +508,11 @@ a.arv-row:hover{background:var(--bg2)}
 .wb-pill.on{background:var(--red);color:var(--on-red);border-color:var(--red)}
 
 /* ══ WORLDBUILDING — card grid (Default view) ══════════════════ */
-.wb-grid{padding:40px var(--space-xl) var(--space-2xl);display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:var(--space-sm)}
+/* min(320px,100%) instead of a bare 320px — at narrow mobile widths the
+   default gutters (--space-lg below 1060px) leave less than 320px of
+   content width, and a bare minmax() track never shrinks below its own
+   minimum, which was forcing horizontal page overflow. */
+.wb-grid{padding:40px var(--space-xl) var(--space-2xl);display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:var(--space-sm)}
 .wb-card{background:var(--bg2);overflow:hidden;transition:background .2s;cursor:pointer;display:flex;flex-direction:column}
 .wb-card:hover{background:var(--bg3)}
 .wb-card-img{position:relative;height:200px;overflow:hidden;background:var(--bg3)}
@@ -1023,6 +1054,12 @@ a.arv-row:hover{background:var(--bg2)}
   display:flex;flex-direction:column;align-items:center;cursor:pointer;
   z-index:30;pointer-events:auto;
 }
+/* Invisible hit-area expansion for marker selection — a real (not just
+   ::before-expanded) padding change here would shift the button's own box
+   and, with it, the -50%/-100% transform that keeps it pinned to its exact
+   map coordinate, so the touch target is grown via an absolutely positioned
+   pseudo-element instead, which the transform ignores. */
+.map-pin::before{content:"";position:absolute;inset:-10px}
 .map-pin-dot{
   width:11px;height:11px;border-radius:50%;background:var(--red);
   border:2px solid var(--bg2);box-shadow:0 0 0 1px rgba(var(--red-rgb),.6);
@@ -1109,6 +1146,17 @@ a.arv-row:hover{background:var(--bg2)}
 }
 .mzp-canvas{position:absolute;inset:0}
 .mzp-img{width:100%;height:100%;object-fit:contain;display:block;user-select:none}
+/* Narrow screens: the breadcrumb (top-left) and zoom toolbar (top-center)
+   collide at ~390px width. Move the toolbar to the bottom edge instead of
+   stacking guesswork under the breadcrumb, and let it wrap so Close never
+   gets pushed off-screen. */
+@media(max-width:600px){
+  .mz-overlay .mzp-breadcrumb{left:12px;right:12px;top:10px;max-width:calc(100% - 24px)}
+  .mz-overlay .iz-controls{
+    top:auto;bottom:14px;left:12px;right:12px;transform:none;
+    flex-wrap:wrap;justify-content:center;row-gap:8px;
+  }
+}
 
 /* ══ MAP PIN DETAIL — read-only, resizes to the pin image's orientation ══ */
 .pin-panel{
@@ -1183,6 +1231,15 @@ a.arv-row:hover{background:var(--bg2)}
 .prev-overlay-body{flex:1;overflow-y:auto}
 
 /* ══ RESPONSIVE ════════════════════════ */
+/* Tablet-only band (Tailwind's md, below lg): the desktop nav renders here
+   (md:flex) but the container's desktop padding/gaps (md:px-12 + gap-4 x2)
+   leave too little room for the full link + social-icon row, pushing the
+   last icons past the right edge with no way to reach them. Reclaim space
+   without touching the breakpoint that swaps mobile/desktop nav. */
+@media(min-width:768px) and (max-width:1023px){
+  .hn-bar{padding-left:var(--space-lg);padding-right:var(--space-lg);gap:8px}
+  .hn-socials{gap:8px}
+}
 @media(max-width:1060px){
   :root{--asw:220px}
   .ph,.port-list,.port-ctrl,.sk-ctrl,.sk-grid,.wb-grid,
@@ -1209,12 +1266,17 @@ a.arv-row:hover{background:var(--bg2)}
   .game-row-content,.game-row.rev .game-row-content{order:2}
   .about-grid{grid-template-columns:1fr}
   .hs-grid{grid-template-columns:1fr}
-  .gm-panel{grid-template-columns:1fr;max-height:90vh}
+  /* Single-column stack needs its own two-row track list — the desktop
+     minmax(0,1fr) is sized for one row (image | info side by side) and
+     collapses .gm-img-side's row to 0px when both are auto-placed into it
+     stacked, letting the image float on top of the info panel underneath. */
+  .gm-panel{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);max-height:90vh}
   .gm-img-side{min-height:240px;max-height:300px}
   .h-name{font-size:clamp(2rem,8vw,4rem);white-space:normal}
   .narr-grid{grid-template-columns:1fr;gap:28px}
   .narr-frame{aspect-ratio:16/10}
   .pillar-grid{grid-template-columns:1fr}
+  .sk-grid{grid-template-columns:repeat(2,1fr)}
   .home-narrative,.home-pillars{padding-left:var(--space-md);padding-right:var(--space-md)}
   .sc-heading,.sc-track{padding-left:var(--space-md);padding-right:var(--space-md)}
   .sc-item{width:200px;height:135px}

@@ -48,7 +48,13 @@ export default function SketchGrid({ items, initialYear }: { items: Sketch[]; in
       <div className="sk-ctrl">
         <div className="year-row">
           {years.map((y) => (
-            <button key={y} className={`yr-btn ${year === y ? "on" : ""}`} onClick={() => setYear(y)}>
+            <button
+              key={y}
+              type="button"
+              className={`yr-btn ${year === y ? "on" : ""}`}
+              aria-pressed={year === y}
+              onClick={() => setYear(y)}
+            >
               {y === "all" ? "All" : y}
             </button>
           ))}

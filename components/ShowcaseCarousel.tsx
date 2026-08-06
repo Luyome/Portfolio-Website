@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { isOptimizableImageUrl } from "@/lib/image-host";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 export type ShowcaseItem = {
   id: number;
@@ -18,25 +19,36 @@ export default function ShowcaseCarousel({ items }: { items: ShowcaseItem[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const reduceMotion = usePrefersReducedMotion();
 
   useEffect(() => {
-    if (items.length <= 1 || paused) return;
+    // Reduced motion: never auto-advance, matching HeroCarousel — the
+    // visitor drives it manually (scroll/tab through the track), which
+    // stays fully functional.
+    if (items.length <= 1 || paused || reduceMotion) return;
     const id = setInterval(() => setIndex((i) => (i + 1) % items.length), AUTO_ADVANCE_MS);
     return () => clearInterval(id);
-  }, [items.length, paused]);
+  }, [items.length, paused, reduceMotion]);
 
   useEffect(() => {
     const track = trackRef.current;
     const child = track?.children[index] as HTMLElement | undefined;
     if (track && child) {
-      track.scrollTo({ left: child.offsetLeft - track.offsetLeft, behavior: "smooth" });
+      track.scrollTo({ left: child.offsetLeft - track.offsetLeft, behavior: reduceMotion ? "auto" : "smooth" });
     }
-  }, [index]);
+  }, [index, reduceMotion]);
 
   if (items.length === 0) return null;
 
   return (
-    <div className="sc-track" ref={trackRef} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+    <div
+      className="sc-track"
+      ref={trackRef}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
       {items.map((item) => (
         <Link key={item.id} href={item.linkHref || "#"} className="sc-item">
           <Image

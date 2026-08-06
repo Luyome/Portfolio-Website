@@ -9,6 +9,7 @@ import { toEmbedUrl } from "@/lib/video-embed";
 import type { MediaEntry } from "@/lib/group-images";
 import InlineBold from "./InlineBold";
 import ImageZoomOverlay from "./ImageZoomOverlay";
+import { useModalFocus } from "@/hooks/useModalFocus";
 
 export type GalleryLink = { id: number | string; label: string; href: string; kind?: string };
 
@@ -53,10 +54,33 @@ export default function GalleryModal({
   const item = open ? items[index] : null;
   const [zoomSrc, setZoomSrc] = useState<string | null>(null);
   const readingRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Only manages focus while the image zoom overlay isn't also open on top
+  // — that overlay runs its own useModalFocus and returns focus back here.
+  useModalFocus(open && !zoomSrc, panelRef);
 
   function goTo(next: number) {
     setZoomSrc(null);
     onNavigate(next);
+  }
+
+  // Spread onto the clickable image/cover elements below so opening the zoom
+  // overlay works the same by keyboard (Enter/Space) as it does by click —
+  // matching the tabIndex+role pattern already used site-wide for
+  // non-native clickable elements (e.g. PortfolioBrowser's image cards).
+  function zoomTrigger(src: string) {
+    return {
+      role: "button" as const,
+      tabIndex: 0,
+      onClick: () => setZoomSrc(src),
+      onKeyDown: (e: React.KeyboardEvent) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          setZoomSrc(src);
+        }
+      },
+    };
   }
 
   useEffect(() => {
@@ -116,18 +140,18 @@ export default function GalleryModal({
       }}
     >
       {item && (
-        <div className="gm-panel">
+        <div className="gm-panel" ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="gm-modal-title">
           <div className="gm-img-side">
             <div className="gm-img-scroll" ref={readingRef}>
               {hasRichContent ? (
                 <div className="gm-reading">
                   {item.img ? (
-                    <div className="gm-reading-cover" onClick={() => setZoomSrc(item.img!)}>
+                    <div className="gm-reading-cover" {...zoomTrigger(item.img!)}>
                       <img src={item.img} alt={item.title} />
                     </div>
                   ) : sequence.length === 0 ? (
                     <div className="gm-reading-cover">
-                      <img src={NO_IMAGE_SVG} alt={item.title} />
+                      <img src={NO_IMAGE_SVG} alt="" />
                     </div>
                   ) : null}
                   {sequence.map((entry, i) => {
@@ -145,7 +169,7 @@ export default function GalleryModal({
                                   src={b.src}
                                   alt={b.alt}
                                   className="gm-reading-img"
-                                  onClick={() => setZoomSrc(b.src)}
+                                  {...zoomTrigger(b.src)}
                                 />
                               );
                             }
@@ -180,7 +204,7 @@ export default function GalleryModal({
                           src={entry.url}
                           alt={item.title}
                           className="gm-reading-img"
-                          onClick={() => setZoomSrc(entry.url)}
+                          {...zoomTrigger(entry.url)}
                         />
                       );
                     }
@@ -200,9 +224,9 @@ export default function GalleryModal({
               ) : (
                 <div className="gm-img-list">
                   {item.img ? (
-                    <img src={item.img} alt={item.title} onClick={() => setZoomSrc(item.img!)} />
+                    <img src={item.img} alt={item.title} {...zoomTrigger(item.img!)} />
                   ) : sequence.length === 0 ? (
-                    <img src={NO_IMAGE_SVG} alt={item.title} />
+                    <img src={NO_IMAGE_SVG} alt="" />
                   ) : null}
                   {sequence.map((entry, i) =>
                     entry.kind === "video" ? (
@@ -220,7 +244,7 @@ export default function GalleryModal({
                         key={`img-${i}`}
                         src={entry.url}
                         alt={item.title}
-                        onClick={() => setZoomSrc(entry.url)}
+                        {...zoomTrigger(entry.url)}
                       />
                     ) : null
                   )}
@@ -229,15 +253,19 @@ export default function GalleryModal({
             </div>
             <div className="gm-nav">
               <button
+                type="button"
                 className="gm-nav-btn"
                 disabled={index === 0}
+                aria-label="Previous item"
                 onClick={() => index !== null && goTo(index - 1)}
               >
                 ← Prev
               </button>
               <button
+                type="button"
                 className="gm-nav-btn"
                 disabled={index === items.length - 1}
+                aria-label="Next item"
                 onClick={() => index !== null && goTo(index + 1)}
               >
                 Next →
@@ -247,9 +275,9 @@ export default function GalleryModal({
           <div className="gm-info">
             <div className="gm-bar">
               <span className="gm-cat-lbl">{item.catLabel}</span>
-              <button className="gm-close" onClick={onClose}>✕ &nbsp; Close</button>
+              <button type="button" className="gm-close" onClick={onClose}>✕ &nbsp; Close</button>
             </div>
-            <div className="gm-title" style={fieldStyle(item.styles, "title")}>{item.title}</div>
+            <div className="gm-title" id="gm-modal-title" style={fieldStyle(item.styles, "title")}>{item.title}</div>
             {item.subtitle && <div className="gm-subtitle">{item.subtitle}</div>}
             {item.metaRows && item.metaRows.length > 0 && (
               <div>
@@ -312,8 +340,8 @@ export default function GalleryModal({
               <div className="gm-link-area">
                 <div className="gm-link-lbl">External Link</div>
                 <div className="gm-link-row">
-                  <input className="gm-link-in" value={item.link} readOnly />
-                  <button className="gm-link-btn" onClick={() => window.open(item.link, "_blank")}>
+                  <input className="gm-link-in" aria-label="External link URL" value={item.link} readOnly />
+                  <button type="button" className="gm-link-btn" onClick={() => window.open(item.link, "_blank")}>
                     Open →
                   </button>
                 </div>

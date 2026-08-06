@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useDragZoom } from "@/hooks/useDragZoom";
+import { useModalFocus } from "@/hooks/useModalFocus";
 
 export default function ImageZoomOverlay({
   src,
@@ -14,7 +15,10 @@ export default function ImageZoomOverlay({
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLImageElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const { zoom, pan, zoomBy, reset, onMouseDown, onMouseMove, onMouseUp, minZoom } = useDragZoom({ viewportRef, contentRef });
+
+  useModalFocus(true, overlayRef);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -35,14 +39,18 @@ export default function ImageZoomOverlay({
   return (
     <div
       className="iz-overlay"
+      ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={alt || "Image preview"}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div className="iz-controls">
-        <button type="button" onClick={() => zoomBy(-0.25)}>−</button>
+        <button type="button" aria-label="Zoom out" onClick={() => zoomBy(-0.25)}>−</button>
         <span className="iz-zoom-label">{Math.round(zoom * 100)}%</span>
-        <button type="button" onClick={() => zoomBy(0.25)}>+</button>
+        <button type="button" aria-label="Zoom in" onClick={() => zoomBy(0.25)}>+</button>
         <button type="button" onClick={reset}>Reset</button>
         <button type="button" className="iz-close" onClick={onClose}>✕ Close</button>
       </div>

@@ -71,14 +71,26 @@ export default function PortfolioBrowser({
       <div className="port-ctrl">
         <div className="year-row">
           {years.map((y) => (
-            <button key={y} className={`yr-btn ${year === y ? "on" : ""}`} onClick={() => setYear(y)}>
+            <button
+              key={y}
+              type="button"
+              className={`yr-btn ${year === y ? "on" : ""}`}
+              aria-pressed={year === y}
+              onClick={() => setYear(y)}
+            >
               {y === "all" ? "All" : y}
             </button>
           ))}
         </div>
         <div className="cat-row">
           {cats.map((c) => (
-            <button key={c} className={`cat-btn ${cat === c ? "on" : ""}`} onClick={() => setCat(c)}>
+            <button
+              key={c}
+              type="button"
+              className={`cat-btn ${cat === c ? "on" : ""}`}
+              aria-pressed={cat === c}
+              onClick={() => setCat(c)}
+            >
               {c === "all" ? "All" : c}
             </button>
           ))}

@@ -82,7 +82,7 @@ export default function GamesBrowser({ items }: { items: Game[] }) {
               <div className="gr-status">
                 <span style={fieldStyle(g.styles, "status")}>{g.status}</span> — <span style={fieldStyle(g.styles, "engine")}>{g.engine}</span>
               </div>
-              <h3 className="gr-title" style={fieldStyle(g.styles, "title")} onClick={() => setOpenIndex(i)}>{g.title}</h3>
+              <h2 className="gr-title" style={fieldStyle(g.styles, "title")} onClick={() => setOpenIndex(i)}>{g.title}</h2>
               <p className="gr-desc" style={fieldStyle(g.styles, "desc")}>{g.desc}</p>
               <div className="gr-tags">
                 {g.tags.map((t) => (
