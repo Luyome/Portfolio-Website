@@ -59,7 +59,7 @@ export default function DashboardChart({ events }: { events: ContentEvent[] }) {
   return (
     <div className="adm-chart-card">
       <div className="adm-chart-head">
-        <div className="adm-chart-title">Content Activity</div>
+        <h2 className="adm-chart-title">Content Activity</h2>
         <div className="adm-chart-filters">
           <button
             type="button"

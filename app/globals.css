@@ -927,6 +927,32 @@ a.arv-row:hover{background:var(--bg2)}
 .adm-toggle-btn.on{border-color:var(--red);color:var(--text)}
 .adm-toggle-btn.on .adm-toggle-dot{background:var(--red);box-shadow:0 0 0 3px rgba(var(--red-rgb),.25)}
 
+.adm-dash-header-actions{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+
+.adm-overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px}
+.adm-overview-card{background:var(--bg2);border:1px solid var(--border);padding:24px 22px;display:block;transition:border-color .18s,background .18s}
+.adm-overview-card:hover,.adm-overview-card:focus-visible{border-color:rgba(var(--red-rgb),.5);background:var(--red-dim)}
+
+.adm-quick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:24px}
+.adm-quick-action{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:14px 16px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);
+  font-family:var(--M);font-size:var(--text-label-size);letter-spacing:var(--text-label-track);text-transform:uppercase;
+  transition:all .18s;
+}
+.adm-quick-action:hover,.adm-quick-action:focus-visible{border-color:var(--red);color:var(--text);background:var(--red-dim)}
+
+.adm-dash-list{display:flex;flex-direction:column;gap:2px;margin-bottom:24px}
+.adm-dash-row{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:14px 4px;border-bottom:1px solid rgba(var(--red-rgb),.08);
+  font-family:var(--B);font-size:0.9rem;color:var(--text2);transition:color .18s;
+}
+.adm-dash-row:hover,.adm-dash-row:focus-visible{color:var(--text)}
+.adm-dash-row-type{font-family:var(--M);font-size:0.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red);flex-shrink:0}
+.adm-dash-row-title{flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-dash-row-meta{font-family:var(--M);font-size:0.68rem;color:var(--muted);flex-shrink:0;white-space:nowrap}
+
 /* ══ ADMIN APPEARANCE (per-page color overrides) ══════════ */
 .pa-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:16px;margin:24px auto 0;max-width:1280px}
 .pa-card{background:var(--bg2);border:1px solid var(--border);padding:22px 24px}
