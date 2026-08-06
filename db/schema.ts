@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb, boolean, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb, boolean, uniqueIndex, type AnyPgColumn } from "drizzle-orm/pg-core";
 
 export type ThemedColor = { dark?: string; light?: string };
 export type FieldStyle = { color?: ThemedColor; fontSize?: string };
@@ -320,3 +320,32 @@ export const archiveCategories = pgTable("archive_categories", {
   label: text("label").notNull(),
   sortOrder: integer("sort_order").notNull().default(0),
 });
+
+// Controlled metadata options for Medium, Subject Matter, Software, and Tags
+// (Task 2.9). `type` is a plain, app-validated text column — matching the
+// project's existing convention for controlled string sets (see `kind` on
+// the *_links tables, `pinType` on `mapLocations`) rather than a pgEnum,
+// which this schema has never used. The allowed values live in one place:
+// `lib/metadata.ts`'s `METADATA_TYPES`. `iconUrl`/`websiteUrl` are only ever
+// populated for `type: "software"`; every other type stores them as `null`.
+// No Portfolio (or other content) junction table is created here — that is
+// Task 2.10 scope.
+export const metadataOptions = pgTable(
+  "metadata_options",
+  {
+    id: serial("id").primaryKey(),
+    type: text("type").notNull(),
+    name: text("name").notNull(),
+    slug: text("slug").notNull(),
+    iconUrl: text("icon_url"),
+    websiteUrl: text("website_url"),
+    sortOrder: integer("sort_order").notNull().default(0),
+    isActive: boolean("is_active").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [
+    // Same slug may repeat across different type groups, but not within one.
+    uniqueIndex("metadata_options_type_slug_idx").on(table.type, table.slug),
+  ]
+);

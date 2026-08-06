@@ -17,7 +17,10 @@ export const ADMIN_NAV: AdminNavSection[] = [
   },
   {
     section: "Archive",
-    items: [{ href: "/admin/archive", label: "Archive" }],
+    items: [
+      { href: "/admin/archive", label: "Archive" },
+      { href: "/admin/metadata", label: "Metadata" },
+    ],
   },
   {
     section: "Appearance",

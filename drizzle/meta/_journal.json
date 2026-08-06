@@ -127,6 +127,13 @@
       "when": 1785844852403,
       "tag": "0017_grey_bishop",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1786045138330,
+      "tag": "0018_ancient_jack_flag",
+      "breakpoints": true
     }
   ]
 }

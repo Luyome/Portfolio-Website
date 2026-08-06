@@ -95,6 +95,27 @@ export function nullableUrl(value: FormDataEntryValue | null, field: string): st
   return trimmed;
 }
 
+/**
+ * URL-shaped text restricted to a safe `http:`/`https:` scheme, becoming
+ * `null` when empty — for fields that render as an outbound link (e.g. a
+ * Software option's website URL) where `javascript:`, `data:`, or a
+ * scheme-relative value must never be stored.
+ */
+export function nullableHttpUrl(value: FormDataEntryValue | null, field: string): string | null {
+  const trimmed = raw(value).trim();
+  if (!trimmed) return null;
+  let url: URL;
+  try {
+    url = new URL(trimmed);
+  } catch {
+    throw new ValidationError(`${field} must be a valid URL.`);
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new ValidationError(`${field} must be a valid URL.`);
+  }
+  return trimmed;
+}
+
 /** Normalized map coordinate — finite number within the map's established 0–100 range (see MapEditor's clamp). */
 export function coordinate(value: number, field: string): number {
   if (!Number.isFinite(value) || value < 0 || value > 100) {
