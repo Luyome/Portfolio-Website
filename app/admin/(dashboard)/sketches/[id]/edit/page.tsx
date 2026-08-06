@@ -8,6 +8,7 @@ import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
 import { updateSketch, createSketchImage, updateSketchImage, deleteSketchImage, createSketchLink, updateSketchLink, deleteSketchLink, createSketchVideo, updateSketchVideo, deleteSketchVideo } from "@/lib/actions/sketches";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import { requiredId } from "@/lib/validation";
 
 export default async function EditSketchPage({
   params,
@@ -15,7 +16,12 @@ export default async function EditSketchPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const sketchId = Number(id);
+  let sketchId: number;
+  try {
+    sketchId = requiredId(id, "Sketch");
+  } catch {
+    notFound();
+  }
   const [[item], images, links, videos, appearance] = await Promise.all([
     db.select().from(sketches).where(eq(sketches.id, sketchId)),
     db.select().from(sketchImages).where(eq(sketchImages.sketchId, sketchId)).orderBy(asc(sketchImages.sortOrder)),

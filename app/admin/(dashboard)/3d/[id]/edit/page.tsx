@@ -8,6 +8,7 @@ import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
 import { updateModel3D, createModel3DImage, updateModel3DImage, deleteModel3DImage, createModel3DLink, updateModel3DLink, deleteModel3DLink, createModel3DVideo, updateModel3DVideo, deleteModel3DVideo } from "@/lib/actions/models3d";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import { requiredId } from "@/lib/validation";
 
 export default async function EditModel3DPage({
   params,
@@ -15,7 +16,12 @@ export default async function EditModel3DPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const modelId = Number(id);
+  let modelId: number;
+  try {
+    modelId = requiredId(id, "3D model");
+  } catch {
+    notFound();
+  }
   const [[item], images, links, videos, appearance] = await Promise.all([
     db.select().from(models3d).where(eq(models3d.id, modelId)),
     db.select().from(model3dImages).where(eq(model3dImages.modelId, modelId)).orderBy(asc(model3dImages.sortOrder)),

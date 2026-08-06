@@ -8,6 +8,7 @@ import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
 import { updateGame, createGameLink, updateGameLink, deleteGameLink, createGameImage, updateGameImage, deleteGameImage, createGameVideo, updateGameVideo, deleteGameVideo } from "@/lib/actions/games";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import { requiredId } from "@/lib/validation";
 
 export default async function EditGamePage({
   params,
@@ -15,7 +16,12 @@ export default async function EditGamePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const gameId = Number(id);
+  let gameId: number;
+  try {
+    gameId = requiredId(id, "Game");
+  } catch {
+    notFound();
+  }
   const [item] = await db.select().from(games).where(eq(games.id, gameId));
   if (!item) notFound();
 

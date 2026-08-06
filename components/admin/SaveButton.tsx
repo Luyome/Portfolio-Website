@@ -27,6 +27,13 @@ export default function SaveButton({
   const [clicking, setClicking] = useState(false);
   const [showDot, setShowDot] = useState(false);
   const wasPending = useRef(false);
+  // Synchronous guard against a fast double-click: React's `pending` state
+  // (from useFormStatus, or from the `clicking` state below) only takes
+  // effect after a re-render, which leaves a brief window where a second
+  // click can submit the same action again before the button visually
+  // disables. This ref is set on the very first click, in the same event,
+  // so a near-simultaneous second click is blocked outright.
+  const submitting = useRef(false);
 
   const pending = formId ? clicking : status.pending;
 
@@ -38,6 +45,7 @@ export default function SaveButton({
       return () => clearTimeout(t);
     }
     wasPending.current = status.pending;
+    if (!status.pending) submitting.current = false;
   }, [status.pending, formId]);
 
   function handleOptimisticClick() {
@@ -46,7 +54,17 @@ export default function SaveButton({
       setClicking(false);
       setShowDot(true);
       setTimeout(() => setShowDot(false), 500);
+      submitting.current = false;
     }, 400);
+  }
+
+  function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
+    if (submitting.current) {
+      e.preventDefault();
+      return;
+    }
+    submitting.current = true;
+    if (formId) handleOptimisticClick();
   }
 
   return (
@@ -57,7 +75,7 @@ export default function SaveButton({
         className={className}
         style={style}
         disabled={pending}
-        onClick={formId ? handleOptimisticClick : undefined}
+        onClick={handleClick}
       >
         {children}
       </button>

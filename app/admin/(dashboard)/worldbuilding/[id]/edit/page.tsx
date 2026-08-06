@@ -8,6 +8,7 @@ import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
 import { updateWorldbuildingEntry, createWorldbuildingImage, updateWorldbuildingImage, deleteWorldbuildingImage, createWorldbuildingLink, updateWorldbuildingLink, deleteWorldbuildingLink, createWorldbuildingVideo, updateWorldbuildingVideo, deleteWorldbuildingVideo } from "@/lib/actions/worldbuilding";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import { requiredId } from "@/lib/validation";
 
 export default async function EditWorldbuildingEntryPage({
   params,
@@ -15,7 +16,12 @@ export default async function EditWorldbuildingEntryPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const entryId = Number(id);
+  let entryId: number;
+  try {
+    entryId = requiredId(id, "Worldbuilding entry");
+  } catch {
+    notFound();
+  }
   const [[item], images, links, videos, appearance] = await Promise.all([
     db.select().from(worldbuildingEntries).where(eq(worldbuildingEntries.id, entryId)),
     db.select().from(worldbuildingImages).where(eq(worldbuildingImages.entryId, entryId)).orderBy(asc(worldbuildingImages.sortOrder)),

@@ -4,10 +4,16 @@ import { db } from "@/db";
 import { worldMaps } from "@/db/schema";
 import { updateWorldMap } from "@/lib/actions/map";
 import WorldMapForm from "@/components/admin/WorldMapForm";
+import { requiredId } from "@/lib/validation";
 
 export default async function EditMapPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const mapId = Number(id);
+  let mapId: number;
+  try {
+    mapId = requiredId(id, "Map");
+  } catch {
+    notFound();
+  }
   const [[item], allMaps] = await Promise.all([
     db.select().from(worldMaps).where(eq(worldMaps.id, mapId)),
     db.select().from(worldMaps).orderBy(asc(worldMaps.sortOrder)),

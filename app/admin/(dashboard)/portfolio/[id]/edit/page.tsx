@@ -8,6 +8,7 @@ import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
 import { updatePortfolioItem, createPortfolioImage, updatePortfolioImage, deletePortfolioImage, createPortfolioLink, updatePortfolioLink, deletePortfolioLink, createPortfolioVideo, updatePortfolioVideo, deletePortfolioVideo } from "@/lib/actions/portfolio";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import { requiredId } from "@/lib/validation";
 
 export default async function EditPortfolioItemPage({
   params,
@@ -15,7 +16,12 @@ export default async function EditPortfolioItemPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const portfolioId = Number(id);
+  let portfolioId: number;
+  try {
+    portfolioId = requiredId(id, "Portfolio item");
+  } catch {
+    notFound();
+  }
   const [item, images, links, videos, appearance] = await Promise.all([
     db.select().from(portfolioItems).where(eq(portfolioItems.id, portfolioId)).then((rows) => rows[0]),
     db.select().from(portfolioImages).where(eq(portfolioImages.portfolioId, portfolioId)).orderBy(asc(portfolioImages.sortOrder)),
