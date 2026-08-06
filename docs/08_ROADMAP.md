@@ -50,7 +50,20 @@ Confirmed Sprint 1 gaps to close: reduced-motion support, spacing tokens, typogr
 
 Comments, likes, bookmarks, notifications, and public accounts are not part of this sprint — see section 6, Explicitly Out of Scope.
 
-**Sprint 2 — Private Admin Panel and CMS Refinement** — *Next.* Admin authentication, dashboard, CRUD, and a working Map Editor already exist. This sprint refines and extends them (media management polish, tag/category management, content relationship management, Map Manager improvements) rather than building an admin system from scratch.
+**Sprint 2 — Private Admin Panel and CMS Refinement** — *Active.* Admin authentication, dashboard, CRUD, and a working Map Editor already exist. This sprint refines and extends them (media management polish, tag/category management, content relationship management, Map Manager improvements) rather than building an admin system from scratch.
+
+- Task 2.1 — Admin Panel Audit & Scope Lock: **Next.** Audit existing Admin routes, authentication, CRUD flows, forms, server actions, media upload system, and database relationships. Acceptance criteria: existing Admin pages and features listed; working, inconsistent, partial, and missing flows separated; real Sprint 2-scope problems verified; work belonging to future content sprints separated out; no unnecessary schema or architectural expansion performed.
+- Task 2.2 — Admin Shell, Navigation & Responsive Layout: **Planned.** Improve the existing Admin layout, navigation, header, and content areas under a consistent, responsive Admin shell. Scope: active-section indication, Admin navigation layout, mobile and tablet behaviour, Public/Admin navigation separation, shared page title and action area, overflowing table and form fields.
+- Task 2.3 — Admin Dashboard & Content Overview: **Planned.** Turn the Admin home page into a functional hub for daily content management. Scope: quick access to existing content types, content counts, recently added/updated content, missing-required-field warnings, view-site link, frequently used actions. Excludes analytics, visitor graphs, or Vercel/Neon dashboard integration.
+- Task 2.4 — Shared Admin Form System: **Planned.** Make repeated Admin form fields and form feedback consistent. Scope: label, input, textarea, select, and checkbox; help text; required/optional field indicators; field-level validation messages; Save/Saving/Success/Error states; Cancel and back-navigation behaviour; form error summary; accessibility. Only genuinely reused parts are consolidated.
+- Task 2.5 — Existing CRUD Workflow Consistency: **Planned.** Bring the listing, create, edit, and delete flows of existing content types to a common standard. Areas: Portfolio, Sketches, 3D Models, Games, Worldbuilding, Maps, About, CV, Archive, Site Settings. Scope: Create/Edit consistency, post-save redirect, success/error feedback, server-side validation, invalid-ID behaviour, empty state, deterministic ordering, double-submit protection, safe delete confirmation. Excludes adding Project, Story, or Devlog CRUD.
+- Task 2.6 — Media Upload & Asset Management Hardening: **Planned.** Make the existing Vercel Blob upload flow safer and clearer. Scope: upload progress state, file type/size validation, failed-upload feedback, image preview, alt text, image ordering, cover image, orphaned-Blob risk, source/master-file upload risk, external-URL vs. Blob-URL distinction. Excludes building a new CDN or standalone media library.
+- Task 2.7 — Admin Authentication, Session & Destructive Action Safety: **Planned.** Audit owner-only Admin access and sensitive mutation operations for security and fix verified issues. Scope: Admin route protection, login and logout, session invalidation, unauthorized server action calls, safe redirects, safe error messages, delete/irreversible-action confirmation, double-submit protection, Admin `noindex`. Excludes public login, multi-admin, role systems, or OAuth.
+- Task 2.8 — Map Editor & Complex Admin Tools Usability: **Planned.** Improve the existing Map Editor and complex Admin tools for general usability. Scope: marker creation and editing, normalized coordinates, zoom visibility ranges, priority, optional content relationships, map image selection, form/preview relationship, mobile/tablet usability, invalid-data feedback, Save/Cancel behaviour. Leaves semantic zoom, public Map Explorer, new pin layers, and KRUPNI map art direction to Sprint 4.
+- Task 2.9 — Admin Accessibility, Responsive & Integration QA: **Planned.** Test the Admin systems developed throughout Sprint 2 together. Scope: desktop/tablet/mobile Admin, keyboard and focus-visible, form label and error accessibility, touch targets, table/form overflow, login/logout, unauthorized access, CRUD and validation, upload behaviour, dashboard, Map Editor, Admin noindex, type-check/lint/production build, local and production smoke QA. Excludes creating or deleting test content in production data.
+- Task 2.10 — Sprint 2 Roadmap Status Update / Sprint Close: **Planned.** Verify Task 2.1–2.9 status, close Sprint 2, and mark Sprint 3 as the next sprint. Acceptance criteria: Task 2.1–2.9 Complete; Admin ready for daily use; owner-only access preserved; CRUD flows consistent; media upload safe; Admin responsive and accessible; build, lint, and type-check pass; production smoke QA complete; Sprint 2 Complete; Sprint 3 Next.
+
+**Sprint 2 scope boundaries** — not part of this sprint: Home Page composition, public KRUPNI or Map Explorer, a new Projects system, a Stories or Devlog system, Portfolio public art direction, a multi-language system, public users, comments/likes/bookmarks/community, newsletter, multi-admin or role systems. These remain in their assigned future sprints or out of scope.
 
 **Sprint 3 — Home Page** — The Home Page already exists (hero, project stream, worldbuilding introduction, map preview, pillar previews, About/Contact entry points). This sprint aligns, improves, and completes it against the current documentation rather than building it new.
 
@@ -108,7 +121,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 
 ## 8. Current Status
 
-- Current sprint: Sprint 1 — Core Systems (Complete). Next sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Next).
+- Current sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Active). Previous sprint: Sprint 1 — Core Systems (Complete).
 - Task 1.1 — Existing Core Systems Audit: Complete.
 - Task 1.2 — Final Product Scope and Documentation Alignment: Complete.
 - Task 1.2.1 — Documentation Consistency Patch: Complete.
@@ -127,6 +140,16 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 1.15 — Performance & Vercel Usage QA: Complete.
 - Task 1.16 — Sprint 1 Integration QA: Complete.
 - Task 1.17 — Roadmap Status Update / Sprint Close: Complete.
+- Task 2.1 — Admin Panel Audit & Scope Lock: Next.
+- Task 2.2 — Admin Shell, Navigation & Responsive Layout: Planned.
+- Task 2.3 — Admin Dashboard & Content Overview: Planned.
+- Task 2.4 — Shared Admin Form System: Planned.
+- Task 2.5 — Existing CRUD Workflow Consistency: Planned.
+- Task 2.6 — Media Upload & Asset Management Hardening: Planned.
+- Task 2.7 — Admin Authentication, Session & Destructive Action Safety: Planned.
+- Task 2.8 — Map Editor & Complex Admin Tools Usability: Planned.
+- Task 2.9 — Admin Accessibility, Responsive & Integration QA: Planned.
+- Task 2.10 — Sprint 2 Roadmap Status Update / Sprint Close: Planned.
 - The Admin Panel, CRUD systems, and public map foundation already exist and are being extended, not built from zero.
 - No second Worldbuilding universe is planned scope.
 
