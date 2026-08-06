@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { siteSettings, heroButtons, homeHeroSlides, homeShowcase } from "@/db/schema";
+import { requireAdminSession } from "@/lib/actions/guard";
 import { num, numOrNull, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
 
@@ -15,6 +16,7 @@ function revalidateAll() {
 }
 
 export async function updateHomeSettings(formData: FormData) {
+  await requireAdminSession();
   const fields = {
     heroEyebrow: str(formData.get("heroEyebrow")),
     heroJpLine: str(formData.get("heroJpLine")),
@@ -46,6 +48,7 @@ export async function updateHomeSettings(formData: FormData) {
 }
 
 export async function createHeroButton(formData: FormData) {
+  await requireAdminSession();
   await db.insert(heroButtons).values({
     label: str(formData.get("label")),
     href: str(formData.get("href")),
@@ -56,6 +59,7 @@ export async function createHeroButton(formData: FormData) {
 }
 
 export async function updateHeroButton(id: number, formData: FormData) {
+  await requireAdminSession();
   await db
     .update(heroButtons)
     .set({
@@ -69,6 +73,7 @@ export async function updateHeroButton(id: number, formData: FormData) {
 }
 
 export async function deleteHeroButton(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(heroButtons).where(eq(heroButtons.id, id));
   revalidateAll();
@@ -80,6 +85,7 @@ function optStr(value: FormDataEntryValue | null): string | null {
 }
 
 export async function createHomeHeroSlide(formData: FormData) {
+  await requireAdminSession();
   await db.insert(homeHeroSlides).values({
     url: str(formData.get("url")),
     title: optStr(formData.get("title")),
@@ -91,6 +97,7 @@ export async function createHomeHeroSlide(formData: FormData) {
 }
 
 export async function updateHomeHeroSlide(id: number, formData: FormData) {
+  await requireAdminSession();
   await db
     .update(homeHeroSlides)
     .set({
@@ -104,12 +111,14 @@ export async function updateHomeHeroSlide(id: number, formData: FormData) {
 }
 
 export async function deleteHomeHeroSlide(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(homeHeroSlides).where(eq(homeHeroSlides.id, id));
   revalidateAll();
 }
 
 export async function createHomeShowcaseItem(formData: FormData) {
+  await requireAdminSession();
   const existing = await db.select().from(homeShowcase);
   if (existing.length >= MAX_SHOWCASE_ITEMS) {
     return;
@@ -124,6 +133,7 @@ export async function createHomeShowcaseItem(formData: FormData) {
 }
 
 export async function updateHomeShowcaseItem(id: number, formData: FormData) {
+  await requireAdminSession();
   await db
     .update(homeShowcase)
     .set({
@@ -136,6 +146,7 @@ export async function updateHomeShowcaseItem(id: number, formData: FormData) {
 }
 
 export async function deleteHomeShowcaseItem(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(homeShowcase).where(eq(homeShowcase.id, id));
   revalidateAll();

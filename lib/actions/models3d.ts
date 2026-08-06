@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { models3d, model3dImages, model3dLinks, model3dVideos } from "@/db/schema";
+import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseLinkFields } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
 import { requiredInt, requiredText, optionalText, nullableText, nullableUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
@@ -31,6 +32,7 @@ function revalidateAll() {
 }
 
 export async function createModel3D(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readFields(formData);
@@ -43,6 +45,7 @@ export async function createModel3D(_prevState: ActionState, formData: FormData)
 }
 
 export async function updateModel3D(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readFields(formData);
@@ -55,12 +58,14 @@ export async function updateModel3D(id: number, _prevState: ActionState, formDat
 }
 
 export async function deleteModel3D(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(models3d).where(eq(models3d.id, id));
   revalidateAll();
 }
 
 export async function createModel3DImage(modelId: number, formData: FormData) {
+  await requireAdminSession();
   let url: string;
   try {
     url = requiredUrl(formData.get("url"), "Image");
@@ -72,17 +77,20 @@ export async function createModel3DImage(modelId: number, formData: FormData) {
 }
 
 export async function updateModel3DImage(id: number, formData: FormData) {
+  await requireAdminSession();
   await db.update(model3dImages).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(model3dImages.id, id));
   revalidateAll();
 }
 
 export async function deleteModel3DImage(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(model3dImages).where(eq(model3dImages.id, id));
   revalidateAll();
 }
 
 export async function createModel3DVideo(modelId: number, formData: FormData) {
+  await requireAdminSession();
   let url: string;
   try {
     url = requiredUrl(formData.get("url"), "Video");
@@ -94,17 +102,20 @@ export async function createModel3DVideo(modelId: number, formData: FormData) {
 }
 
 export async function updateModel3DVideo(id: number, formData: FormData) {
+  await requireAdminSession();
   await db.update(model3dVideos).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(model3dVideos.id, id));
   revalidateAll();
 }
 
 export async function deleteModel3DVideo(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(model3dVideos).where(eq(model3dVideos.id, id));
   revalidateAll();
 }
 
 export async function createModel3DLink(modelId: number, formData: FormData) {
+  await requireAdminSession();
   let fields;
   try {
     fields = parseLinkFields(formData);
@@ -116,6 +127,7 @@ export async function createModel3DLink(modelId: number, formData: FormData) {
 }
 
 export async function updateModel3DLink(id: number, formData: FormData) {
+  await requireAdminSession();
   let fields;
   try {
     fields = parseLinkFields(formData);
@@ -127,6 +139,7 @@ export async function updateModel3DLink(id: number, formData: FormData) {
 }
 
 export async function deleteModel3DLink(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(model3dLinks).where(eq(model3dLinks.id, id));
   revalidateAll();

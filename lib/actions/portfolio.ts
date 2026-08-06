@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { portfolioItems, portfolioImages, portfolioLinks, portfolioVideos } from "@/db/schema";
+import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseCsv, parseLinkFields } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
 import { requiredInt, requiredText, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
@@ -34,6 +35,7 @@ function revalidateAll() {
 }
 
 export async function createPortfolioItem(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readFields(formData);
@@ -46,6 +48,7 @@ export async function createPortfolioItem(_prevState: ActionState, formData: For
 }
 
 export async function updatePortfolioItem(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readFields(formData);
@@ -58,12 +61,14 @@ export async function updatePortfolioItem(id: number, _prevState: ActionState, f
 }
 
 export async function deletePortfolioItem(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(portfolioItems).where(eq(portfolioItems.id, id));
   revalidateAll();
 }
 
 export async function createPortfolioImage(portfolioId: number, formData: FormData) {
+  await requireAdminSession();
   let url: string;
   try {
     url = requiredUrl(formData.get("url"), "Image");
@@ -75,17 +80,20 @@ export async function createPortfolioImage(portfolioId: number, formData: FormDa
 }
 
 export async function updatePortfolioImage(id: number, formData: FormData) {
+  await requireAdminSession();
   await db.update(portfolioImages).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(portfolioImages.id, id));
   revalidateAll();
 }
 
 export async function deletePortfolioImage(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(portfolioImages).where(eq(portfolioImages.id, id));
   revalidateAll();
 }
 
 export async function createPortfolioVideo(portfolioId: number, formData: FormData) {
+  await requireAdminSession();
   let url: string;
   try {
     url = requiredUrl(formData.get("url"), "Video");
@@ -97,17 +105,20 @@ export async function createPortfolioVideo(portfolioId: number, formData: FormDa
 }
 
 export async function updatePortfolioVideo(id: number, formData: FormData) {
+  await requireAdminSession();
   await db.update(portfolioVideos).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(portfolioVideos.id, id));
   revalidateAll();
 }
 
 export async function deletePortfolioVideo(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(portfolioVideos).where(eq(portfolioVideos.id, id));
   revalidateAll();
 }
 
 export async function createPortfolioLink(portfolioId: number, formData: FormData) {
+  await requireAdminSession();
   let fields;
   try {
     fields = parseLinkFields(formData);
@@ -119,6 +130,7 @@ export async function createPortfolioLink(portfolioId: number, formData: FormDat
 }
 
 export async function updatePortfolioLink(id: number, formData: FormData) {
+  await requireAdminSession();
   let fields;
   try {
     fields = parseLinkFields(formData);
@@ -130,6 +142,7 @@ export async function updatePortfolioLink(id: number, formData: FormData) {
 }
 
 export async function deletePortfolioLink(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(portfolioLinks).where(eq(portfolioLinks.id, id));
   revalidateAll();

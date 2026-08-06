@@ -4,9 +4,11 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { cvContent } from "@/db/schema";
+import { requireAdminSession } from "@/lib/actions/guard";
 import { str } from "@/lib/form-utils";
 
 export async function updateCvContent(formData: FormData) {
+  await requireAdminSession();
   const fields = { img: str(formData.get("img")) || null };
 
   const [existing] = await db.select().from(cvContent).limit(1);

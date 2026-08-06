@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { worldMaps, mapLocations } from "@/db/schema";
+import { requireAdminSession } from "@/lib/actions/guard";
 import { num, numOrNull } from "@/lib/form-utils";
 import {
   coordinate,
@@ -41,6 +42,7 @@ function readMapFields(formData: FormData) {
 }
 
 export async function createWorldMap(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readMapFields(formData);
@@ -53,6 +55,7 @@ export async function createWorldMap(_prevState: ActionState, formData: FormData
 }
 
 export async function updateWorldMap(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readMapFields(formData);
@@ -65,6 +68,7 @@ export async function updateWorldMap(id: number, _prevState: ActionState, formDa
 }
 
 export async function deleteWorldMap(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(worldMaps).where(eq(worldMaps.id, id));
   revalidateAll();
@@ -79,6 +83,7 @@ export async function deleteWorldMap(formData: FormData) {
 // guards its `createMapLocation` call on a truthy return (`if (row) ...`),
 // so returning `undefined` on invalid input is a pre-existing, handled case.
 export async function createMapLocation(mapId: number, name: string, x: number, y: number) {
+  await requireAdminSession();
   try {
     requiredId(mapId, "Map");
     requiredText(name, "Name");
@@ -93,6 +98,7 @@ export async function createMapLocation(mapId: number, name: string, x: number, 
 }
 
 export async function updateMapLocationPosition(id: number, x: number, y: number) {
+  await requireAdminSession();
   try {
     requiredId(id, "Location");
     coordinate(x, "X");
@@ -116,6 +122,7 @@ export async function updateMapLocationInfo(
     iconType: string;
   }
 ) {
+  await requireAdminSession();
   let parsed;
   try {
     requiredId(id, "Location");
@@ -136,6 +143,7 @@ export async function updateMapLocationInfo(
 }
 
 export async function deleteMapLocation(id: number) {
+  await requireAdminSession();
   await db.delete(mapLocations).where(eq(mapLocations.id, id));
   revalidateAll();
 }

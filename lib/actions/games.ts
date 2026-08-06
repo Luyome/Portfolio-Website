@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { games, gameLinks, gameImages, gameVideos } from "@/db/schema";
+import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseCsv, parseLines, parseLinkFields, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
 import { requiredInt, requiredText, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
@@ -37,6 +38,7 @@ function revalidateAll() {
 }
 
 export async function createGame(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readFields(formData);
@@ -49,6 +51,7 @@ export async function createGame(_prevState: ActionState, formData: FormData): P
 }
 
 export async function updateGame(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readFields(formData);
@@ -61,12 +64,14 @@ export async function updateGame(id: number, _prevState: ActionState, formData: 
 }
 
 export async function deleteGame(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(games).where(eq(games.id, id));
   revalidateAll();
 }
 
 export async function createGameLink(gameId: number, formData: FormData) {
+  await requireAdminSession();
   let fields;
   try {
     fields = parseLinkFields(formData);
@@ -78,6 +83,7 @@ export async function createGameLink(gameId: number, formData: FormData) {
 }
 
 export async function updateGameLink(id: number, formData: FormData) {
+  await requireAdminSession();
   let fields;
   try {
     fields = parseLinkFields(formData);
@@ -89,12 +95,14 @@ export async function updateGameLink(id: number, formData: FormData) {
 }
 
 export async function deleteGameLink(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(gameLinks).where(eq(gameLinks.id, id));
   revalidateAll();
 }
 
 export async function createGameImage(gameId: number, formData: FormData) {
+  await requireAdminSession();
   let url: string;
   try {
     url = requiredUrl(formData.get("url"), "Image");
@@ -106,17 +114,20 @@ export async function createGameImage(gameId: number, formData: FormData) {
 }
 
 export async function updateGameImage(id: number, formData: FormData) {
+  await requireAdminSession();
   await db.update(gameImages).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(gameImages.id, id));
   revalidateAll();
 }
 
 export async function deleteGameImage(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(gameImages).where(eq(gameImages.id, id));
   revalidateAll();
 }
 
 export async function createGameVideo(gameId: number, formData: FormData) {
+  await requireAdminSession();
   let url: string;
   try {
     url = requiredUrl(formData.get("url"), "Video");
@@ -128,11 +139,13 @@ export async function createGameVideo(gameId: number, formData: FormData) {
 }
 
 export async function updateGameVideo(id: number, formData: FormData) {
+  await requireAdminSession();
   await db.update(gameVideos).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(gameVideos.id, id));
   revalidateAll();
 }
 
 export async function deleteGameVideo(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(gameVideos).where(eq(gameVideos.id, id));
   revalidateAll();

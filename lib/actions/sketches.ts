@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { sketches, sketchImages, sketchLinks, sketchVideos } from "@/db/schema";
+import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseLinkFields } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
 import { requiredInt, requiredText, optionalText, nullableText, nullableUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
@@ -31,6 +32,7 @@ function revalidateAll() {
 }
 
 export async function createSketch(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readFields(formData);
@@ -43,6 +45,7 @@ export async function createSketch(_prevState: ActionState, formData: FormData):
 }
 
 export async function updateSketch(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readFields(formData);
@@ -55,12 +58,14 @@ export async function updateSketch(id: number, _prevState: ActionState, formData
 }
 
 export async function deleteSketch(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(sketches).where(eq(sketches.id, id));
   revalidateAll();
 }
 
 export async function createSketchImage(sketchId: number, formData: FormData) {
+  await requireAdminSession();
   let url: string;
   try {
     url = requiredUrl(formData.get("url"), "Image");
@@ -72,17 +77,20 @@ export async function createSketchImage(sketchId: number, formData: FormData) {
 }
 
 export async function updateSketchImage(id: number, formData: FormData) {
+  await requireAdminSession();
   await db.update(sketchImages).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(sketchImages.id, id));
   revalidateAll();
 }
 
 export async function deleteSketchImage(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(sketchImages).where(eq(sketchImages.id, id));
   revalidateAll();
 }
 
 export async function createSketchVideo(sketchId: number, formData: FormData) {
+  await requireAdminSession();
   let url: string;
   try {
     url = requiredUrl(formData.get("url"), "Video");
@@ -94,17 +102,20 @@ export async function createSketchVideo(sketchId: number, formData: FormData) {
 }
 
 export async function updateSketchVideo(id: number, formData: FormData) {
+  await requireAdminSession();
   await db.update(sketchVideos).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(sketchVideos.id, id));
   revalidateAll();
 }
 
 export async function deleteSketchVideo(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(sketchVideos).where(eq(sketchVideos.id, id));
   revalidateAll();
 }
 
 export async function createSketchLink(sketchId: number, formData: FormData) {
+  await requireAdminSession();
   let fields;
   try {
     fields = parseLinkFields(formData);
@@ -116,6 +127,7 @@ export async function createSketchLink(sketchId: number, formData: FormData) {
 }
 
 export async function updateSketchLink(id: number, formData: FormData) {
+  await requireAdminSession();
   let fields;
   try {
     fields = parseLinkFields(formData);
@@ -127,6 +139,7 @@ export async function updateSketchLink(id: number, formData: FormData) {
 }
 
 export async function deleteSketchLink(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(sketchLinks).where(eq(sketchLinks.id, id));
   revalidateAll();

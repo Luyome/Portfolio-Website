@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { pageAppearance } from "@/db/schema";
 import type { PageColorKey, PageColorMap, ThemedColor } from "@/db/schema";
+import { requireAdminSession } from "@/lib/actions/guard";
 import { str } from "@/lib/form-utils";
 import type { PageKey } from "@/lib/page-appearance";
 
@@ -16,6 +17,7 @@ function revalidateAll(page: PageKey) {
 }
 
 export async function updatePageAppearance(page: PageKey, formData: FormData) {
+  await requireAdminSession();
   const colors: PageColorMap = {};
   for (const key of PAGE_COLOR_KEYS) {
     const dark = str(formData.get(`${key}_dark`));

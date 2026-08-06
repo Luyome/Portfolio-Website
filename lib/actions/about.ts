@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { aboutContent, timelineEntries } from "@/db/schema";
+import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseCsv, parseLines, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
 
@@ -13,6 +14,7 @@ function revalidateAll() {
 }
 
 export async function updateAboutContent(formData: FormData) {
+  await requireAdminSession();
   const fields = {
     whoIAmParagraphs: parseLines(formData.get("whoIAmParagraphs")),
     tools: parseCsv(formData.get("tools")),
@@ -29,6 +31,7 @@ export async function updateAboutContent(formData: FormData) {
 }
 
 export async function createTimelineEntry(formData: FormData) {
+  await requireAdminSession();
   await db.insert(timelineEntries).values({
     year: str(formData.get("year")),
     text: str(formData.get("text")),
@@ -38,6 +41,7 @@ export async function createTimelineEntry(formData: FormData) {
 }
 
 export async function updateTimelineEntry(id: number, formData: FormData) {
+  await requireAdminSession();
   await db
     .update(timelineEntries)
     .set({
@@ -50,6 +54,7 @@ export async function updateTimelineEntry(id: number, formData: FormData) {
 }
 
 export async function deleteTimelineEntry(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(timelineEntries).where(eq(timelineEntries.id, id));
   revalidateAll();

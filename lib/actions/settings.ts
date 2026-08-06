@@ -4,10 +4,12 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { siteSettings } from "@/db/schema";
+import { requireAdminSession } from "@/lib/actions/guard";
 import { str } from "@/lib/form-utils";
 import { DEFAULT_SITE_SETTINGS } from "@/lib/site-settings";
 
 export async function updateSiteSettings(formData: FormData) {
+  await requireAdminSession();
   const fields = {
     name: str(formData.get("name")),
     handle: str(formData.get("handle")),
@@ -33,6 +35,7 @@ export async function updateSiteSettings(formData: FormData) {
 }
 
 export async function setForceDarkMode(next: boolean) {
+  await requireAdminSession();
   const [existing] = await db.select().from(siteSettings).limit(1);
   if (existing) {
     await db.update(siteSettings).set({ forceDarkMode: next }).where(eq(siteSettings.id, existing.id));

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingVideos } from "@/db/schema";
+import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseCsv, parseLinkFields, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
 import { requiredInt, requiredText, optionalUrl, oneOf, requiredUrl, safeErrorMessage } from "@/lib/validation";
@@ -37,6 +38,7 @@ function revalidateAll() {
 }
 
 export async function createWorldbuildingEntry(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readFields(formData);
@@ -49,6 +51,7 @@ export async function createWorldbuildingEntry(_prevState: ActionState, formData
 }
 
 export async function updateWorldbuildingEntry(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
   let fields;
   try {
     fields = readFields(formData);
@@ -61,12 +64,14 @@ export async function updateWorldbuildingEntry(id: number, _prevState: ActionSta
 }
 
 export async function deleteWorldbuildingEntry(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(worldbuildingEntries).where(eq(worldbuildingEntries.id, id));
   revalidateAll();
 }
 
 export async function createWorldbuildingImage(entryId: number, formData: FormData) {
+  await requireAdminSession();
   let url: string;
   try {
     url = requiredUrl(formData.get("url"), "Image");
@@ -78,17 +83,20 @@ export async function createWorldbuildingImage(entryId: number, formData: FormDa
 }
 
 export async function updateWorldbuildingImage(id: number, formData: FormData) {
+  await requireAdminSession();
   await db.update(worldbuildingImages).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(worldbuildingImages.id, id));
   revalidateAll();
 }
 
 export async function deleteWorldbuildingImage(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(worldbuildingImages).where(eq(worldbuildingImages.id, id));
   revalidateAll();
 }
 
 export async function createWorldbuildingVideo(entryId: number, formData: FormData) {
+  await requireAdminSession();
   let url: string;
   try {
     url = requiredUrl(formData.get("url"), "Video");
@@ -100,17 +108,20 @@ export async function createWorldbuildingVideo(entryId: number, formData: FormDa
 }
 
 export async function updateWorldbuildingVideo(id: number, formData: FormData) {
+  await requireAdminSession();
   await db.update(worldbuildingVideos).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(worldbuildingVideos.id, id));
   revalidateAll();
 }
 
 export async function deleteWorldbuildingVideo(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(worldbuildingVideos).where(eq(worldbuildingVideos.id, id));
   revalidateAll();
 }
 
 export async function createWorldbuildingLink(entryId: number, formData: FormData) {
+  await requireAdminSession();
   let fields;
   try {
     fields = parseLinkFields(formData);
@@ -122,6 +133,7 @@ export async function createWorldbuildingLink(entryId: number, formData: FormDat
 }
 
 export async function updateWorldbuildingLink(id: number, formData: FormData) {
+  await requireAdminSession();
   let fields;
   try {
     fields = parseLinkFields(formData);
@@ -133,6 +145,7 @@ export async function updateWorldbuildingLink(id: number, formData: FormData) {
 }
 
 export async function deleteWorldbuildingLink(formData: FormData) {
+  await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(worldbuildingLinks).where(eq(worldbuildingLinks.id, id));
   revalidateAll();
