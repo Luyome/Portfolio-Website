@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { games, gameLinks, gameImages, gameVideos } from "@/db/schema";
 import GameForm from "@/components/admin/GameForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import ExtraImagesPanel from "@/components/admin/ExtraImagesPanel";
 import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
@@ -39,7 +40,7 @@ export default async function EditGamePage({
 
   return (
     <div>
-      <div className="adm-title">Edit Game</div>
+      <AdminPageHeader title="Edit Game" />
       <GameForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
       <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateGameImage} deleteAction={deleteGameImage} />
       <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateGameVideo} deleteAction={deleteGameVideo} />

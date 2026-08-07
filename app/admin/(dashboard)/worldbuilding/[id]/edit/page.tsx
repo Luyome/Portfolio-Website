@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingVideos } from "@/db/schema";
 import WorldbuildingForm from "@/components/admin/WorldbuildingForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import ExtraImagesPanel from "@/components/admin/ExtraImagesPanel";
 import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
@@ -38,7 +39,7 @@ export default async function EditWorldbuildingEntryPage({
 
   return (
     <div>
-      <div className="adm-title">Edit Worldbuilding Entry</div>
+      <AdminPageHeader title="Edit Worldbuilding Entry" />
       <WorldbuildingForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
       <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateWorldbuildingImage} deleteAction={deleteWorldbuildingImage} />
       <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateWorldbuildingVideo} deleteAction={deleteWorldbuildingVideo} />

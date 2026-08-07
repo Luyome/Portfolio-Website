@@ -16,6 +16,7 @@ import DeleteButton from "@/components/admin/DeleteButton";
 import MetadataForm from "@/components/admin/MetadataForm";
 import NumberPicker from "@/components/admin/NumberPicker";
 import SaveButton from "@/components/admin/SaveButton";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminMetadataPage({
   searchParams,
@@ -43,13 +44,12 @@ export default async function AdminMetadataPage({
 
   return (
     <div>
-      <div className="adm-title">Metadata</div>
-      <p className="adm-sub">
-        Manage the controlled Medium, Subject Matter, Software, and Tag options used across content. Portfolio
-        selectors and legacy migration are handled separately (Task 2.10).
-      </p>
+      <AdminPageHeader
+        title="Metadata"
+        description="Manage the controlled Medium, Subject Matter, Software, and Tag options used across content. Portfolio selectors and legacy migration are handled separately (Task 2.10)."
+      />
 
-      <div className="adm-chart-filters" style={{ marginTop: 24, flexWrap: "wrap" }}>
+      <div className="adm-chart-filters" style={{ flexWrap: "wrap" }}>
         {METADATA_TYPES.map((t) => (
           <Link key={t} href={`/admin/metadata?type=${t}`} className={`adm-chart-chip ${t === activeType ? "on" : ""}`}>
             {METADATA_TYPE_LABELS[t]}

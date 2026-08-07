@@ -6,6 +6,7 @@ import { deleteWorldbuildingEntry } from "@/lib/actions/worldbuilding";
 import DeleteButton from "@/components/admin/DeleteButton";
 import ResizableTh from "@/components/admin/ResizableTh";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminWorldbuildingListPage() {
   const items = await db
@@ -15,13 +16,17 @@ export default async function AdminWorldbuildingListPage() {
 
   return (
     <div>
-      <div className="adm-title">Worldbuilding</div>
-      <p className="adm-sub">{items.length} item(s)</p>
-      <div className="adm-actions" style={{ marginBottom: 16 }}>
-        <Link href="/admin/worldbuilding/new" className="adm-btn">+ New Entry</Link>
-        <Link href="/admin/worldbuilding/maps">Map Manager →</Link>
-        <Link href="/admin/worldbuilding/map">Map Pins →</Link>
-      </div>
+      <AdminPageHeader
+        title="Worldbuilding"
+        description={`${items.length} item(s)`}
+        action={
+          <div className="adm-actions">
+            <Link href="/admin/worldbuilding/new" className="adm-btn">+ New Entry</Link>
+            <Link href="/admin/worldbuilding/maps">Map Manager →</Link>
+            <Link href="/admin/worldbuilding/map">Map Pins →</Link>
+          </div>
+        }
+      />
       {items.length === 0 ? (
         <AdminEmptyState label="No worldbuilding entries yet." />
       ) : (

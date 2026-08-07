@@ -12,6 +12,7 @@ import TimelineYearPicker from "@/components/admin/TimelineYearPicker";
 import NumberPicker from "@/components/admin/NumberPicker";
 import AboutForm from "@/components/admin/AboutForm";
 import SaveButton from "@/components/admin/SaveButton";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
 export default async function AdminAboutPage() {
@@ -24,9 +25,7 @@ export default async function AdminAboutPage() {
 
   return (
     <div>
-      <div className="adm-title">About</div>
-
-      <p className="adm-sub">Who I Am &amp; Tools</p>
+      <AdminPageHeader title="About" description="Who I Am &amp; Tools" />
       <AboutForm
         action={updateAboutContent}
         whoIAmParagraphs={about?.whoIAmParagraphs.join("\n") ?? ""}

@@ -1,4 +1,5 @@
 import PortfolioForm from "@/components/admin/PortfolioForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { createPortfolioItem } from "@/lib/actions/portfolio";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { getActiveMetadataOptionsByType } from "@/lib/portfolio-metadata";
@@ -11,7 +12,7 @@ export default async function NewPortfolioItemPage() {
 
   return (
     <div>
-      <div className="adm-title">New Portfolio Item</div>
+      <AdminPageHeader title="New Portfolio Item" />
       <PortfolioForm action={createPortfolioItem} pageVars={pageAppearanceVars(appearance)} metadataOptions={metadataOptions} />
     </div>
   );

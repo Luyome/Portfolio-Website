@@ -1,4 +1,5 @@
 import SketchForm from "@/components/admin/SketchForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { createSketch } from "@/lib/actions/sketches";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
@@ -7,7 +8,7 @@ export default async function NewSketchPage() {
 
   return (
     <div>
-      <div className="adm-title">New Sketch</div>
+      <AdminPageHeader title="New Sketch" />
       <SketchForm action={createSketch} pageVars={pageAppearanceVars(appearance)} />
     </div>
   );

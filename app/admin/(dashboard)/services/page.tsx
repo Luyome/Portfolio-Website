@@ -6,15 +6,18 @@ import { deleteService } from "@/lib/actions/services";
 import DeleteButton from "@/components/admin/DeleteButton";
 import ResizableTh from "@/components/admin/ResizableTh";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminServicesListPage() {
   const items = await db.select().from(services).orderBy(asc(services.sortOrder), asc(services.id));
 
   return (
     <div>
-      <div className="adm-title">Services</div>
-      <p className="adm-sub">{items.length} item(s)</p>
-      <Link href="/admin/services/new" className="adm-btn">+ New Service</Link>
+      <AdminPageHeader
+        title="Services"
+        description={`${items.length} item(s)`}
+        action={<Link href="/admin/services/new" className="adm-btn">+ New Service</Link>}
+      />
       {items.length === 0 ? (
         <AdminEmptyState label="No services yet." />
       ) : (

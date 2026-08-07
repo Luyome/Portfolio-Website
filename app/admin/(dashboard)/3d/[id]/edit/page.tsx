@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { models3d, model3dImages, model3dLinks, model3dVideos } from "@/db/schema";
 import Model3DForm from "@/components/admin/Model3DForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import ExtraImagesPanel from "@/components/admin/ExtraImagesPanel";
 import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
@@ -38,7 +39,7 @@ export default async function EditModel3DPage({
 
   return (
     <div>
-      <div className="adm-title">Edit 3D Model</div>
+      <AdminPageHeader title="Edit 3D Model" />
       <Model3DForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
       <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateModel3DImage} deleteAction={deleteModel3DImage} />
       <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateModel3DVideo} deleteAction={deleteModel3DVideo} />

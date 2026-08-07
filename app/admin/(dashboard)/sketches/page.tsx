@@ -6,15 +6,18 @@ import { deleteSketch } from "@/lib/actions/sketches";
 import DeleteButton from "@/components/admin/DeleteButton";
 import ResizableTh from "@/components/admin/ResizableTh";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminSketchesListPage() {
   const items = await db.select().from(sketches).orderBy(desc(sketches.year), asc(sketches.sortOrder), asc(sketches.id));
 
   return (
     <div>
-      <div className="adm-title">Sketches</div>
-      <p className="adm-sub">{items.length} item(s)</p>
-      <Link href="/admin/sketches/new" className="adm-btn">+ New Sketch</Link>
+      <AdminPageHeader
+        title="Sketches"
+        description={`${items.length} item(s)`}
+        action={<Link href="/admin/sketches/new" className="adm-btn">+ New Sketch</Link>}
+      />
       {items.length === 0 ? (
         <AdminEmptyState label="No sketches yet." />
       ) : (

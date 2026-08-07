@@ -10,6 +10,7 @@ import PortfolioPreviewCard from "./PortfolioPreviewCard";
 import Field from "./Field";
 import FormError from "./FormError";
 import FormActions from "./FormActions";
+import AdminSection from "./AdminSection";
 import MultiSelect, { type MultiSelectChip } from "./MultiSelect";
 import type { portfolioItems } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
@@ -93,53 +94,65 @@ export default function PortfolioForm({
     <PreviewToggle renderPreview={() => <PortfolioPreviewCard state={state} pageVars={pageVars} />}>
       <form action={formAction} className="adm-form" onChange={handleFormChange}>
         <FormError message={actionState?.error} />
-        <Field
-          id="title"
-          label="Title"
-          required
-          labelExtra={<FieldStyleControls fieldKey="title" current={item?.styles?.title} onStyleChange={(p) => updateStyle("title", p)} />}
-        >
-          <input name="title" defaultValue={item?.title} required />
-        </Field>
-        <Field id="cat" label="Category" required>
-          <input name="cat" defaultValue={item?.cat} required />
-        </Field>
-        <div className="adm-field">
-          <label htmlFor="year">Year</label>
-          <YearPicker id="year" name="year" defaultValue={item?.year} onValueChange={(v) => setState((s) => ({ ...s, year: v }))} />
-        </div>
-        <Field
-          id="desc"
-          label="Description"
-          required
-          labelExtra={<FieldStyleControls fieldKey="desc" current={item?.styles?.desc} onStyleChange={(p) => updateStyle("desc", p)} />}
-        >
-          <textarea name="desc" defaultValue={item?.desc} required />
-        </Field>
-        {METADATA_TYPES.map((type) => (
+
+        <AdminSection title="Basic Information">
+          <div className="adm-form-row">
+            <Field
+              id="title"
+              label="Title"
+              required
+              labelExtra={<FieldStyleControls fieldKey="title" current={item?.styles?.title} onStyleChange={(p) => updateStyle("title", p)} />}
+            >
+              <input name="title" defaultValue={item?.title} required />
+            </Field>
+            <Field id="cat" label="Category" required>
+              <input name="cat" defaultValue={item?.cat} required />
+            </Field>
+          </div>
+          <div className="adm-field">
+            <label htmlFor="year">Year</label>
+            <YearPicker id="year" name="year" defaultValue={item?.year} onValueChange={(v) => setState((s) => ({ ...s, year: v }))} />
+          </div>
           <Field
-            key={type}
-            id={`metadata-${type}`}
-            label={METADATA_TYPE_LABELS[type]}
-            required={false}
-            hint={`Select any number of ${METADATA_TYPE_LABELS[type]} options — managed under Admin → Metadata.`}
+            id="desc"
+            label="Description"
+            required
+            labelExtra={<FieldStyleControls fieldKey="desc" current={item?.styles?.desc} onStyleChange={(p) => updateStyle("desc", p)} />}
           >
-            <MultiSelect
-              name={FIELD_NAMES[type]}
-              options={metadataOptions[type]}
-              initialSelected={metadataSelections[type]}
-              metadataType={type}
-              onSelectionChange={type === "tag" ? handleTagSelectionChange : undefined}
-            />
+            <textarea name="desc" defaultValue={item?.desc} required />
           </Field>
-        ))}
-        <Field id="link" label="External Link" required={false}>
-          <input name="link" defaultValue={item?.link} placeholder="https://www.artstation.com/..." />
-        </Field>
-        <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
-        <Field id="sortOrder" label="Sort Order" required={false}>
-          <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
-        </Field>
+        </AdminSection>
+
+        <AdminSection title="Metadata" description="Managed under Admin → Metadata.">
+          {METADATA_TYPES.map((type) => (
+            <Field
+              key={type}
+              id={`metadata-${type}`}
+              label={METADATA_TYPE_LABELS[type]}
+              required={false}
+              hint={`Select any number of ${METADATA_TYPE_LABELS[type]} options — managed under Admin → Metadata.`}
+            >
+              <MultiSelect
+                name={FIELD_NAMES[type]}
+                options={metadataOptions[type]}
+                initialSelected={metadataSelections[type]}
+                metadataType={type}
+                onSelectionChange={type === "tag" ? handleTagSelectionChange : undefined}
+              />
+            </Field>
+          ))}
+        </AdminSection>
+
+        <AdminSection title="Media & Display">
+          <Field id="link" label="External Link" required={false}>
+            <input name="link" defaultValue={item?.link} placeholder="https://www.artstation.com/..." />
+          </Field>
+          <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
+          <Field id="sortOrder" label="Sort Order" required={false}>
+            <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
+          </Field>
+        </AdminSection>
+
         <FormActions cancelHref="/admin/portfolio" />
       </form>
     </PreviewToggle>

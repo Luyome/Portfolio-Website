@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { cvContent } from "@/db/schema";
 import FileUploadField from "@/components/admin/FileUploadField";
 import SaveButton from "@/components/admin/SaveButton";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { updateCvContent } from "@/lib/actions/cv";
 
 export default async function AdminCvPage() {
@@ -11,8 +12,7 @@ export default async function AdminCvPage() {
 
   return (
     <div>
-      <div className="adm-title">CV</div>
-      <p className="adm-sub">Upload your CV as an image or a PDF. Powers the &quot;Download CV (PDF)&quot; button on /about.</p>
+      <AdminPageHeader title="CV" description={`Upload your CV as an image or a PDF. Powers the "Download CV (PDF)" button on /about.`} />
       {current && (
         isPdf ? (
           <div className="adm-hint">📄 PDF uploaded — {current.split("/").pop()}</div>

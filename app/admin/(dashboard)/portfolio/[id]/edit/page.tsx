@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { portfolioItems, portfolioImages, portfolioLinks, portfolioVideos } from "@/db/schema";
 import PortfolioForm from "@/components/admin/PortfolioForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import ExtraImagesPanel from "@/components/admin/ExtraImagesPanel";
 import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
@@ -41,7 +42,7 @@ export default async function EditPortfolioItemPage({
 
   return (
     <div>
-      <div className="adm-title">Edit Portfolio Item</div>
+      <AdminPageHeader title="Edit Portfolio Item" />
       <PortfolioForm
         action={updateWithId}
         item={item}

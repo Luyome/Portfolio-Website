@@ -7,19 +7,19 @@ import NumberPicker from "@/components/admin/NumberPicker";
 import SaveButton from "@/components/admin/SaveButton";
 import Field from "@/components/admin/Field";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminArchivePage() {
   const categories = await db.select().from(archiveCategories).orderBy(asc(archiveCategories.sortOrder), asc(archiveCategories.id));
 
   return (
     <div>
-      <div className="adm-title">Archive</div>
-      <p className="adm-sub">
-        Manage the category filter chips shown on the public Archive page. Year and Project Type filters are
-        derived automatically from your content and don&apos;t need management here.
-      </p>
+      <AdminPageHeader
+        title="Archive"
+        description="Manage the category filter chips shown on the public Archive page. Year and Project Type filters are derived automatically from your content and don't need management here."
+      />
 
-      <p className="adm-sub" style={{ marginTop: 32 }}>Category Chips</p>
+      <p className="adm-sub" style={{ marginTop: 0 }}>Category Chips</p>
       {categories.length === 0 ? (
         <AdminEmptyState label="No category chips yet." />
       ) : (

@@ -6,15 +6,18 @@ import { deleteModel3D } from "@/lib/actions/models3d";
 import DeleteButton from "@/components/admin/DeleteButton";
 import ResizableTh from "@/components/admin/ResizableTh";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminModel3DListPage() {
   const items = await db.select().from(models3d).orderBy(desc(models3d.year), asc(models3d.sortOrder), asc(models3d.id));
 
   return (
     <div>
-      <div className="adm-title">3D</div>
-      <p className="adm-sub">{items.length} item(s)</p>
-      <Link href="/admin/3d/new" className="adm-btn">+ New 3D Model</Link>
+      <AdminPageHeader
+        title="3D"
+        description={`${items.length} item(s)`}
+        action={<Link href="/admin/3d/new" className="adm-btn">+ New 3D Model</Link>}
+      />
       {items.length === 0 ? (
         <AdminEmptyState label="No 3D models yet." />
       ) : (

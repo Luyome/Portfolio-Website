@@ -7,6 +7,7 @@ import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import HomePreviewCard from "./HomePreviewCard";
 import SaveButton from "./SaveButton";
+import AdminSection from "./AdminSection";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
 type PreviewState = {
@@ -85,54 +86,66 @@ export default function HomeHeroForm({
   return (
     <PreviewToggle renderPreview={() => <HomePreviewCard state={state} pageVars={pageVars} />}>
       <form action={action} className="adm-form" onChange={handleFormChange}>
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="heroEyebrow">Eyebrow</label>
-            <FieldStyleControls fieldKey="heroEyebrow" current={settings.styles?.heroEyebrow} onStyleChange={(p) => updateStyle("heroEyebrow", p)} />
+        <AdminSection title="Identity Text">
+          <div className="adm-field">
+            <div className="adm-field-label-row">
+              <label htmlFor="heroEyebrow">Eyebrow</label>
+              <FieldStyleControls fieldKey="heroEyebrow" current={settings.styles?.heroEyebrow} onStyleChange={(p) => updateStyle("heroEyebrow", p)} />
+            </div>
+            <input id="heroEyebrow" name="heroEyebrow" defaultValue={settings.heroEyebrow} placeholder="Istanbul, Turkey — 2026" />
           </div>
-          <input id="heroEyebrow" name="heroEyebrow" defaultValue={settings.heroEyebrow} placeholder="Istanbul, Turkey — 2026" />
-        </div>
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="heroJpLine">Japanese Subtitle</label>
-            <FieldStyleControls fieldKey="heroJpLine" current={settings.styles?.heroJpLine} onStyleChange={(p) => updateStyle("heroJpLine", p)} />
+          <div className="adm-field">
+            <div className="adm-field-label-row">
+              <label htmlFor="heroJpLine">Japanese Subtitle</label>
+              <FieldStyleControls fieldKey="heroJpLine" current={settings.styles?.heroJpLine} onStyleChange={(p) => updateStyle("heroJpLine", p)} />
+            </div>
+            <input id="heroJpLine" name="heroJpLine" defaultValue={settings.heroJpLine} />
           </div>
-          <input id="heroJpLine" name="heroJpLine" defaultValue={settings.heroJpLine} />
-        </div>
-        <div className="adm-field">
-          <div className="adm-field-label-row">
-            <label htmlFor="heroBio">Bio</label>
-            <FieldStyleControls fieldKey="heroBio" current={settings.styles?.heroBio} onStyleChange={(p) => updateStyle("heroBio", p)} />
+          <div className="adm-field">
+            <div className="adm-field-label-row">
+              <label htmlFor="heroBio">Bio</label>
+              <FieldStyleControls fieldKey="heroBio" current={settings.styles?.heroBio} onStyleChange={(p) => updateStyle("heroBio", p)} />
+            </div>
+            <textarea id="heroBio" name="heroBio" defaultValue={settings.heroBio} style={{ minHeight: 110 }} />
+            <div className="adm-hint">Wrap words in **double asterisks** to bold them, e.g. **The Abyss**.</div>
           </div>
-          <textarea id="heroBio" name="heroBio" defaultValue={settings.heroBio} style={{ minHeight: 110 }} />
-          <div className="adm-hint">Wrap words in **double asterisks** to bold them, e.g. **The Abyss**.</div>
-        </div>
-        <ImageUploadField
-          name="homeBgImage"
-          initialUrl={settings.homeBgImage}
-          label="Hero Background Image"
-          sizeFieldName="homeBg"
-          initialSize={{ width: settings.homeBgWidth, height: settings.homeBgHeight }}
-          onValueChange={(v) => setState((s) => ({ ...s, homeBgImage: v }))}
-        />
-        <div className="adm-hint" style={{ marginTop: -8 }}>
-          The hero image always spans the full page width. Width/Height above let you force an exact tiled/cropped size instead of auto-cover; leave both at 0 for the default behavior.
-        </div>
-        <div className="adm-field">
-          <label htmlFor="homeBgOpacity">Hero Background Opacity ({settings.homeBgOpacity}%)</label>
-          <input id="homeBgOpacity" name="homeBgOpacity" type="range" min={0} max={100} defaultValue={settings.homeBgOpacity} />
-        </div>
-        <ImageUploadField name="contactBgImage" initialUrl={settings.contactBgImage} label="Let's Work Together Background Image" />
-        <div className="adm-field">
-          <label htmlFor="contactBgOpacity">Let&apos;s Work Together Background Opacity ({settings.contactBgOpacity}%)</label>
-          <input id="contactBgOpacity" name="contactBgOpacity" type="range" min={0} max={100} defaultValue={settings.contactBgOpacity} />
-        </div>
-        <ImageUploadField name="narrativeImage" initialUrl={settings.narrativeImage} label="Editorial Narrative Image" />
-        <div className="adm-field">
-          <label htmlFor="narrativeText">Editorial Narrative Text</label>
-          <textarea id="narrativeText" name="narrativeText" defaultValue={settings.narrativeText} style={{ minHeight: 110 }} />
-          <div className="adm-hint">Shown next to the narrative image, below the hero. Leave the image empty to hide this section.</div>
-        </div>
+        </AdminSection>
+
+        <AdminSection title="Hero Background">
+          <ImageUploadField
+            name="homeBgImage"
+            initialUrl={settings.homeBgImage}
+            label="Hero Background Image"
+            sizeFieldName="homeBg"
+            initialSize={{ width: settings.homeBgWidth, height: settings.homeBgHeight }}
+            onValueChange={(v) => setState((s) => ({ ...s, homeBgImage: v }))}
+          />
+          <div className="adm-hint" style={{ marginTop: -8 }}>
+            The hero image always spans the full page width. Width/Height above let you force an exact tiled/cropped size instead of auto-cover; leave both at 0 for the default behavior.
+          </div>
+          <div className="adm-field">
+            <label htmlFor="homeBgOpacity">Hero Background Opacity ({settings.homeBgOpacity}%)</label>
+            <input id="homeBgOpacity" name="homeBgOpacity" type="range" min={0} max={100} defaultValue={settings.homeBgOpacity} />
+          </div>
+        </AdminSection>
+
+        <AdminSection title="Contact Background">
+          <ImageUploadField name="contactBgImage" initialUrl={settings.contactBgImage} label="Let's Work Together Background Image" />
+          <div className="adm-field">
+            <label htmlFor="contactBgOpacity">Let&apos;s Work Together Background Opacity ({settings.contactBgOpacity}%)</label>
+            <input id="contactBgOpacity" name="contactBgOpacity" type="range" min={0} max={100} defaultValue={settings.contactBgOpacity} />
+          </div>
+        </AdminSection>
+
+        <AdminSection title="Editorial Narrative">
+          <ImageUploadField name="narrativeImage" initialUrl={settings.narrativeImage} label="Editorial Narrative Image" />
+          <div className="adm-field">
+            <label htmlFor="narrativeText">Editorial Narrative Text</label>
+            <textarea id="narrativeText" name="narrativeText" defaultValue={settings.narrativeText} style={{ minHeight: 110 }} />
+            <div className="adm-hint">Shown next to the narrative image, below the hero. Leave the image empty to hide this section.</div>
+          </div>
+        </AdminSection>
+
         <SaveButton />
       </form>
     </PreviewToggle>

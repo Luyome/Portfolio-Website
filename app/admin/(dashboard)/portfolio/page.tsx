@@ -6,6 +6,7 @@ import { deletePortfolioItem } from "@/lib/actions/portfolio";
 import DeleteButton from "@/components/admin/DeleteButton";
 import ResizableTh from "@/components/admin/ResizableTh";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminPortfolioListPage() {
   const items = await db
@@ -15,9 +16,11 @@ export default async function AdminPortfolioListPage() {
 
   return (
     <div>
-      <div className="adm-title">Portfolio</div>
-      <p className="adm-sub">{items.length} item(s)</p>
-      <Link href="/admin/portfolio/new" className="adm-btn">+ New Portfolio Item</Link>
+      <AdminPageHeader
+        title="Portfolio"
+        description={`${items.length} item(s)`}
+        action={<Link href="/admin/portfolio/new" className="adm-btn">+ New Portfolio Item</Link>}
+      />
       {items.length === 0 ? (
         <AdminEmptyState label="No portfolio items yet." />
       ) : (

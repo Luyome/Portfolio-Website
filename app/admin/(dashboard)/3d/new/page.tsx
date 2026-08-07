@@ -1,4 +1,5 @@
 import Model3DForm from "@/components/admin/Model3DForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { createModel3D } from "@/lib/actions/models3d";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
@@ -7,7 +8,7 @@ export default async function NewModel3DPage() {
 
   return (
     <div>
-      <div className="adm-title">New 3D Model</div>
+      <AdminPageHeader title="New 3D Model" />
       <Model3DForm action={createModel3D} pageVars={pageAppearanceVars(appearance)} />
     </div>
   );

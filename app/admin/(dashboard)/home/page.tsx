@@ -14,6 +14,7 @@ import HeroSlidesPanel from "@/components/admin/HeroSlidesPanel";
 import ShowcaseImagesPanel from "@/components/admin/ShowcaseImagesPanel";
 import SaveButton from "@/components/admin/SaveButton";
 import HomeCurationPanel, { HomeSkillsPanel } from "@/components/admin/HomeCurationPanel";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { getHomeProductionStats } from "@/lib/home-data";
 
@@ -33,7 +34,7 @@ export default async function AdminHomePage() {
   const preview = previewRows[0];
   const selectedMapPins = pins.filter((pin)=>pin.mapId===preview?.mapId);
   return <div>
-    <div className="adm-title">Home</div><p className="adm-sub">Manage legacy Home content and the ordered Sprint 3 Home configuration.</p>
+    <AdminPageHeader title="Home" description="Manage legacy Home content and the ordered Sprint 3 Home configuration." />
     <nav className="adm-home-index" aria-label="Home sections">{SECTION_LABELS.map((label,index)=><a key={label} href={`#home-section-${index+1}`}><span>0{index+1}</span>{label}</a>)}</nav>
     <div id="home-section-1" className="adm-home-anchor"><p className="adm-sub" style={{marginTop:0}}>1. Identity Hero — legacy-compatible controls</p></div>
     <HomeHeroForm action={updateHomeSettings} settings={settings} pageVars={pageAppearanceVars(appearance)} />

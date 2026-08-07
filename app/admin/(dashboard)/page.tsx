@@ -3,6 +3,7 @@ import { getDashboardData, getRecentContent } from "@/lib/dashboard-analytics";
 import DashboardChart from "@/components/admin/DashboardChart";
 import ForceDarkModeToggle from "@/components/admin/ForceDarkModeToggle";
 import EmptyState from "@/components/EmptyState";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getSiteSettings } from "@/lib/site-settings";
 
 const QUICK_ACTIONS = [
@@ -22,15 +23,18 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="adm-dashboard">
-      <h1 className="adm-title">Dashboard</h1>
-      <p className="adm-sub">Content overview, generated from everything you&apos;ve added to the site.</p>
-
-      <div className="adm-dash-header-actions">
-        <a href="/" target="_blank" rel="noopener noreferrer" className="adm-exit-btn">
-          <span className="arr">↗</span> View Public Site
-        </a>
-        <Link href={primaryCreateHref} className="adm-btn">+ {primaryCreateLabel}</Link>
-      </div>
+      <AdminPageHeader
+        title="Dashboard"
+        description="Content overview, generated from everything you&apos;ve added to the site."
+        action={
+          <>
+            <a href="/" target="_blank" rel="noopener noreferrer" className="adm-exit-btn">
+              <span className="arr">↗</span> View Public Site
+            </a>
+            <Link href={primaryCreateHref} className="adm-btn">+ {primaryCreateLabel}</Link>
+          </>
+        }
+      />
 
       <ForceDarkModeToggle initial={settings.forceDarkMode} />
 

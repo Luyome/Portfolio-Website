@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { sketches, sketchImages, sketchLinks, sketchVideos } from "@/db/schema";
 import SketchForm from "@/components/admin/SketchForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import ExtraImagesPanel from "@/components/admin/ExtraImagesPanel";
 import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
@@ -38,7 +39,7 @@ export default async function EditSketchPage({
 
   return (
     <div>
-      <div className="adm-title">Edit Sketch</div>
+      <AdminPageHeader title="Edit Sketch" />
       <SketchForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
       <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateSketchImage} deleteAction={deleteSketchImage} />
       <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateSketchVideo} deleteAction={deleteSketchVideo} />

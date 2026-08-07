@@ -6,6 +6,7 @@ import { deleteWorldMap } from "@/lib/actions/map";
 import DeleteButton from "@/components/admin/DeleteButton";
 import ResizableTh from "@/components/admin/ResizableTh";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminMapsListPage() {
   const maps = await db.select().from(worldMaps).orderBy(asc(worldMaps.sortOrder), asc(worldMaps.id));
@@ -13,12 +14,16 @@ export default async function AdminMapsListPage() {
 
   return (
     <div>
-      <div className="adm-title">Map Manager</div>
-      <p className="adm-sub">{maps.length} map(s)</p>
-      <div className="adm-actions" style={{ marginBottom: 16 }}>
-        <Link href="/admin/worldbuilding/maps/new" className="adm-btn">+ New Map</Link>
-        <Link href="/admin/worldbuilding/map">Place Pins →</Link>
-      </div>
+      <AdminPageHeader
+        title="Map Manager"
+        description={`${maps.length} map(s)`}
+        action={
+          <div className="adm-actions">
+            <Link href="/admin/worldbuilding/maps/new" className="adm-btn">+ New Map</Link>
+            <Link href="/admin/worldbuilding/map">Place Pins →</Link>
+          </div>
+        }
+      />
       {maps.length === 0 ? (
         <AdminEmptyState label="No maps yet." />
       ) : (

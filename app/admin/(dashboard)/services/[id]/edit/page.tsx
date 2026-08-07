@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { services } from "@/db/schema";
 import ServiceForm from "@/components/admin/ServiceForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { updateService } from "@/lib/actions/services";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { requiredId } from "@/lib/validation";
@@ -29,7 +30,7 @@ export default async function EditServicePage({
 
   return (
     <div>
-      <div className="adm-title">Edit Service</div>
+      <AdminPageHeader title="Edit Service" />
       <ServiceForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
     </div>
   );

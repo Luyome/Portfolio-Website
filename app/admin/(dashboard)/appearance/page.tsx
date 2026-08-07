@@ -3,6 +3,7 @@ import { pageAppearance } from "@/db/schema";
 import { updatePageAppearance } from "@/lib/actions/appearance";
 import { PAGE_KEYS, PAGE_LABELS } from "@/lib/page-appearance";
 import PageAppearanceForm from "@/components/admin/PageAppearanceForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminAppearancePage() {
   const rows = await db.select().from(pageAppearance);
@@ -10,11 +11,10 @@ export default async function AdminAppearancePage() {
 
   return (
     <div>
-      <div className="adm-title">Appearance</div>
-      <p className="adm-sub">
-        Override background, text, and accent colors per public page. Leave a swatch on &quot;Default&quot; to keep
-        following the site&apos;s normal light/dark theme.
-      </p>
+      <AdminPageHeader
+        title="Appearance"
+        description={`Override background, text, and accent colors per public page. Leave a swatch on "Default" to keep following the site's normal light/dark theme.`}
+      />
       <div className="pa-list">
         {PAGE_KEYS.map((key) => (
           <PageAppearanceForm

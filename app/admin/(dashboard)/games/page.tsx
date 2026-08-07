@@ -6,15 +6,18 @@ import { deleteGame } from "@/lib/actions/games";
 import DeleteButton from "@/components/admin/DeleteButton";
 import ResizableTh from "@/components/admin/ResizableTh";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminGamesListPage() {
   const items = await db.select().from(games).orderBy(asc(games.sortOrder), asc(games.id));
 
   return (
     <div>
-      <div className="adm-title">Games</div>
-      <p className="adm-sub">{items.length} item(s)</p>
-      <Link href="/admin/games/new" className="adm-btn">+ New Game</Link>
+      <AdminPageHeader
+        title="Games"
+        description={`${items.length} item(s)`}
+        action={<Link href="/admin/games/new" className="adm-btn">+ New Game</Link>}
+      />
       {items.length === 0 ? (
         <AdminEmptyState label="No games yet." />
       ) : (

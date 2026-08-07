@@ -1,4 +1,5 @@
 import WorldbuildingForm from "@/components/admin/WorldbuildingForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { createWorldbuildingEntry } from "@/lib/actions/worldbuilding";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 
@@ -7,7 +8,7 @@ export default async function NewWorldbuildingEntryPage() {
 
   return (
     <div>
-      <div className="adm-title">New Worldbuilding Entry</div>
+      <AdminPageHeader title="New Worldbuilding Entry" />
       <WorldbuildingForm action={createWorldbuildingEntry} pageVars={pageAppearanceVars(appearance)} />
     </div>
   );

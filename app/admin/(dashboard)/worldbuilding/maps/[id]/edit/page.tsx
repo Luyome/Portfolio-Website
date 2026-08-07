@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { worldMaps } from "@/db/schema";
 import { updateWorldMap } from "@/lib/actions/map";
 import WorldMapForm from "@/components/admin/WorldMapForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { requiredId } from "@/lib/validation";
 
 export default async function EditMapPage({ params }: { params: Promise<{ id: string }> }) {
@@ -25,7 +26,7 @@ export default async function EditMapPage({ params }: { params: Promise<{ id: st
 
   return (
     <div>
-      <div className="adm-title">Edit Map</div>
+      <AdminPageHeader title="Edit Map" />
       <WorldMapForm action={updateWithId} item={item} otherMaps={otherMaps} />
     </div>
   );

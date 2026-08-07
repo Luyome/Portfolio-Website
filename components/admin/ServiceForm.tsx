@@ -6,6 +6,7 @@ import PreviewToggle from "./PreviewToggle";
 import ServicePreviewCard from "./ServicePreviewCard";
 import Field from "./Field";
 import FormActions from "./FormActions";
+import AdminSection from "./AdminSection";
 import type { services } from "@/db/schema";
 
 type ServiceRow = typeof services.$inferSelect;
@@ -36,18 +37,23 @@ export default function ServiceForm({
   return (
     <PreviewToggle renderPreview={() => <ServicePreviewCard state={state} pageVars={pageVars} />}>
       <form action={action} className="adm-form" onChange={handleFormChange}>
-        <Field id="icon" label="Icon" required hint="A single character/symbol, e.g. ◆ ◈ ◬ ▶ △ ■">
-          <input name="icon" defaultValue={item?.icon} required placeholder="◆" />
-        </Field>
-        <Field id="title" label="Title" required>
-          <input name="title" defaultValue={item?.title} required />
-        </Field>
-        <Field id="desc" label="Description" required>
-          <textarea name="desc" defaultValue={item?.desc} required />
-        </Field>
-        <Field id="sortOrder" label="Sort Order" required={false}>
-          <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
-        </Field>
+        <AdminSection title="Basic Information">
+          <div className="adm-form-row">
+            <Field id="icon" label="Icon" required hint="A single character/symbol, e.g. ◆ ◈ ◬ ▶ △ ■">
+              <input name="icon" defaultValue={item?.icon} required placeholder="◆" />
+            </Field>
+            <Field id="title" label="Title" required>
+              <input name="title" defaultValue={item?.title} required />
+            </Field>
+          </div>
+          <Field id="desc" label="Description" required>
+            <textarea name="desc" defaultValue={item?.desc} required />
+          </Field>
+          <Field id="sortOrder" label="Sort Order" required={false}>
+            <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
+          </Field>
+        </AdminSection>
+
         <FormActions cancelHref="/admin/services" />
       </form>
     </PreviewToggle>

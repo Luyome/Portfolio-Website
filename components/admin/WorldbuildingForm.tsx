@@ -13,6 +13,7 @@ import WorldbuildingPreviewCard from "./WorldbuildingPreviewCard";
 import Field from "./Field";
 import FormError from "./FormError";
 import FormActions from "./FormActions";
+import AdminSection from "./AdminSection";
 import type { worldbuildingEntries } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 import { CATEGORIES } from "@/types/worldbuilding";
@@ -77,52 +78,66 @@ export default function WorldbuildingForm({
     <PreviewToggle renderPreview={() => <WorldbuildingPreviewCard state={state} pageVars={pageVars} />}>
       <form action={formAction} className="adm-form" onChange={handleFormChange}>
         <FormError message={actionState?.error} />
-        <Field
-          id="title"
-          label="Title"
-          required
-          labelExtra={<FieldStyleControls fieldKey="title" current={item?.styles?.title} onStyleChange={(p) => updateStyle("title", p)} />}
-        >
-          <input name="title" defaultValue={item?.title} required />
-        </Field>
-        <Field id="cat" label="Category" required>
-          <select name="cat" defaultValue={item?.cat ?? CATEGORIES[0]} required>
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </Field>
-        <div className="adm-field">
-          <label htmlFor="year">Year</label>
-          <YearPicker id="year" name="year" defaultValue={item?.year} />
-        </div>
-        <div className="adm-field">
-          <label htmlFor="date">Display Date</label>
-          <DatePicker id="date" name="date" defaultValue={item?.date} onValueChange={(v) => setState((s) => ({ ...s, date: v }))} />
-        </div>
-        <Field
-          id="excerpt"
-          label="Excerpt"
-          required
-          labelExtra={<FieldStyleControls fieldKey="excerpt" current={item?.styles?.excerpt} onStyleChange={(p) => updateStyle("excerpt", p)} />}
-        >
-          <textarea name="excerpt" defaultValue={item?.excerpt} required />
-        </Field>
-        <Field id="chips" label="Chips" required={false} hint="Comma separated, e.g. Aethermoor, Lore, Cities">
-          <input name="chips" defaultValue={item?.chips.join(", ")} />
-        </Field>
-        <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
-        <ContentEditor name="content" defaultValue={item?.content} />
-        <div className="adm-field">
-          <label>Content Order</label>
-          <div className="adm-hint" style={{ marginBottom: 8 }}>
-            Where Content lands relative to Gallery Images and Videos (lower number = earlier).
+
+        <AdminSection title="Basic Information">
+          <div className="adm-form-row">
+            <Field
+              id="title"
+              label="Title"
+              required
+              labelExtra={<FieldStyleControls fieldKey="title" current={item?.styles?.title} onStyleChange={(p) => updateStyle("title", p)} />}
+            >
+              <input name="title" defaultValue={item?.title} required />
+            </Field>
+            <Field id="cat" label="Category" required>
+              <select name="cat" defaultValue={item?.cat ?? CATEGORIES[0]} required>
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </Field>
           </div>
-          <OrderPicker name="contentOrder" defaultValue={item?.contentOrder ?? 0} />
-        </div>
-        <Field id="sortOrder" label="Sort Order" required={false}>
-          <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
-        </Field>
+          <div className="adm-form-row">
+            <div className="adm-field">
+              <label htmlFor="year">Year</label>
+              <YearPicker id="year" name="year" defaultValue={item?.year} />
+            </div>
+            <div className="adm-field">
+              <label htmlFor="date">Display Date</label>
+              <DatePicker id="date" name="date" defaultValue={item?.date} onValueChange={(v) => setState((s) => ({ ...s, date: v }))} />
+            </div>
+          </div>
+          <Field
+            id="excerpt"
+            label="Excerpt"
+            required
+            labelExtra={<FieldStyleControls fieldKey="excerpt" current={item?.styles?.excerpt} onStyleChange={(p) => updateStyle("excerpt", p)} />}
+          >
+            <textarea name="excerpt" defaultValue={item?.excerpt} required />
+          </Field>
+          <Field id="chips" label="Chips" required={false} hint="Comma separated, e.g. Aethermoor, Lore, Cities">
+            <input name="chips" defaultValue={item?.chips.join(", ")} />
+          </Field>
+        </AdminSection>
+
+        <AdminSection title="Content & Media">
+          <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
+          <ContentEditor name="content" defaultValue={item?.content} />
+          <div className="adm-field">
+            <label>Content Order</label>
+            <div className="adm-hint" style={{ marginBottom: 8 }}>
+              Where Content lands relative to Gallery Images and Videos (lower number = earlier).
+            </div>
+            <OrderPicker name="contentOrder" defaultValue={item?.contentOrder ?? 0} />
+          </div>
+        </AdminSection>
+
+        <AdminSection title="Display">
+          <Field id="sortOrder" label="Sort Order" required={false}>
+            <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
+          </Field>
+        </AdminSection>
+
         <FormActions cancelHref="/admin/worldbuilding" />
       </form>
     </PreviewToggle>
