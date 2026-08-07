@@ -38,6 +38,17 @@ export default function HomeContactSocial({ links, images = [], artworks = [], b
   const secondary = images.filter((_, index) => index !== activeImage).slice(0, 2);
   const washOpacity = Math.min(Math.max(backgroundOpacity, 0), 100) / 100;
 
+  // Shortest-path horizontal offset for the sliding frame: each image sits a full
+  // frame-width to the side of its neighbour and slides into place via `transform`
+  // (not an opacity crossfade), wrapping around the short (<=3 image) rotation.
+  const slideOffset = (index: number) => {
+    const length = images.length;
+    let diff = index - activeImage;
+    if (diff > length / 2) diff -= length;
+    if (diff < -length / 2) diff += length;
+    return diff;
+  };
+
   return (
     <section className="home-contact-social" aria-labelledby="home-contact-title" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false); }}>
       {images.length > 0 && <div className="hcs-wash" aria-hidden="true">
@@ -63,7 +74,7 @@ export default function HomeContactSocial({ links, images = [], artworks = [], b
               <div className="hcs-feature-visual" aria-hidden="true">
                 <div className="hcs-frame hcs-frame-main">
                   {images.map((image, index) => (
-                    <Image key={image} src={image} alt="" fill sizes="(max-width: 820px) 82vw, 480px" priority={false} unoptimized={!isOptimizableImageUrl(image)} style={{ opacity: index === activeImage ? 1 : 0 }} />
+                    <Image key={image} src={image} alt="" fill sizes="(max-width: 820px) 82vw, 460px" priority={false} unoptimized={!isOptimizableImageUrl(image)} style={{ transform: `translateX(${slideOffset(index) * 100}%)` }} />
                   ))}
                 </div>
               </div>

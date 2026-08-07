@@ -677,12 +677,15 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .hcs-feature-marks{display:flex;gap:8px;margin-top:24px}
 .hcs-feature-marks span{width:26px;height:3px;background:var(--border)}
 .hcs-feature-marks span:first-child{background:var(--red)}
-.hcs-feature-visual{min-width:0;height:100%;position:relative}
+.hcs-feature-visual{min-width:0}
 
 .hcs-frame{overflow:hidden;background:var(--bg2);border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 36px rgba(0,0,0,.4)}
 .hcs-frame img{object-fit:cover}
-.hcs-frame-main{position:absolute;inset:clamp(-40px,-4vw,-56px) 0 0 auto;width:100%;max-width:420px;aspect-ratio:3/4;border-radius:18px 0 0 18px;border-right:0}
-.hcs-frame-main img{transition:opacity 1.1s ease}
+/* Landscape-only sliding frame: three images sit edge-to-edge and slide
+   horizontally into place (`transform`, not an opacity crossfade) — every
+   rotating Contact image is a wide/horizontal crop, never portrait. */
+.hcs-frame-main{position:relative;width:100%;max-width:460px;aspect-ratio:3/2;margin-left:auto;margin-top:clamp(-52px,-4.6vw,-28px);border-radius:18px;overflow:hidden}
+.hcs-frame-main img{object-fit:cover;transition:transform .9s cubic-bezier(.4,0,.2,1)}
 
 /* Three-module row: Artwork, Contact, Index/Continue — the middle Contact column is
    deliberately the widest, matching the reference's dominant middle list module. */
@@ -742,8 +745,7 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
   .hcs-panel{padding:28px clamp(20px,4vw,32px) 28px}
   .hcs-feature{grid-template-columns:1fr;gap:32px}
   .hcs-feature-text{max-width:none;padding-right:0}
-  .hcs-feature-visual{height:280px}
-  .hcs-frame-main{position:relative;inset:auto;width:100%;max-width:360px;aspect-ratio:4/5;margin-inline:auto;border-radius:18px}
+  .hcs-frame-main{width:100%;max-width:420px;aspect-ratio:3/2;margin:0 auto;border-radius:18px}
   .hcs-modules{grid-template-columns:1fr 1fr}
   .hcs-module-nav{grid-column:1/-1}
 }
