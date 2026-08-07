@@ -16,7 +16,7 @@ export const DEFAULT_SITE_SETTINGS = {
   heroEyebrow: "Istanbul, Turkey — 2026",
   heroJpLine: "ゲームデザイナー　物語　世界",
   heroBio:
-    "Game Designer & worldbuilder. Building **visceral, narrative-driven** games with Unreal Engine 5. Currently developing **The Abyss** — a psychological horror anomaly game for Steam.",
+    "Game Designer & worldbuilder creating **visceral, narrative-driven** systems and worlds. Currently developing **The Abyss** — a psychological horror anomaly game for Steam.",
   homeBgImage: "",
   homeBgOpacity: 30,
   homeBgWidth: null as number | null,

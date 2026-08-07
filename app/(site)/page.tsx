@@ -3,20 +3,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { services, heroButtons, homeHeroSlides, homeShowcase, worldbuildingEntries, games, models3d } from "@/db/schema";
+import { services, heroButtons, homeHeroSlides, worldbuildingEntries, games, models3d } from "@/db/schema";
 import { getSiteSettings } from "@/lib/site-settings";
 import InlineBold from "@/components/InlineBold";
 import HeroCarousel from "@/components/HeroCarousel";
-import ShowcaseCarousel from "@/components/ShowcaseCarousel";
+import SelectedWorkCoverflow from "@/components/SelectedWorkCoverflow";
 import Reveal from "@/components/Reveal";
 import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { isOptimizableImageUrl } from "@/lib/image-host";
+import { getHomeFeaturedWorks } from "@/lib/home-data";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
+
+function alignPrimaryPositioning(copy: string): string {
+  return copy.replace(/games with Unreal Engine(?:\s*5)?/gi, "games and immersive worlds");
+}
 
 export default async function HomePage() {
   const [
@@ -25,7 +30,7 @@ export default async function HomePage() {
     buttons,
     appearance,
     heroSlideRows,
-    showcaseRows,
+    featuredWorks,
     wbFeatured,
     gameFeatured,
     modelFeatured,
@@ -35,7 +40,7 @@ export default async function HomePage() {
     db.select().from(heroButtons).orderBy(asc(heroButtons.sortOrder)),
     getPageAppearance("home"),
     db.select().from(homeHeroSlides).orderBy(asc(homeHeroSlides.sortOrder)),
-    db.select().from(homeShowcase).orderBy(asc(homeShowcase.sortOrder)).limit(12),
+    getHomeFeaturedWorks(),
     db.select().from(worldbuildingEntries).orderBy(asc(worldbuildingEntries.sortOrder)).limit(1),
     db.select().from(games).orderBy(asc(games.sortOrder)).limit(1),
     db.select().from(models3d).orderBy(asc(models3d.sortOrder)).limit(1),
@@ -85,7 +90,7 @@ export default async function HomePage() {
             <div className="h-jp" style={fieldStyle(settings.styles, "heroJpLine")}>{settings.heroJpLine}</div>
             <div className="h-rule" aria-hidden="true" />
             <p className="h-bio" style={fieldStyle(settings.styles, "heroBio")}>
-              <InlineBold text={settings.heroBio} />
+              <InlineBold text={alignPrimaryPositioning(settings.heroBio)} />
             </p>
             <div className="h-btns">
               {buttons.map((b) => (
@@ -97,6 +102,8 @@ export default async function HomePage() {
           </div>
         </Reveal>
       </div>
+
+      <SelectedWorkCoverflow items={featuredWorks} />
 
       {settings.narrativeImage && settings.narrativeText && (
         <Reveal className="home-narrative">
@@ -116,15 +123,6 @@ export default async function HomePage() {
               <p className="narr-text">{settings.narrativeText}</p>
             </div>
           </div>
-        </Reveal>
-      )}
-
-      {showcaseRows.length > 0 && (
-        <Reveal className="home-showcase">
-          <div className="sc-heading">
-            <h2 className="sc-title">Selected Work</h2>
-          </div>
-          <ShowcaseCarousel items={showcaseRows} />
         </Reveal>
       )}
 

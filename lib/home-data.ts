@@ -304,6 +304,12 @@ async function getHomeContentSelections(): Promise<ResolvedHomeContent[]> {
   });
 }
 
+/** Focused public read for Task 3.5; avoids resolving later Home sections. */
+export const getHomeFeaturedWorks = cache(async () => {
+  const selections = await getHomeContentSelections();
+  return selections.filter((item) => item.section === "featured_work");
+});
+
 export async function getHomeProductionStats(): Promise<HomeProductionStat[]> {
   const [modelCount, sketchCount, worldbuildingCount, gameCount, settings] = await Promise.all([
     db.select({ value: count() }).from(models3d),
