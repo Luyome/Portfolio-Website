@@ -86,9 +86,9 @@ Content limits for this sprint: Featured Works max 6; Home Skills max 6; Capabil
 
 Identity note: Tetsunaru is the brand/internet identity; Demir Ünal is the real/professional name. The exact name and brand hierarchy inside the Hero is not locked yet — to be decided visually during implementation, not here.
 
-Sprint 3 tasks (all **Not Started** — planning only, no implementation begun):
+Sprint 3 tasks:
 
-- Task 3.1 — Existing Home System Audit + Scope Lock: Not started.
+- Task 3.1 — Existing Home System Audit + Scope Lock: **Complete.**
 - Task 3.2 — Home Data Architecture: Not started.
 - Task 3.3 — Home Admin Architecture: Not started.
 - Task 3.4 — Identity Hero: Not started.
@@ -104,6 +104,8 @@ Sprint 3 tasks (all **Not Started** — planning only, no implementation begun):
 - Task 3.14 — Production Deploy + Sprint Close: Not started.
 
 Sprint 3 scope boundaries (deferred to their assigned sprint, not built here): Full Map Explorer + Map Editor refinement → Sprint 4; Games → Sprint 5; Projects → Sprint 6; Portfolio final redesign → Sprint 7; Stories/Devlogs → Sprint 8; full About/Creator Profile + detailed Skills → Sprint 9; multi-language → Sprint 10; public accounts/community remain out of scope (section 6).
+
+**Verified Home audit / scope lock (Task 3.1):** Preserve and extend the existing server-rendered Home route, Site Settings identity/contact/social data, Hero media/buttons, ordered manual showcase foundation, Services/Focus Areas CRUD, shared media/motion/reduced-motion/layout/metadata systems, and existing Portfolio/2D/3D/Games/Worldbuilding/Map records. Sprint 3 must add only Home-scoped Skills, automatic broad-stat visibility, content-linked ordered Featured Works (max 6), Map Preview selection (approx. 3–5 markers), ordered Worldbuilding Highlights (max 3), and Latest Dispatches configuration (approx. 3–4); it must not expand the deferred destination systems. The global editorial status/visibility/Featured model remains unresolved and is not required for Home-specific ordered curation, but the owner must define what counts as a “Published Entry” (or approve hiding that stat) before Task 3.2 can finalize that automatic count because current content tables have no publication field.
 
 Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 
@@ -193,7 +195,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 2.10 — Portfolio Metadata Selectors & Legacy Migration: Complete.
 - Task 2.11 — Admin Integration QA: Complete.
 - Task 2.12 — Production Sync & Sprint 2 Close: Complete.
-- Task 3.1 — Existing Home System Audit + Scope Lock: Not started.
+- Task 3.1 — Existing Home System Audit + Scope Lock: Complete.
 - Task 3.2 — Home Data Architecture: Not started.
 - Task 3.3 — Home Admin Architecture: Not started.
 - Task 3.4 — Identity Hero: Not started.
