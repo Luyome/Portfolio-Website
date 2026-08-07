@@ -310,6 +310,15 @@ export const getHomeFeaturedWorks = cache(async () => {
   return selections.filter((item) => item.section === "featured_work");
 });
 
+/** Focused public read for Task 3.6; does not resolve future Home stages. */
+export const getHomeCapabilitiesAndSkills = cache(async () => {
+  const [capabilities, skills] = await Promise.all([
+    db.select().from(services).where(eq(services.isHomeVisible, true)).orderBy(asc(services.sortOrder), asc(services.id)),
+    db.select().from(homeSkills).where(eq(homeSkills.isVisible, true)).orderBy(asc(homeSkills.sortOrder), asc(homeSkills.id)),
+  ]);
+  return { capabilities, skills };
+});
+
 export async function getHomeProductionStats(): Promise<HomeProductionStat[]> {
   const [modelCount, sketchCount, worldbuildingCount, gameCount, settings] = await Promise.all([
     db.select({ value: count() }).from(models3d),

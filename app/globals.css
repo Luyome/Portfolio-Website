@@ -442,25 +442,28 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .pillar-label{position:relative;z-index:1;padding:26px 22px;font-family:var(--T);font-size:1.25rem;font-weight:700;color:#fff}
 .pillar-arrow{position:relative;z-index:1;font-family:var(--T);color:var(--red);margin-left:8px}
 
-/* HOME SERVICES */
-.home-services{width:100%;padding:56px var(--space-xl);border-top:1px solid var(--border)}
-.hs-title{font-family:var(--T);font-size:2.2rem;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px}
-.hs-sub{font-family:var(--B);font-size:1rem;color:var(--text2);text-align:center;font-style:italic;margin-bottom:44px}
-.hs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1180px;margin:0 auto}
-.hs-card{
-  background:var(--bg2);padding:28px 24px;
-  border:1px solid var(--border);
-  transition:border-color .2s,background .2s;
-}
-.hs-card:hover{background:var(--bg3);border-color:rgba(var(--red-rgb),.4)}
-.home-services .hs-grid>.hs-card:first-child{border-color:rgba(var(--red-rgb),.45);background:var(--bg3)}
-.hs-icon{
-  width:48px;height:48px;background:var(--red);
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:18px;font-size:1.3rem;
-}
-.hs-card-title{font-family:var(--T);font-size:var(--text-heading-sm);font-weight:var(--text-heading-weight);color:var(--text);margin-bottom:10px}
-.hs-card-desc{font-family:var(--B);font-size:0.9rem;color:var(--text2);line-height:1.7}
+/* HOME CAPABILITIES + SKILLS */
+.home-practice{width:100%;padding:clamp(76px,9vw,132px) clamp(24px,7vw,104px);background:var(--bg);border-bottom:1px solid var(--border)}
+.hp-capabilities,.hp-skills{width:min(1512px,100%);margin-inline:auto}
+.hp-heading{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);align-items:end;gap:clamp(36px,8vw,128px);margin-bottom:clamp(46px,6vw,84px)}
+.hp-kicker{font-family:var(--M);font-size:.64rem;letter-spacing:.26em;text-transform:uppercase;color:var(--red);margin-bottom:14px}
+.hp-heading h2{font-family:var(--S);font-size:clamp(3.3rem,7.2vw,7.4rem);font-weight:900;line-height:.82;letter-spacing:-.06em;text-transform:uppercase}
+.hp-heading>p{font-family:var(--S);font-size:clamp(1rem,1.15vw,1.18rem);line-height:1.7;color:var(--text2);max-width:42ch}
+.hp-capability-list{list-style:none;border-top:1px solid rgba(255,255,255,.18)}
+.hp-capability{display:grid;grid-template-columns:clamp(48px,6vw,92px) minmax(220px,.8fr) minmax(300px,1.2fr);align-items:start;gap:clamp(20px,3vw,52px);padding:clamp(28px,3vw,46px) 0;border-bottom:1px solid var(--border);transition:border-color .22s ease,background-color .22s ease}
+.hp-capability:hover{border-color:rgba(var(--red-rgb),.58);background:linear-gradient(90deg,rgba(var(--red-rgb),.055),transparent 72%)}
+.hp-index{font-family:var(--M);font-size:.64rem;letter-spacing:.18em;color:var(--red);padding-top:.42rem}
+.hp-capability h3{font-family:var(--S);font-size:clamp(1.55rem,2.7vw,3rem);font-weight:750;line-height:1;letter-spacing:-.035em;text-transform:uppercase}
+.hp-capability p{font-family:var(--S);font-size:clamp(.98rem,1.05vw,1.08rem);line-height:1.72;color:var(--text2);max-width:64ch}
+.hp-skills{display:grid;grid-template-columns:minmax(250px,.72fr) minmax(0,1.28fr);gap:clamp(48px,9vw,150px);padding-top:clamp(72px,9vw,126px)}
+.hp-skills-intro h2{font-family:var(--S);font-size:clamp(2rem,3.7vw,4rem);font-weight:800;line-height:.95;letter-spacing:-.045em;text-transform:uppercase}
+.hp-skills-intro p{font-family:var(--S);font-size:1rem;line-height:1.7;color:var(--text2);max-width:38ch;margin-top:22px}
+.hp-skill-list{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid rgba(255,255,255,.18)}
+.hp-skill-list li{min-height:92px;display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:10px;border-bottom:1px solid var(--border);padding:18px 22px 18px 0}
+.hp-skill-list li:nth-child(odd){border-right:1px solid var(--border)}
+.hp-skill-list li:nth-child(even){padding-left:22px}
+.hp-skill-list span{font-family:var(--M);font-size:.58rem;letter-spacing:.14em;color:var(--muted)}
+.hp-skill-list strong{font-family:var(--S);font-size:clamp(1.05rem,1.45vw,1.4rem);font-weight:650;line-height:1.2}
 
 /* HOME CONTACT */
 .home-contact{
@@ -1445,11 +1448,10 @@ a.arv-row:hover{background:var(--bg2)}
 @media(max-width:1060px){
   :root{--asw:220px}
   .ph,.port-list,.port-ctrl,.sk-ctrl,.sk-grid,.wb-grid,
-  .games-wrap,.about-wrap,.arv-wrap,.home-hero,.home-services,.home-contact,
+  .games-wrap,.about-wrap,.arv-wrap,.home-hero,.home-contact,
   .home-narrative,.home-pillars,.adm-wrap,.map-wrap{padding-left:var(--space-lg);padding-right:var(--space-lg)}
   .wa-wrap{padding-left:var(--space-lg);padding-right:var(--space-lg)}
   .wb-ctrl{margin-left:var(--space-lg);margin-right:var(--space-lg)}
-  .hs-grid{grid-template-columns:1fr 1fr}
   .sc-heading,.sc-track{padding-left:var(--space-lg);padding-right:var(--space-lg)}
   .narr-grid{gap:36px}
   .pillar-grid{grid-template-columns:1fr 1fr}
@@ -1478,7 +1480,11 @@ a.arv-row:hover{background:var(--bg2)}
   .game-row-media,.game-row.rev .game-row-media{order:1;height:280px}
   .game-row-content,.game-row.rev .game-row-content{order:2}
   .about-grid{grid-template-columns:1fr}
-  .hs-grid{grid-template-columns:1fr}
+  .hp-heading,.hp-skills{grid-template-columns:1fr}
+  .hp-heading{align-items:start;gap:24px}
+  .hp-skills{gap:36px}
+  .hp-capability{grid-template-columns:44px minmax(0,1fr)}
+  .hp-capability p{grid-column:2}
   /* Single-column stack needs its own two-row track list — the desktop
      minmax(0,1fr) is sized for one row (image | info side by side) and
      collapses .gm-img-side's row to 0px when both are auto-placed into it
@@ -1505,3 +1511,13 @@ a.arv-row:hover{background:var(--bg2)}
   .sc-heading,.sc-track{padding-left:var(--space-md);padding-right:var(--space-md)}
   .sc-item{width:200px;height:135px}
 }
+@media(max-width:560px){
+  .home-practice{padding:68px 20px}
+  .hp-heading h2{font-size:clamp(2.8rem,16vw,4.4rem)}
+  .hp-capability{grid-template-columns:34px minmax(0,1fr);gap:12px;padding:28px 0}
+  .hp-capability h3{font-size:clamp(1.45rem,7.4vw,2rem)}
+  .hp-capability p{font-size:1rem}
+  .hp-skill-list{grid-template-columns:1fr}
+  .hp-skill-list li,.hp-skill-list li:nth-child(even){min-height:76px;padding:15px 0;border-right:0}
+}
+@media(prefers-reduced-motion:reduce){.hp-capability{transition:none}}

@@ -93,7 +93,7 @@ Sprint 3 tasks:
 - Task 3.3 — Home Admin Architecture: **Complete.**
 - Task 3.4 — Identity Hero: **Complete.**
 - Task 3.5 — Selected Work Coverflow: **Complete.**
-- Task 3.6 — Capabilities + Home Skills: Not started.
+- Task 3.6 — Capabilities + Home Skills: **Complete.**
 - Task 3.7 — Automatic Production Stats: Not started.
 - Task 3.8 — KRUPNI Home Map Preview: Not started.
 - Task 3.9 — Worldbuilding Highlights: Not started.
@@ -115,7 +115,9 @@ Sprint 3 scope boundaries (deferred to their assigned sprint, not built here): F
 
 **Selected Work Coverflow (Task 3.5):** Added the media-led, user-controlled Selected Work section directly after the Identity Hero using the existing Home-specific ordered curation (maximum 6, separate from any global Featured/status model), real content metadata, and currently valid destination routes; invalid/deleted references continue to be omitted by the data boundary and the legacy Showcase no longer duplicates it publicly. Owner-approved Home direction is now sans-serif, with primary positioning centered on Game Designer + Worldbuilding while engine/software remains supporting metadata. The Home narrative proceeds from identity (“Who I am”) to work (“What I made”) and will continue through capabilities, production range, worldbuilding, current work, and contact in assigned tasks. Placeholder replacement remains later content work, and full Header/Nav visual refinement remains deferred to Task 3.12. Task 3.6 remains Not Started.
 
-**Task 3.5 final Hero refinement:** Locked the desktop Hero as a full first-viewport cinematic opening with a centered, wider composition and an approximately 10% larger sans-serif information scale; Selected Work begins after scroll. Tablet and mobile retain independent scaling; Task 3.6 remains Not Started.
+**Task 3.5 final Hero refinement:** Locked the desktop Hero as a full first-viewport cinematic opening with a centered, wider composition and an approximately 10% larger sans-serif information scale; Selected Work begins after scroll. Tablet and mobile retain independent scaling.
+
+**Capabilities + Home Skills (Task 3.6):** Replaced the legacy public Focus Areas cards with an editorial, ordered Capabilities presentation backed by the existing Services/Home visibility system, followed by the minimal ordered Home Skills model (0–6 entries, no proficiency scoring). Production Stats remain Task 3.7. Header/Nav and shared Admin visual refinement remain Task 3.12; domain-specific Admin refinement remains Sprints 4–9. Missing final media continues to follow the approved replaceable-placeholder policy and is not a blocker.
 
 Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 
@@ -210,7 +212,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 3.3 — Home Admin Architecture: Complete.
 - Task 3.4 — Identity Hero: Complete.
 - Task 3.5 — Selected Work Coverflow: Complete.
-- Task 3.6 — Capabilities + Home Skills: Not started.
+- Task 3.6 — Capabilities + Home Skills: Complete.
 - Task 3.7 — Automatic Production Stats: Not started.
 - Task 3.8 — KRUPNI Home Map Preview: Not started.
 - Task 3.9 — Worldbuilding Highlights: Not started.

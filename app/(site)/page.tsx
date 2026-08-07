@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { services, heroButtons, homeHeroSlides, worldbuildingEntries, games, models3d } from "@/db/schema";
+import { heroButtons, homeHeroSlides, worldbuildingEntries, games, models3d } from "@/db/schema";
 import { getSiteSettings } from "@/lib/site-settings";
 import InlineBold from "@/components/InlineBold";
 import HeroCarousel from "@/components/HeroCarousel";
@@ -13,7 +13,7 @@ import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { isOptimizableImageUrl } from "@/lib/image-host";
-import { getHomeFeaturedWorks } from "@/lib/home-data";
+import { getHomeCapabilitiesAndSkills, getHomeFeaturedWorks } from "@/lib/home-data";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -25,7 +25,7 @@ function alignPrimaryPositioning(copy: string): string {
 
 export default async function HomePage() {
   const [
-    servicesList,
+    homePractice,
     settings,
     buttons,
     appearance,
@@ -35,7 +35,7 @@ export default async function HomePage() {
     gameFeatured,
     modelFeatured,
   ] = await Promise.all([
-    db.select().from(services).orderBy(services.sortOrder),
+    getHomeCapabilitiesAndSkills(),
     getSiteSettings(),
     db.select().from(heroButtons).orderBy(asc(heroButtons.sortOrder)),
     getPageAppearance("home"),
@@ -105,6 +105,48 @@ export default async function HomePage() {
 
       <SelectedWorkCoverflow items={featuredWorks} />
 
+      <section id="capabilities" className="home-practice" aria-labelledby="home-practice-title">
+        <Reveal className="hp-capabilities">
+          <div className="hp-heading">
+            <div>
+              <div className="hp-kicker">Capabilities</div>
+              <h2 id="home-practice-title">What I Do</h2>
+            </div>
+            <p>Disciplines I bring together to shape playable ideas, visual spaces, and coherent worlds.</p>
+          </div>
+
+          {homePractice.capabilities.length > 0 && (
+            <ol className="hp-capability-list">
+              {homePractice.capabilities.map((capability, index) => (
+                <li key={capability.id} className="hp-capability">
+                  <span className="hp-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                  <h3>{capability.title}</h3>
+                  <p>{capability.desc}</p>
+                </li>
+              ))}
+            </ol>
+          )}
+        </Reveal>
+
+        {homePractice.skills.length > 0 && (
+          <Reveal className="hp-skills">
+            <div className="hp-skills-intro">
+              <div className="hp-kicker">Working Practice</div>
+              <h2>Skills &amp; Tools</h2>
+              <p>A focused set of disciplines and production tools used across the work.</p>
+            </div>
+            <ol className="hp-skill-list">
+              {homePractice.skills.map((skill, index) => (
+                <li key={skill.id}>
+                  <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{skill.label}</strong>
+                </li>
+              ))}
+            </ol>
+          </Reveal>
+        )}
+      </section>
+
       {settings.narrativeImage && settings.narrativeText && (
         <Reveal className="home-narrative">
           <div className="narr-grid">
@@ -143,20 +185,6 @@ export default async function HomePage() {
                 {p.label} <span className="pillar-arrow">→</span>
               </div>
             </Link>
-          ))}
-        </div>
-      </Reveal>
-
-      <Reveal className="home-services">
-        <h2 className="hs-title">Focus Areas</h2>
-        <div className="hs-sub">Environment design, hardsurface modeling, and worldbuilding — where my practice is focused</div>
-        <div className="hs-grid">
-          {servicesList.map((s) => (
-            <div className="hs-card" key={s.id}>
-              <div className="hs-icon">{s.icon}</div>
-              <div className="hs-card-title">{s.title}</div>
-              <div className="hs-card-desc">{s.desc}</div>
-            </div>
           ))}
         </div>
       </Reveal>
