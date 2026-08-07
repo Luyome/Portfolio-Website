@@ -98,7 +98,7 @@ Sprint 3 tasks:
 - Task 3.8 — KRUPNI Home Map Preview: **Complete.**
 - Task 3.9 — Worldbuilding Highlights: **Complete.**
 - Task 3.10 — Latest Dispatches: **Complete.**
-- Task 3.11 — Contact + Social: Not started.
+- Task 3.11 — Contact + Social: **Complete.**
 - Task 3.12 — Responsive + Motion + Accessibility + Performance: Not started.
 - Task 3.13 — Integration + Browser QA: Not started.
 - Task 3.14 — Production Deploy + Sprint Close: Not started.
@@ -127,7 +127,9 @@ Sprint 3 scope boundaries (deferred to their assigned sprint, not built here): F
 
 **Worldbuilding Highlights (Task 3.9):** Added a compact, media-first KRUPNI editorial section after the optional Home map preview. It respects the existing ordered Home curation up to three records and links every item to its canonical Worldbuilding detail state. When owner curation is empty, the public read uses the first three real canonical Worldbuilding records in stable source order as a non-persistent preview fallback; partial curation remains authoritative, deleted or invalid references fail safely, missing media uses a visual-only archive treatment, and zero legitimate records omit the section. No schema, content model, persisted fallback, or invented lore was added.
 
-**Latest Dispatches (Task 3.10):** Added a compact editorial list after Worldbuilding Highlights using only Home-curated canonical Portfolio, Sketch, 3D, Worldbuilding, and Game records. Entries preserve their real content type, title, summary, creation timestamp, and exact existing detail route; the public boundary rejects invalid records, orders deterministically newest-first, caps output at four, and omits the section when no legitimate curation exists. No fallback records, schema changes, publication system, or Sprint 8 Stories/Lore/Devlog models were added. Task 3.11 remains Not Started.
+**Latest Dispatches (Task 3.10):** Added a compact editorial list after Worldbuilding Highlights using only Home-curated canonical Portfolio, Sketch, 3D, Worldbuilding, and Game records. Entries preserve their real content type, title, summary, creation timestamp, and exact existing detail route; the public boundary rejects invalid records, orders deterministically newest-first, caps output at four, and omits the section when no legitimate curation exists. No fallback records, schema changes, publication system, or Sprint 8 Stories/Lore/Devlog models were added.
+
+**Contact + Social (Task 3.11):** Replaced the legacy Home contact CTA with a concise final editorial section sourced exclusively from canonical Site Settings contact and social fields. Configured email and HTTP(S) social destinations retain their exact canonical targets, invalid or empty values are omitted, partial configurations render without placeholders, and a fully empty configuration omits the section. Existing optional Home contact artwork remains an atmospheric background treatment, while the genuine global Footer remains separate and unchanged. No contact form, duplicate profile/contact model, schema change, fabricated personal data, or Task 3.12 polish was added.
 
 Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 
@@ -227,7 +229,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 3.8 — KRUPNI Home Map Preview: **Complete.**
 - Task 3.9 — Worldbuilding Highlights: **Complete.**
 - Task 3.10 — Latest Dispatches: **Complete.**
-- Task 3.11 — Contact + Social: Not started.
+- Task 3.11 — Contact + Social: **Complete.**
 - Task 3.12 — Responsive + Motion + Accessibility + Performance: Not started.
 - Task 3.13 — Integration + Browser QA: Not started.
 - Task 3.14 — Production Deploy + Sprint Close: Not started.

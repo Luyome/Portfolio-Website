@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
 import { heroButtons, homeHeroSlides } from "@/db/schema";
@@ -10,12 +9,13 @@ import SelectedWorkCoverflow from "@/components/SelectedWorkCoverflow";
 import HomeMapPreview from "@/components/HomeMapPreview";
 import HomeWorldbuildingHighlights from "@/components/HomeWorldbuildingHighlights";
 import HomeLatestDispatches from "@/components/HomeLatestDispatches";
+import HomeContactSocial from "@/components/HomeContactSocial";
 import Reveal from "@/components/Reveal";
 import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
-import { isOptimizableImageUrl } from "@/lib/image-host";
 import { getHomeData, getHomeFeaturedWorks } from "@/lib/home-data";
+import { resolveContactSocialLinks } from "@/lib/contact-social";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -46,6 +46,7 @@ export default async function HomePage() {
     (stat): stat is (typeof homeData.stats)[number] & { count: number } =>
       stat.available && stat.isVisible && stat.count !== null
   );
+  const contactSocialLinks = resolveContactSocialLinks(settings);
 
   const heroSlides =
     heroSlideRows.length > 0
@@ -175,40 +176,15 @@ export default async function HomePage() {
         </Reveal>
       )}
 
-      {settings.narrativeImage && settings.narrativeText && (
-        <Reveal className="home-narrative">
-          <div className="narr-grid">
-            <div className="narr-frame">
-              <Image
-                src={settings.narrativeImage}
-                alt=""
-                fill
-                sizes="(max-width: 820px) 100vw, 50vw"
-                unoptimized={!isOptimizableImageUrl(settings.narrativeImage)}
-              />
-            </div>
-            <div>
-              <div className="narr-eyebrow">Creative Vision</div>
-              <h2 className="narr-title">Building Worlds From The Ground Up</h2>
-              <p className="narr-text">{settings.narrativeText}</p>
-            </div>
-          </div>
+      {contactSocialLinks.length > 0 && (
+        <Reveal>
+          <HomeContactSocial
+            links={contactSocialLinks}
+            backgroundImage={settings.contactBgImage}
+            backgroundOpacity={settings.contactBgOpacity}
+          />
         </Reveal>
       )}
-
-      <Reveal className="home-contact">
-        {settings.contactBgImage && (
-          <div
-            className="contact-bg-image"
-            style={{ backgroundImage: `url(${settings.contactBgImage})`, opacity: settings.contactBgOpacity / 100 }}
-          />
-        )}
-        <h2 className="hc-title">Let&apos;s Work Together</h2>
-        <p className="hc-sub">
-          Interested in collaborating on your next project? Let&apos;s create something together.
-        </p>
-        <ActionLink href={`mailto:${settings.contactEmail}`}>Get in Touch</ActionLink>
-      </Reveal>
     </div>
   );
 }

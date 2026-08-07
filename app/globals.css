@@ -600,22 +600,36 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 }
 @media(prefers-reduced-motion:reduce){.hld-link,.hld-arrow{transition:none}.hld-link:hover .hld-arrow,.hld-link:focus-visible .hld-arrow{transform:none}}
 
-/* HOME CONTACT */
-.home-contact{
-  width:100%;padding:60px var(--space-xl);
-  border-top:1px solid var(--border);
-  display:flex;flex-direction:column;align-items:center;
-  text-align:center;position:relative;overflow:hidden;
+/* Home / Contact + social */
+.home-contact-social{position:relative;isolation:isolate;overflow:hidden;padding:clamp(80px,9vw,140px) clamp(24px,7vw,104px);border-bottom:1px solid var(--border);background:var(--bg)}
+.hcs-background{position:absolute;inset:0;z-index:-2;background-position:center;background-size:cover;filter:saturate(.55)}
+.home-contact-social:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 92%,transparent) 46%,color-mix(in srgb,var(--bg) 78%,transparent) 100%);pointer-events:none}
+.hcs-inner{display:grid;grid-template-columns:minmax(240px,.7fr) minmax(0,1.3fr);gap:clamp(40px,7vw,112px);width:min(1512px,100%);margin-inline:auto}
+.hcs-heading{align-self:start;position:sticky;top:112px}
+.hcs-kicker{font-family:var(--M);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:18px}
+.hcs-heading h2{max-width:8ch;font-family:var(--S);font-size:clamp(2.7rem,5.7vw,6rem);font-weight:850;line-height:.88;letter-spacing:-.06em;text-transform:uppercase}
+.hcs-links{list-style:none;border-top:1px solid var(--border)}
+.hcs-links li{border-bottom:1px solid var(--border)}
+.hcs-links a{display:grid;grid-template-columns:44px minmax(110px,.55fr) minmax(0,1fr) 44px;align-items:center;gap:20px;min-height:100px;padding:18px 0;outline:none;transition:padding-inline .2s ease,background-color .2s ease}
+.hcs-index{font-family:var(--M);font-size:.58rem;letter-spacing:.12em;color:var(--muted)}
+.hcs-label{font-family:var(--S);font-size:clamp(1.05rem,1.7vw,1.45rem);font-weight:700;letter-spacing:-.025em}
+.hcs-value{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--M);font-size:.66rem;letter-spacing:.04em;color:var(--text2)}
+.hcs-arrow{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--border);color:var(--muted);transition:color .2s ease,border-color .2s ease,transform .2s ease}
+.hcs-links a:hover,.hcs-links a:focus-visible{padding-inline:14px;background:rgba(255,255,255,.018)}
+.hcs-links a:hover .hcs-arrow,.hcs-links a:focus-visible .hcs-arrow{color:var(--red2);border-color:var(--red);transform:translate(2px,-2px)}
+.hcs-links a:focus-visible{box-shadow:inset 0 0 0 2px var(--red)}
+@media(max-width:820px){
+  .hcs-inner{grid-template-columns:1fr;gap:40px}
+  .hcs-heading{position:static}
+  .hcs-heading h2{max-width:11ch}
 }
-.contact-bg-image{position:absolute;inset:0;background-size:cover;background-position:center;pointer-events:none;z-index:0}
-.hc-title{font-family:var(--T);font-size:2.6rem;font-weight:900;color:var(--red);margin-bottom:14px}
-.hc-sub{font-family:var(--B);font-size:1.05rem;color:var(--text2);max-width:520px;line-height:1.8;margin-bottom:28px}
-.hc-btn{
-  font-family:var(--M);font-size:var(--text-label-size);letter-spacing:var(--text-label-track);
-  text-transform:uppercase;padding:14px 40px;
-  background:var(--red);color:var(--on-red);transition:background .18s;
+@media(max-width:520px){
+  .home-contact-social{padding-block:68px}
+  .hcs-links a{grid-template-columns:34px minmax(0,1fr) 44px;gap:12px;min-height:88px}
+  .hcs-value{grid-column:2;grid-row:2;margin-top:-18px;font-size:.58rem}
+  .hcs-arrow{grid-column:3;grid-row:1/3}
 }
-.hc-btn:hover{background:var(--red2)}
+@media(prefers-reduced-motion:reduce){.hcs-links a,.hcs-arrow{transition:none}.hcs-links a:hover .hcs-arrow,.hcs-links a:focus-visible .hcs-arrow{transform:none}}
 
 /* ══ ARCHIVE ══════════════════════════════ */
 .arv-wrap{padding:52px var(--space-xl) var(--space-2xl)}
