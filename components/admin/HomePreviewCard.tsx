@@ -35,7 +35,7 @@ export default function HomePreviewCard({
           <div className="home-hero-copy">
             <div className="h-eyebrow" style={fieldStyle(state.styles, "heroEyebrow")}>{state.heroEyebrow}</div>
             <h1 className="h-name">{state.handle || "/ TETSUNARU"}</h1>
-            <div className="h-identity"><span className="h-identity-label">Creator / Designer</span><span className="h-identity-name">{state.name}</span></div>
+            <div className="h-identity"><span className="h-identity-name">{state.name}</span><span className="h-identity-label">Game Designer / Worldbuilder</span></div>
           </div>
           <div className="home-hero-context">
             <div className="h-jp" style={fieldStyle(state.styles, "heroJpLine")}>{state.heroJpLine}</div>

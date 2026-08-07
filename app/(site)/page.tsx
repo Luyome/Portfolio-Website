@@ -77,8 +77,8 @@ export default async function HomePage() {
             <div className="h-eyebrow" style={fieldStyle(settings.styles, "heroEyebrow")}>{settings.heroEyebrow}</div>
             <h1 className="h-name">{settings.handle}</h1>
             <div className="h-identity">
-              <span className="h-identity-label">Creator / Designer</span>
               <span className="h-identity-name">{settings.name}</span>
+              <span className="h-identity-label">Game Designer / Worldbuilder</span>
             </div>
           </div>
           <div className="home-hero-context">
