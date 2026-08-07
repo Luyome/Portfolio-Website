@@ -31,6 +31,8 @@ test("Home content selections reject duplicates and invalid section targets", as
     () => validateHomeSelectionSet("worldbuilding_highlight", [{ type: "portfolio", id: 1 }]),
     /only reference Worldbuilding/
   );
+  assert.throws(() => validateHomeSelectionSet("featured_work", [{ type: "portfolio", id: 0 }]), /invalid/);
+  assert.throws(() => validateHomeSelectionSet("featured_work", [{ type: "unknown" as "portfolio", id: 1 }]), /type is invalid/);
 });
 
 test("Home map preview pin limits and uniqueness are enforced", async () => {
@@ -48,4 +50,24 @@ test("unsupported production stats remain unavailable", async () => {
   assert.equal(isHomeStatSupported("stories_devlogs"), false);
   assert.equal(isHomeStatSupported("published_entries"), false);
   assert.equal(isHomeStatSupported("3d_works"), true);
+});
+
+test("Home Skills enforce the limit, required labels, and case-insensitive uniqueness", async () => {
+  const { validateHomeSkills } = await homeData;
+  assert.throws(() => validateHomeSkills(Array.from({ length: 7 }, (_, index) => ({ label: `Skill ${index}`, isVisible: true }))), /at most 6/);
+  assert.throws(() => validateHomeSkills([{ label: "Unreal", isVisible: true }, { label: "unreal", isVisible: false }]), /must be unique/);
+  assert.throws(() => validateHomeSkills([{ label: "  ", isVisible: true }]), /is required/);
+  assert.deepEqual(validateHomeSkills([{ label: "  Game Design  ", isVisible: false }]), ["Game Design"]);
+});
+
+test("ordered persistence payloads preserve explicit order and visibility", async () => {
+  const { homeSelectionValues, homeSkillValues } = await homeData;
+  assert.deepEqual(
+    homeSelectionValues("featured_work", [{ type: "game", id: 9 }, { type: "portfolio", id: 3 }]).map(({ sortOrder, gameId, portfolioId }) => ({ sortOrder, gameId, portfolioId })),
+    [{ sortOrder: 0, gameId: 9, portfolioId: null }, { sortOrder: 1, gameId: null, portfolioId: 3 }]
+  );
+  assert.deepEqual(homeSkillValues([{ label: "Visible", isVisible: true }, { label: "Hidden", isVisible: false }]), [
+    { label: "Visible", isVisible: true, sortOrder: 0 },
+    { label: "Hidden", isVisible: false, sortOrder: 1 },
+  ]);
 });

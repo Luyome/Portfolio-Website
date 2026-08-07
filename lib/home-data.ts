@@ -100,7 +100,7 @@ export function validateHomeMapPinSet(locationIds: readonly number[]): void {
   locationIds.forEach((id) => requiredId(id, "Map pin"));
 }
 
-function selectionValues(section: HomeContentSection, refs: readonly HomeContentReference[]) {
+export function homeSelectionValues(section: HomeContentSection, refs: readonly HomeContentReference[]) {
   return refs.map((ref, sortOrder) => ({
     section,
     portfolioId: ref.type === "portfolio" ? ref.id : null,
@@ -154,17 +154,18 @@ export async function replaceHomeContentSelections(
     await remove;
     return;
   }
-  await db.batch([remove, db.insert(homeContentSelections).values(selectionValues(section, refs))]);
+  await db.batch([remove, db.insert(homeContentSelections).values(homeSelectionValues(section, refs))]);
+}
+
+export function homeSkillValues(skills: readonly { label: string; isVisible: boolean }[]) {
+  const labels = validateHomeSkills(skills);
+  return skills.map((skill, sortOrder) => ({ label: labels[sortOrder], isVisible: skill.isVisible, sortOrder }));
 }
 
 export async function replaceHomeSkills(
   skills: readonly { label: string; isVisible: boolean }[]
 ): Promise<void> {
-  if (skills.length > HOME_SKILLS_LIMIT) throw new ValidationError(`Home supports at most ${HOME_SKILLS_LIMIT} skills.`);
-  const labels = skills.map((skill) => requiredText(skill.label, "Skill"));
-  if (new Set(labels.map((label) => label.toLocaleLowerCase("en-US"))).size !== labels.length) {
-    throw new ValidationError("Home Skills must be unique.");
-  }
+  const values = homeSkillValues(skills);
   const remove = db.delete(homeSkills);
   if (skills.length === 0) {
     await remove;
@@ -172,8 +173,17 @@ export async function replaceHomeSkills(
   }
   await db.batch([
     remove,
-    db.insert(homeSkills).values(skills.map((skill, sortOrder) => ({ label: labels[sortOrder], isVisible: skill.isVisible, sortOrder }))),
+    db.insert(homeSkills).values(values),
   ]);
+}
+
+export function validateHomeSkills(skills: readonly { label: string; isVisible: boolean }[]): string[] {
+  if (skills.length > HOME_SKILLS_LIMIT) throw new ValidationError(`Home supports at most ${HOME_SKILLS_LIMIT} skills.`);
+  const labels = skills.map((skill) => requiredText(skill.label, "Skill"));
+  if (new Set(labels.map((label) => label.toLocaleLowerCase("en-US"))).size !== labels.length) {
+    throw new ValidationError("Home Skills must be unique.");
+  }
+  return labels;
 }
 
 export async function setHomeCapabilities(serviceIds: readonly number[]): Promise<void> {

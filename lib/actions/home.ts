@@ -3,12 +3,26 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { siteSettings, heroButtons, homeHeroSlides, homeShowcase } from "@/db/schema";
+import { siteSettings, heroButtons, homeHeroSlides, homeMapPreview, homeShowcase } from "@/db/schema";
 import { requireAdminSession } from "@/lib/actions/guard";
+import {
+  HOME_CONTENT_SECTIONS,
+  HOME_CONTENT_TYPES,
+  HOME_STAT_KEYS,
+  replaceHomeContentSelections,
+  replaceHomeMapPreviewPins,
+  replaceHomeSkills,
+  setHomeCapabilities,
+  setHomeMapPreview,
+  setHomeStatVisibility,
+  type HomeContentReference,
+} from "@/lib/home-data";
+import { oneOf, requiredId, safeErrorMessage } from "@/lib/validation";
 import { num, numOrNull, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
 
 const MAX_SHOWCASE_ITEMS = 12;
+export type HomeAdminActionState = { error?: string; success?: string } | undefined;
 
 function revalidateAll() {
   revalidatePath("/", "layout");
@@ -150,4 +164,97 @@ export async function deleteHomeShowcaseItem(formData: FormData) {
   const id = num(formData.get("id"));
   await db.delete(homeShowcase).where(eq(homeShowcase.id, id));
   revalidateAll();
+}
+
+function jsonArray(formData: FormData, name: string): unknown[] {
+  const value = formData.get(name);
+  if (typeof value !== "string") throw new Error("Invalid form payload");
+  const parsed: unknown = JSON.parse(value);
+  if (!Array.isArray(parsed)) throw new Error("Invalid form payload");
+  return parsed;
+}
+
+export async function saveHomeContentSelections(
+  _state: HomeAdminActionState,
+  formData: FormData
+): Promise<HomeAdminActionState> {
+  await requireAdminSession();
+  try {
+    const section = oneOf(formData.get("section"), HOME_CONTENT_SECTIONS, "Home section");
+    const refs = jsonArray(formData, "items").map((item): HomeContentReference => {
+      if (!item || typeof item !== "object") throw new Error("Invalid form payload");
+      const row = item as Record<string, unknown>;
+      return {
+        type: oneOf(typeof row.type === "string" ? row.type : null, HOME_CONTENT_TYPES, "Content type"),
+        id: requiredId(typeof row.id === "number" ? row.id : null, "Content"),
+      };
+    });
+    await replaceHomeContentSelections(section, refs);
+    revalidateAll();
+    return { success: "Selection saved." };
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+}
+
+export async function saveHomeSkills(_state: HomeAdminActionState, formData: FormData): Promise<HomeAdminActionState> {
+  await requireAdminSession();
+  try {
+    const skills = jsonArray(formData, "items").map((item) => {
+      if (!item || typeof item !== "object") throw new Error("Invalid form payload");
+      const row = item as Record<string, unknown>;
+      return { label: typeof row.label === "string" ? row.label : "", isVisible: row.isVisible === true };
+    });
+    await replaceHomeSkills(skills);
+    revalidateAll();
+    return { success: "Home Skills saved." };
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+}
+
+export async function saveHomeCapabilities(_state: HomeAdminActionState, formData: FormData): Promise<HomeAdminActionState> {
+  await requireAdminSession();
+  try {
+    const ids = jsonArray(formData, "items").map((id) => requiredId(typeof id === "number" ? id : null, "Capability"));
+    await setHomeCapabilities(ids);
+    revalidateAll();
+    return { success: "Capabilities saved." };
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+}
+
+export async function saveHomeStats(_state: HomeAdminActionState, formData: FormData): Promise<HomeAdminActionState> {
+  await requireAdminSession();
+  try {
+    const visible = new Set(jsonArray(formData, "items").map((key) => oneOf(typeof key === "string" ? key : null, HOME_STAT_KEYS, "Production stat")));
+    await Promise.all(HOME_STAT_KEYS.map((key) => setHomeStatVisibility(key, visible.has(key))));
+    revalidateAll();
+    return { success: "Production Stats saved." };
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+}
+
+export async function saveHomeMapPreview(_state: HomeAdminActionState, formData: FormData): Promise<HomeAdminActionState> {
+  await requireAdminSession();
+  try {
+    const rawMapId = formData.get("mapId");
+    const mapId = typeof rawMapId === "string" && rawMapId ? requiredId(rawMapId, "Map") : null;
+    const isVisible = formData.get("isVisible") === "on";
+    const submittedPins = jsonArray(formData, "items").map((id) => requiredId(typeof id === "number" ? id : null, "Map pin"));
+    const [current] = await db.select({ mapId: homeMapPreview.mapId }).from(homeMapPreview).where(eq(homeMapPreview.id, 1));
+    // A map change is a two-step Admin interaction: persist the new source
+    // map and clear references belonging to the old one, then choose markers
+    // from the newly-rendered eligible list. This avoids cross-map FKs and a
+    // partial configuration when the previous map already had selections.
+    const pins = current?.mapId === mapId ? submittedPins : [];
+    await setHomeMapPreview(mapId, isVisible);
+    await replaceHomeMapPreviewPins(pins);
+    revalidateAll();
+    return { success: "Map Preview saved." };
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
 }
