@@ -666,40 +666,41 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
    statement/primary CTA (left) with a dominant crossfading artwork frame that bleeds
    past the panel's own top and right edges (right) — matching the reference's teal
    hero card with its character art breaking out of the frame. */
-.hcs-panel{position:relative;overflow:visible;border-radius:22px;border:1px solid var(--border);background:linear-gradient(135deg,var(--bg2) 0%,var(--bg) 68%);padding:clamp(32px,4vw,56px) 0 clamp(32px,4vw,56px) clamp(32px,4.4vw,60px)}
-.hcs-feature{width:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.92fr);gap:clamp(24px,4vw,48px);align-items:center}
-.hcs-feature-text{min-width:0;max-width:48ch;padding-right:clamp(24px,3vw,40px)}
-.hcs-kicker{font-family:var(--M);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:14px}
-.hcs-feature-text h2{font-family:var(--S);font-size:clamp(1.9rem,3.4vw,3.2rem);font-weight:850;line-height:1;letter-spacing:-.045em;text-transform:uppercase}
-.hcs-feature-copy{max-width:42ch;margin-top:14px;font-family:var(--S);font-size:.96rem;line-height:1.62;color:var(--text2)}
-.hcs-cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:26px}
-.hcs-cta-value{font-family:var(--M);font-size:.72rem;letter-spacing:.03em;color:var(--text2)}
-.hcs-feature-marks{display:flex;gap:8px;margin-top:24px}
+.hcs-panel{position:relative;overflow:visible;border-radius:22px;border:1px solid var(--border);background:linear-gradient(135deg,var(--bg2) 0%,var(--bg) 68%);padding:clamp(22px,2.6vw,34px) 0 clamp(22px,2.6vw,34px) clamp(26px,3.4vw,44px)}
+.hcs-feature{width:100%;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr);gap:clamp(20px,3vw,36px);align-items:center}
+.hcs-feature-text{min-width:0;max-width:54ch;padding-right:clamp(20px,2.4vw,32px)}
+.hcs-kicker{font-family:var(--M);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.hcs-feature-text h2{font-family:var(--S);font-size:clamp(1.5rem,2.5vw,2.15rem);font-weight:850;line-height:1.02;letter-spacing:-.04em;text-transform:uppercase}
+.hcs-feature-copy{max-width:44ch;margin-top:10px;font-family:var(--S);font-size:.86rem;line-height:1.55;color:var(--text2)}
+.hcs-cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:18px}
+.hcs-cta-value{font-family:var(--M);font-size:.7rem;letter-spacing:.03em;color:var(--text2)}
+.hcs-feature-marks{display:flex;gap:8px;margin-top:14px}
 .hcs-feature-marks span{width:26px;height:3px;background:var(--border)}
 .hcs-feature-marks span:first-child{background:var(--red)}
 .hcs-feature-visual{min-width:0}
 
 .hcs-frame{overflow:hidden;background:var(--bg2);border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 36px rgba(0,0,0,.4)}
 .hcs-frame img{object-fit:cover}
-/* Landscape-only sliding frame: three images sit edge-to-edge and slide
-   horizontally into place (`transform`, not an opacity crossfade) — every
+/* Landscape-only sliding frame, kept short/wide (2:1) so the whole top panel reads
+   as a short horizontal banner, not a tall block: three images sit edge-to-edge and
+   slide horizontally into place (`transform`, not an opacity crossfade) — every
    rotating Contact image is a wide/horizontal crop, never portrait. */
-.hcs-frame-main{position:relative;width:100%;max-width:460px;aspect-ratio:3/2;margin-left:auto;margin-top:clamp(-52px,-4.6vw,-28px);border-radius:18px;overflow:hidden}
+.hcs-frame-main{position:relative;width:100%;max-width:clamp(280px,30vw,420px);aspect-ratio:2/1;margin-left:auto;margin-top:clamp(-36px,-3.4vw,-20px);border-radius:16px;overflow:hidden}
 .hcs-frame-main img{object-fit:cover;transition:transform .9s cubic-bezier(.4,0,.2,1)}
 
 /* Three-module row: Artwork, Contact, Index/Continue — the middle Contact column is
    deliberately the widest, matching the reference's dominant middle list module. */
-.hcs-modules{width:100%;display:grid;grid-template-columns:.85fr 1.3fr .95fr;gap:clamp(24px,2.8vw,40px)}
+.hcs-modules{width:100%;display:grid;grid-template-columns:.85fr 1.3fr .95fr;gap:clamp(20px,2.4vw,32px)}
 .hcs-module{min-width:0;display:flex;flex-direction:column}
-.hcs-module-kicker{font-family:var(--M);font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.hcs-module-kicker{font-family:var(--M);font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px}
 
 /* Column A — Artwork: two square thumbnails with a title caption, plus a full-width
    View More button beneath, matching the reference's two-up thumbnail + button block. */
-.hcs-module-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.hcs-module-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .hcs-module-head .hcs-module-kicker{margin-bottom:0;padding-bottom:0;border-bottom:0}
 .hcs-module-chevron{flex:none;display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--border);color:var(--muted);font-size:.8rem;transition:color .2s ease,border-color .2s ease}
 .hcs-module-chevron:hover,.hcs-module-chevron:focus-visible{color:var(--red2);border-color:var(--red)}
-.hcs-artwork-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.hcs-artwork-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .hcs-artwork-thumb{position:relative;display:block;aspect-ratio:1/1;overflow:hidden;background:var(--bg2);border:1px solid var(--border)}
 .hcs-artwork-thumb img{object-fit:cover;transition:transform .3s ease}
 .hcs-artwork-thumb:hover img,.hcs-artwork-thumb:focus-visible img{transform:scale(1.05)}
@@ -710,8 +711,8 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
    secondary overlapping circular avatar cluster floating on the right edge. */
 .hcs-module-contact{position:relative}
 .hcs-links{list-style:none;min-width:0}
-.hcs-links li{margin-bottom:8px}
-.hcs-links a{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px;padding:10px 16px;border:1px solid var(--border);outline:none;transition:background-color .2s ease,border-color .2s ease}
+.hcs-links li{margin-bottom:6px}
+.hcs-links a{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:46px;padding:9px 14px;border:1px solid var(--border);outline:none;transition:background-color .2s ease,border-color .2s ease}
 .hcs-link-active a{background:rgba(var(--red-rgb),.12);border-color:rgba(var(--red-rgb),.5)}
 .hcs-link-text{display:flex;flex-direction:column;gap:3px;min-width:0}
 .hcs-link-label{font-family:var(--S);font-size:.92rem;font-weight:700;letter-spacing:-.02em}
@@ -729,8 +730,8 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 
 /* Column C — Index/Continue: stacked numbered nav cards (index badge + title +
    short description), matching the reference's icon/title/description card list. */
-.hcs-module-nav{gap:10px}
-.hcs-navcard{display:flex;align-items:flex-start;gap:14px;padding:12px;border:1px solid var(--border);color:var(--text);transition:border-color .18s ease,background-color .18s ease}
+.hcs-module-nav{gap:8px}
+.hcs-navcard{display:flex;align-items:flex-start;gap:14px;padding:10px;border:1px solid var(--border);color:var(--text);transition:border-color .18s ease,background-color .18s ease}
 .hcs-navcard-index{flex:none;display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--border);border-radius:50%;font-family:var(--M);font-size:.62rem;color:var(--red);letter-spacing:.02em}
 .hcs-navcard-text{display:flex;flex-direction:column;gap:3px;min-width:0}
 .hcs-navcard-text strong{font-family:var(--S);font-size:.94rem;font-weight:700;letter-spacing:-.01em}
@@ -745,7 +746,7 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
   .hcs-panel{padding:28px clamp(20px,4vw,32px) 28px}
   .hcs-feature{grid-template-columns:1fr;gap:32px}
   .hcs-feature-text{max-width:none;padding-right:0}
-  .hcs-frame-main{width:100%;max-width:420px;aspect-ratio:3/2;margin:0 auto;border-radius:18px}
+  .hcs-frame-main{width:100%;max-width:380px;aspect-ratio:2/1;margin:0 auto;border-radius:16px}
   .hcs-modules{grid-template-columns:1fr 1fr}
   .hcs-module-nav{grid-column:1/-1}
 }
