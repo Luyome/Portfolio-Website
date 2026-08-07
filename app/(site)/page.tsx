@@ -204,6 +204,10 @@ export default async function HomePage() {
               .filter((image): image is string => Boolean(image))
               .filter((image, index, all) => all.indexOf(image) === index)
               .slice(0, 3)}
+            artworks={[...featuredWorks, ...homeData.worldbuildingHighlights]
+              .filter((item): item is typeof item & { image: string } => Boolean(item.image))
+              .slice(0, 2)
+              .map((item) => ({ title: item.title, image: item.image, href: item.href }))}
             backgroundOpacity={settings.contactBgOpacity}
           />
         </Reveal>
