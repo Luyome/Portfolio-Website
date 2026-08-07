@@ -6,6 +6,7 @@ import type { StylesMap } from "@/lib/style-fields";
 export type HomePreviewState = {
   heroEyebrow: string;
   name: string;
+  handle?: string;
   heroJpLine: string;
   heroBio: string;
   homeBgImage: string;
@@ -30,14 +31,17 @@ export default function HomePreviewCard({
           />
         )}
         <div className="home-hero">
-          <div className="home-glow" />
-          <div className="h-eyebrow" style={fieldStyle(state.styles, "heroEyebrow")}>{state.heroEyebrow}</div>
-          <h1 className="h-name">{state.name.toLocaleUpperCase("tr-TR")}</h1>
-          <div className="h-jp" style={fieldStyle(state.styles, "heroJpLine")}>{state.heroJpLine}</div>
-          <div className="h-rule" />
-          <p className="h-bio" style={fieldStyle(state.styles, "heroBio")}>
-            <InlineBold text={state.heroBio} />
-          </p>
+          <div className="home-glow" aria-hidden="true" />
+          <div className="home-hero-copy">
+            <div className="h-eyebrow" style={fieldStyle(state.styles, "heroEyebrow")}>{state.heroEyebrow}</div>
+            <h1 className="h-name">{state.handle || "/ TETSUNARU"}</h1>
+            <div className="h-identity"><span className="h-identity-label">Creator / Designer</span><span className="h-identity-name">{state.name}</span></div>
+          </div>
+          <div className="home-hero-context">
+            <div className="h-jp" style={fieldStyle(state.styles, "heroJpLine")}>{state.heroJpLine}</div>
+            <div className="h-rule" aria-hidden="true" />
+            <p className="h-bio" style={fieldStyle(state.styles, "heroBio")}><InlineBold text={state.heroBio} /></p>
+          </div>
         </div>
       </div>
     </div>

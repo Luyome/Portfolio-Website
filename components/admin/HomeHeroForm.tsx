@@ -12,6 +12,7 @@ import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 type PreviewState = {
   heroEyebrow: string;
   name: string;
+  handle: string;
   heroJpLine: string;
   heroBio: string;
   homeBgImage: string;
@@ -27,6 +28,7 @@ export default function HomeHeroForm({
   action: (formData: FormData) => void;
   settings: {
     name: string;
+    handle: string;
     heroEyebrow: string;
     heroJpLine: string;
     heroBio: string;
@@ -45,6 +47,7 @@ export default function HomeHeroForm({
   const [state, setState] = useState<PreviewState>({
     heroEyebrow: settings.heroEyebrow,
     name: settings.name,
+    handle: settings.handle,
     heroJpLine: settings.heroJpLine,
     heroBio: settings.heroBio,
     homeBgImage: settings.homeBgImage,

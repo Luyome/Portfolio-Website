@@ -72,20 +72,28 @@ export default async function HomePage() {
           height={settings.homeBgHeight}
         />
         <Reveal className="home-hero">
-          <div className="home-glow" />
-          <div className="h-eyebrow" style={fieldStyle(settings.styles, "heroEyebrow")}>{settings.heroEyebrow}</div>
-          <h1 className="h-name">{settings.name.toLocaleUpperCase("tr-TR")}</h1>
-          <div className="h-jp" style={fieldStyle(settings.styles, "heroJpLine")}>{settings.heroJpLine}</div>
-          <div className="h-rule" />
-          <p className="h-bio" style={fieldStyle(settings.styles, "heroBio")}>
-            <InlineBold text={settings.heroBio} />
-          </p>
-          <div className="h-btns">
-            {buttons.map((b) => (
-              <ActionLink key={b.id} href={b.href} variant={b.style === "primary" ? "primary" : "ghost"}>
-                {b.label}
-              </ActionLink>
-            ))}
+          <div className="home-glow" aria-hidden="true" />
+          <div className="home-hero-copy">
+            <div className="h-eyebrow" style={fieldStyle(settings.styles, "heroEyebrow")}>{settings.heroEyebrow}</div>
+            <h1 className="h-name">{settings.handle}</h1>
+            <div className="h-identity">
+              <span className="h-identity-label">Creator / Designer</span>
+              <span className="h-identity-name">{settings.name}</span>
+            </div>
+          </div>
+          <div className="home-hero-context">
+            <div className="h-jp" style={fieldStyle(settings.styles, "heroJpLine")}>{settings.heroJpLine}</div>
+            <div className="h-rule" aria-hidden="true" />
+            <p className="h-bio" style={fieldStyle(settings.styles, "heroBio")}>
+              <InlineBold text={settings.heroBio} />
+            </p>
+            <div className="h-btns">
+              {buttons.map((b) => (
+                <ActionLink key={b.id} href={b.href} variant={b.style === "primary" ? "primary" : "ghost"}>
+                  {b.label}
+                </ActionLink>
+              ))}
+            </div>
           </div>
         </Reveal>
       </div>

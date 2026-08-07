@@ -80,7 +80,7 @@ Comments, likes, bookmarks, notifications, and public accounts are not part of t
 
 **Sprint 2 scope boundaries** — not part of this sprint: Home Page composition, public KRUPNI or Map Explorer, a new Projects system, a Stories or Devlog system, Portfolio public art direction, a multi-language system, public users, comments/likes/bookmarks/community, newsletter, multi-admin or role systems. These remain in their assigned future sprints or out of scope.
 
-**Sprint 3 — Home Page + Home Admin** — *In Progress; Tasks 3.1–3.3 Complete.* Public Home, in section order: (1) Identity Hero, (2) Selected Work Coverflow, (3) Capabilities/Focus Areas, (4) Skills + Production Stats, (5) KRUPNI Map Preview, (6) Worldbuilding Highlights, (7) Latest Dispatches, (8) Contact + Social. Home Admin: hero management; selection and ordering of Featured Works; Capabilities; Home Skills; automatic Production Stats visibility; map preview; Worldbuilding Highlights; Latest Dispatches; contact/social. Production Stats stay at general categories — 3D Works, 2D Works, Worldbuilding Entries, Game Projects, Stories & Devlogs, Published Entries — without adding overly specific subcategories to Home. Only the minimal creator data actually needed for Home (identity, Home Skills) is created here — the full Creator Profile foundation is Sprint 9 scope.
+**Sprint 3 — Home Page + Home Admin** — *In Progress; Tasks 3.1–3.4 Complete.* Public Home, in section order: (1) Identity Hero, (2) Selected Work Coverflow, (3) Capabilities/Focus Areas, (4) Skills + Production Stats, (5) KRUPNI Map Preview, (6) Worldbuilding Highlights, (7) Latest Dispatches, (8) Contact + Social. Home Admin: hero management; selection and ordering of Featured Works; Capabilities; Home Skills; automatic Production Stats visibility; map preview; Worldbuilding Highlights; Latest Dispatches; contact/social. Production Stats stay at general categories — 3D Works, 2D Works, Worldbuilding Entries, Game Projects, Stories & Devlogs, Published Entries — without adding overly specific subcategories to Home. Only the minimal creator data actually needed for Home (identity, Home Skills) is created here — the full Creator Profile foundation is Sprint 9 scope.
 
 Content limits for this sprint: Featured Works max 6; Home Skills max 6; Capabilities approx. 3–4; Map Preview markers approx. 3–5; Worldbuilding Highlights max 3; Latest Dispatches approx. 3–4.
 
@@ -91,7 +91,7 @@ Sprint 3 tasks:
 - Task 3.1 — Existing Home System Audit + Scope Lock: **Complete.**
 - Task 3.2 — Home Data Architecture: **Complete.**
 - Task 3.3 — Home Admin Architecture: **Complete.**
-- Task 3.4 — Identity Hero: Not started.
+- Task 3.4 — Identity Hero: **Complete.**
 - Task 3.5 — Selected Work Coverflow: Not started.
 - Task 3.6 — Capabilities + Home Skills: Not started.
 - Task 3.7 — Automatic Production Stats: Not started.
@@ -109,7 +109,9 @@ Sprint 3 scope boundaries (deferred to their assigned sprint, not built here): F
 
 **Home data architecture (Task 3.2):** Added Home-scoped ordered content references for Featured Works (max 6), Worldbuilding Highlights (max 3), and Latest Dispatches (max 4), with real foreign keys to existing Portfolio, Sketch, 3D, Worldbuilding, and Game records plus database checks enforcing one target per row and Worldbuilding-only highlights. Added Home Skills (max 6 in the application boundary), Services-based Capability visibility/order (max 4), broad production-stat visibility settings, and a singleton KRUPNI map preview with ordered pins tied to existing map locations (max 5). Unsupported Stories & Devlogs and Published Entries stats remain explicitly unavailable/hidden until their source models exist or the pending publication definition is resolved. `lib/home-data.ts` is the consolidated read/write data boundary for later Home tasks; no Task 3.3 Admin UI was started. Additive migration `0020_flashy_thunderbolts` was applied only to the verified Neon `development` branch. Development integrity checks, 4 targeted tests, type-check, lint (0 errors; same 28 existing warnings), production build, and `git diff --check` passed.
 
-**Home Admin architecture (Task 3.3):** Extended `/admin/home` as the single management surface for all eight locked Home sections while preserving the legacy Hero and Showcase controls still consumed publicly. Reusable ordered-curation controls select only existing records, expose limits and visibility, and provide keyboard/touch Up/Down and removal actions; Services, Map Admin, and Site Settings remain their canonical source editors. New actions authenticate before parsing, return safe validation feedback, and reuse Task 3.2's relationship and limit enforcement. Stories & Devlogs and Published Entries remain unavailable; the global status/publication definition is still unresolved. Task 3.4 remains Not Started.
+**Home Admin architecture (Task 3.3):** Extended `/admin/home` as the single management surface for all eight locked Home sections while preserving the legacy Hero and Showcase controls still consumed publicly. Reusable ordered-curation controls select only existing records, expose limits and visibility, and provide keyboard/touch Up/Down and removal actions; Services, Map Admin, and Site Settings remain their canonical source editors. New actions authenticate before parsing, return safe validation feedback, and reuse Task 3.2's relationship and limit enforcement. Stories & Devlogs and Published Entries remain unavailable; the global status/publication definition is still unresolved.
+
+**Identity Hero (Task 3.4):** Reworked the public Hero into an asymmetric, media-led editorial composition using the existing Site Settings identity fields, Hero copy/buttons, and Hero slide records. Tetsunaru is the display identity, paired directly with the professional name; the existing carousel retains configurable media, captions, links, restrained crossfades, manual controls, and reduced-motion behavior, with an accessible pause control and 44px targets. No schema, dependency, or later Home section was added. Task 3.5 remains Not Started.
 
 Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 
@@ -167,7 +169,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 
 ## 8. Current Status
 
-- Current sprint: Sprint 3 — Home Page + Home Admin (In Progress; Tasks 3.1–3.2 complete). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
+- Current sprint: Sprint 3 — Home Page + Home Admin (In Progress; Tasks 3.1–3.4 complete). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
 - Sprint 2 final baseline commit: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 - Task 1.1 — Existing Core Systems Audit: Complete.
 - Task 1.2 — Final Product Scope and Documentation Alignment: Complete.
@@ -202,7 +204,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 3.1 — Existing Home System Audit + Scope Lock: Complete.
 - Task 3.2 — Home Data Architecture: Complete.
 - Task 3.3 — Home Admin Architecture: Complete.
-- Task 3.4 — Identity Hero: Not started.
+- Task 3.4 — Identity Hero: Complete.
 - Task 3.5 — Selected Work Coverflow: Not started.
 - Task 3.6 — Capabilities + Home Skills: Not started.
 - Task 3.7 — Automatic Production Stats: Not started.
