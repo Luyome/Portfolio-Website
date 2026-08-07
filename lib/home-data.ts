@@ -299,7 +299,24 @@ export type ResolvedHomeContent = {
   image: string | null;
   href: string;
   createdAt: Date;
+  category?: string;
 };
+
+export function resolveHomeWorldbuildingHighlights(
+  curated: readonly ResolvedHomeContent[],
+  eligible: readonly ResolvedHomeContent[]
+): ResolvedHomeContent[] {
+  const valid = (items: readonly ResolvedHomeContent[]) => items.filter((item) =>
+    item.section === "worldbuilding_highlight" &&
+    item.type === "worldbuilding" &&
+    Number.isSafeInteger(item.contentId) &&
+    item.contentId > 0 &&
+    item.title.trim().length > 0 &&
+    item.href === resolveContentDetailHref("worldbuilding", item.contentId)
+  );
+  const selected = valid(curated);
+  return (selected.length > 0 ? selected : valid(eligible)).slice(0, HOME_SECTION_LIMITS.worldbuilding_highlight);
+}
 
 async function getHomeContentSelections(): Promise<ResolvedHomeContent[]> {
   const rows = await db
@@ -308,7 +325,7 @@ async function getHomeContentSelections(): Promise<ResolvedHomeContent[]> {
       portfolio: { id: portfolioItems.id, title: portfolioItems.title, summary: portfolioItems.desc, image: portfolioItems.img, createdAt: portfolioItems.createdAt },
       sketch: { id: sketches.id, title: sketches.label, summary: sketches.desc, image: sketches.img, createdAt: sketches.createdAt },
       model3d: { id: models3d.id, title: models3d.label, summary: models3d.desc, image: models3d.img, createdAt: models3d.createdAt },
-      worldbuilding: { id: worldbuildingEntries.id, title: worldbuildingEntries.title, summary: worldbuildingEntries.excerpt, image: worldbuildingEntries.img, createdAt: worldbuildingEntries.createdAt },
+      worldbuilding: { id: worldbuildingEntries.id, title: worldbuildingEntries.title, summary: worldbuildingEntries.excerpt, image: worldbuildingEntries.img, category: worldbuildingEntries.cat, createdAt: worldbuildingEntries.createdAt },
       game: { id: games.id, title: games.title, summary: games.desc, image: games.img, createdAt: games.createdAt },
     })
     .from(homeContentSelections)
@@ -324,7 +341,7 @@ async function getHomeContentSelections(): Promise<ResolvedHomeContent[]> {
     if (row.portfolio) return [{ ...base, type: "portfolio", contentId: row.portfolio.id, title: row.portfolio.title, summary: row.portfolio.summary, image: row.portfolio.image || null, href: resolveContentDetailHref("portfolio", row.portfolio.id)!, createdAt: row.portfolio.createdAt }];
     if (row.sketch) return [{ ...base, type: "sketch", contentId: row.sketch.id, title: row.sketch.title, summary: row.sketch.summary, image: row.sketch.image, href: resolveContentDetailHref("sketch", row.sketch.id)!, createdAt: row.sketch.createdAt }];
     if (row.model3d) return [{ ...base, type: "model3d", contentId: row.model3d.id, title: row.model3d.title, summary: row.model3d.summary, image: row.model3d.image, href: resolveContentDetailHref("model3d", row.model3d.id)!, createdAt: row.model3d.createdAt }];
-    if (row.worldbuilding) return [{ ...base, type: "worldbuilding", contentId: row.worldbuilding.id, title: row.worldbuilding.title, summary: row.worldbuilding.summary, image: row.worldbuilding.image || null, href: resolveContentDetailHref("worldbuilding", row.worldbuilding.id)!, createdAt: row.worldbuilding.createdAt }];
+    if (row.worldbuilding) return [{ ...base, type: "worldbuilding", contentId: row.worldbuilding.id, title: row.worldbuilding.title, summary: row.worldbuilding.summary, image: row.worldbuilding.image || null, href: resolveContentDetailHref("worldbuilding", row.worldbuilding.id)!, createdAt: row.worldbuilding.createdAt, category: row.worldbuilding.category }];
     if (row.game) return [{ ...base, type: "game", contentId: row.game.id, title: row.game.title, summary: row.game.summary, image: row.game.image || null, href: resolveContentDetailHref("game", row.game.id)!, createdAt: row.game.createdAt }];
     return [];
   });
@@ -394,20 +411,42 @@ async function getHomeMapData() {
 
 /** Consolidated, request-deduplicated read boundary for future Home tasks. */
 export const getHomeData = cache(async () => {
-  const [settings, capabilities, skills, selections, stats, mapPreview] = await Promise.all([
+  const [settings, capabilities, skills, selections, stats, mapPreview, fallbackWorldbuilding] = await Promise.all([
     getSiteSettings(),
     db.select().from(services).where(eq(services.isHomeVisible, true)).orderBy(asc(services.sortOrder), asc(services.id)),
     db.select().from(homeSkills).where(eq(homeSkills.isVisible, true)).orderBy(asc(homeSkills.sortOrder), asc(homeSkills.id)),
     getHomeContentSelections(),
     getHomeProductionStats(),
     getHomeMapData(),
+    db.select({
+      id: worldbuildingEntries.id,
+      title: worldbuildingEntries.title,
+      summary: worldbuildingEntries.excerpt,
+      image: worldbuildingEntries.img,
+      category: worldbuildingEntries.cat,
+      createdAt: worldbuildingEntries.createdAt,
+    }).from(worldbuildingEntries).orderBy(asc(worldbuildingEntries.sortOrder), asc(worldbuildingEntries.id)).limit(HOME_SECTION_LIMITS.worldbuilding_highlight),
   ]);
+  const curatedWorldbuilding = selections.filter((item) => item.section === "worldbuilding_highlight");
+  const fallbackHighlights: ResolvedHomeContent[] = fallbackWorldbuilding.map((item, sortOrder) => ({
+    selectionId: -(sortOrder + 1),
+    section: "worldbuilding_highlight",
+    sortOrder,
+    type: "worldbuilding",
+    contentId: item.id,
+    title: item.title,
+    summary: item.summary,
+    image: item.image || null,
+    href: resolveContentDetailHref("worldbuilding", item.id)!,
+    createdAt: item.createdAt,
+    category: item.category,
+  }));
   return {
     settings,
     capabilities,
     skills,
     featuredWorks: selections.filter((item) => item.section === "featured_work"),
-    worldbuildingHighlights: selections.filter((item) => item.section === "worldbuilding_highlight"),
+    worldbuildingHighlights: resolveHomeWorldbuildingHighlights(curatedWorldbuilding, fallbackHighlights),
     latestDispatches: selections.filter((item) => item.section === "latest_dispatch"),
     stats,
     mapPreview,

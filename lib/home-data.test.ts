@@ -36,6 +36,45 @@ test("Home content selections reject duplicates and invalid section targets", as
   assert.throws(() => validateHomeSelectionSet("featured_work", [{ type: "unknown" as "portfolio", id: 1 }]), /type is invalid/);
 });
 
+test("Worldbuilding highlights preserve curation order, cap at three, and use a non-persistent fallback", async () => {
+  const { resolveHomeWorldbuildingHighlights } = await homeData;
+  const item = (id: number, sortOrder: number, overrides = {}) => ({
+    selectionId: id,
+    section: "worldbuilding_highlight" as const,
+    sortOrder,
+    type: "worldbuilding" as const,
+    contentId: id,
+    title: `Entry ${id}`,
+    summary: "Existing summary",
+    image: null,
+    href: `/worldbuilding?item=${id}`,
+    createdAt: new Date(2026, 0, id),
+    ...overrides,
+  });
+  const fallback = [item(1, 0), item(2, 1), item(3, 2), item(4, 3)];
+  const fallbackSnapshot = structuredClone(fallback);
+
+  assert.deepEqual(resolveHomeWorldbuildingHighlights([], fallback).map((entry) => entry.contentId), [1, 2, 3]);
+  assert.deepEqual(fallback, fallbackSnapshot);
+  assert.deepEqual(resolveHomeWorldbuildingHighlights([item(3, 0), item(1, 1)], fallback).map((entry) => entry.contentId), [3, 1]);
+});
+
+test("Worldbuilding highlights support zero and partial states while dropping invalid references and routes", async () => {
+  const { resolveHomeWorldbuildingHighlights } = await homeData;
+  const valid = {
+    selectionId: 1, section: "worldbuilding_highlight" as const, sortOrder: 0, type: "worldbuilding" as const,
+    contentId: 7, title: "Canonical entry", summary: "", image: null, href: "/worldbuilding?item=7", createdAt: new Date(),
+  };
+  assert.deepEqual(resolveHomeWorldbuildingHighlights([], []), []);
+  assert.deepEqual(resolveHomeWorldbuildingHighlights([valid], []).map((entry) => entry.contentId), [7]);
+  assert.deepEqual(resolveHomeWorldbuildingHighlights([
+    { ...valid, contentId: 0, href: "/worldbuilding?item=0" },
+    { ...valid, contentId: 8, href: "/worldbuilding" },
+    { ...valid, type: "portfolio" as const },
+    valid,
+  ], []), [valid]);
+});
+
 test("Home map preview pin limits and uniqueness are enforced", async () => {
   const { HOME_MAP_PINS_LIMIT, validateHomeMapPinSet } = await homeData;
   assert.doesNotThrow(() => validateHomeMapPinSet(Array.from({ length: HOME_MAP_PINS_LIMIT }, (_, index) => index + 1)));

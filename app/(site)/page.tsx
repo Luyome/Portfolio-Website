@@ -8,6 +8,7 @@ import InlineBold from "@/components/InlineBold";
 import HeroCarousel from "@/components/HeroCarousel";
 import SelectedWorkCoverflow from "@/components/SelectedWorkCoverflow";
 import HomeMapPreview from "@/components/HomeMapPreview";
+import HomeWorldbuildingHighlights from "@/components/HomeWorldbuildingHighlights";
 import Reveal from "@/components/Reveal";
 import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
@@ -158,6 +159,12 @@ export default async function HomePage() {
       {homeData.mapPreview && (
         <Reveal>
           <HomeMapPreview map={homeData.mapPreview.map} pins={homeData.mapPreview.pins} />
+        </Reveal>
+      )}
+
+      {homeData.worldbuildingHighlights.length > 0 && (
+        <Reveal>
+          <HomeWorldbuildingHighlights items={homeData.worldbuildingHighlights} />
         </Reveal>
       )}
 

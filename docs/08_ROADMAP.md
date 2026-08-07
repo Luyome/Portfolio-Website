@@ -96,7 +96,7 @@ Sprint 3 tasks:
 - Task 3.6 — Capabilities + Home Skills: **Complete.**
 - Task 3.7 — Automatic Production Stats: **Complete.**
 - Task 3.8 — KRUPNI Home Map Preview: **Complete.**
-- Task 3.9 — Worldbuilding Highlights: Not started.
+- Task 3.9 — Worldbuilding Highlights: **Complete.**
 - Task 3.10 — Latest Dispatches: Not started.
 - Task 3.11 — Contact + Social: Not started.
 - Task 3.12 — Responsive + Motion + Accessibility + Performance: Not started.
@@ -123,7 +123,9 @@ Sprint 3 scope boundaries (deferred to their assigned sprint, not built here): F
 
 **Automatic Production Stats (Task 3.7):** Integrated a compact editorial stats row with the existing Home Skills area. Counts are automatic aggregate queries over the canonical 3D, Sketch/2D, Worldbuilding, and Game tables and respect the existing Home visibility configuration and canonical category order. The public section omits itself when no stats are enabled and supports partial configurations; unsupported Stories & Devlogs and Published Entries remain unavailable and cannot render a fake zero. No manual value field, schema change, publication model, or future content model was added.
 
-**KRUPNI Home Map Preview (Task 3.8):** Added a compact, atmospheric map section after Skills + Production Stats using the existing Home visibility configuration, canonical map artwork, and ordered selection of up to five canonical pins. The server-rendered preview provides accessible marker and Worldbuilding links without loading the full Explorer client bundle, renders partial marker sets, and omits itself safely for hidden, deleted, mismatched, or missing maps. No schema, duplicate map data, new dependency, or Sprint 4 Explorer feature was added. Task 3.9 remains Not Started.
+**KRUPNI Home Map Preview (Task 3.8):** Added a compact, atmospheric map section after Skills + Production Stats using the existing Home visibility configuration, canonical map artwork, and ordered selection of up to five canonical pins. The server-rendered preview provides accessible marker and Worldbuilding links without loading the full Explorer client bundle, renders partial marker sets, and omits itself safely for hidden, deleted, mismatched, or missing maps. No schema, duplicate map data, new dependency, or Sprint 4 Explorer feature was added.
+
+**Worldbuilding Highlights (Task 3.9):** Added a compact, media-first KRUPNI editorial section after the optional Home map preview. It respects the existing ordered Home curation up to three records and links every item to its canonical Worldbuilding detail state. When owner curation is empty, the public read uses the first three real canonical Worldbuilding records in stable source order as a non-persistent preview fallback; partial curation remains authoritative, deleted or invalid references fail safely, missing media uses a visual-only archive treatment, and zero legitimate records omit the section. No schema, content model, persisted fallback, invented lore, or Task 3.10 work was added. Task 3.10 remains Not Started.
 
 Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 
@@ -181,7 +183,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 
 ## 8. Current Status
 
-- Current sprint: Sprint 3 — Home Page + Home Admin (In Progress; Tasks 3.1–3.8 complete). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
+- Current sprint: Sprint 3 — Home Page + Home Admin (In Progress; Tasks 3.1–3.9 complete). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
 - Sprint 2 final baseline commit: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 - Task 1.1 — Existing Core Systems Audit: Complete.
 - Task 1.2 — Final Product Scope and Documentation Alignment: Complete.
@@ -221,7 +223,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 3.6 — Capabilities + Home Skills: Complete.
 - Task 3.7 — Automatic Production Stats: Complete.
 - Task 3.8 — KRUPNI Home Map Preview: **Complete.**
-- Task 3.9 — Worldbuilding Highlights: Not started.
+- Task 3.9 — Worldbuilding Highlights: **Complete.**
 - Task 3.10 — Latest Dispatches: Not started.
 - Task 3.11 — Contact + Social: Not started.
 - Task 3.12 — Responsive + Motion + Accessibility + Performance: Not started.
