@@ -25,7 +25,12 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin/", "/api/"],
+      // Both the trailing-slash prefix and the bare root path — "/admin"
+      // and "/api" alone (no trailing slash) previously fell outside the
+      // `/admin/`/`/api/` prefix rules and were technically crawlable
+      // (Sprint 2 Closure Audit, finding 8; an indexing-hygiene fix, not an
+      // auth boundary — `proxy.ts` already protects the real routes).
+      disallow: ["/admin", "/admin/", "/api", "/api/"],
     },
     sitemap: new URL("/sitemap.xml", siteUrl).toString(),
   };

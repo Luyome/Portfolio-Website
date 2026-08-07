@@ -32,11 +32,11 @@ export default function GlobalError({
         <title>Something Went Wrong</title>
       </head>
       <body>
-        <div className="page">
+        <main className="page">
           <div className="ph">
             <div className="ph-wm">エラー</div>
             <div className="ph-eyebrow">Critical Error</div>
-            <h2 className="ph-title">Something Went Wrong</h2>
+            <h1 className="ph-title">Something Went Wrong</h1>
             <p className="ph-sub">
               The site ran into a problem it couldn&apos;t recover from. Try again, or head back home.
             </p>
@@ -49,7 +49,7 @@ export default function GlobalError({
               Back to Home
             </Link>
           </div>
-        </div>
+        </main>
       </body>
     </html>
   );

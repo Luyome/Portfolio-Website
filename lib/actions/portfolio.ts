@@ -80,21 +80,25 @@ export async function createPortfolioItem(_prevState: ActionState, formData: For
 
 export async function updatePortfolioItem(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
   await requireAdminSession();
-  let fields;
-  let selections;
-  try {
-    selections = await readMetadataSelections(formData);
-    fields = readFields(formData, selections);
-  } catch (err) {
-    return { error: safeErrorMessage(err) };
-  }
-  const nextIds = new Set(allSelectedMetadataIds(selections));
 
+  // Read first — readMetadataSelections needs the item's pre-edit selection
+  // to know which (if any) inactive options are allowed to stay selected
+  // (Sprint 2 Closure Audit, finding 1). Reused below for the add/remove diff.
   const existingRows = await db
     .select({ metadataOptionId: portfolioMetadataOptions.metadataOptionId })
     .from(portfolioMetadataOptions)
     .where(eq(portfolioMetadataOptions.portfolioId, id));
   const existingIds = new Set(existingRows.map((r) => r.metadataOptionId));
+
+  let fields;
+  let selections;
+  try {
+    selections = await readMetadataSelections(formData, existingIds);
+    fields = readFields(formData, selections);
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  const nextIds = new Set(allSelectedMetadataIds(selections));
   const toRemove = [...existingIds].filter((mid) => !nextIds.has(mid));
   const toAdd = [...nextIds].filter((mid) => !existingIds.has(mid));
 

@@ -62,10 +62,19 @@ export function oneOf<T extends string>(value: FormDataEntryValue | null, allowe
   return v as T;
 }
 
-function isValidUrl(value: string): boolean {
+// Every current caller of the URL validators below is a genuinely external
+// or Blob-hosted media URL (an uploaded image/video, an ArtStation-style
+// external link, a downloadable file) — none accept a site-internal relative
+// path today (confirmed by reviewing every call site under lib/actions/ and
+// lib/form-utils.ts). `http:`/`https:` is therefore the correct, single
+// allowed scheme set for all of them, not only `nullableHttpUrl`'s original
+// Software-website case — `javascript:`, `data:`, `file:`, and any other
+// scheme are rejected as invalid (Sprint 2 Closure Audit, finding 4).
+const SAFE_URL_PROTOCOLS = new Set(["http:", "https:"]);
+
+function isSafeUrl(value: string): boolean {
   try {
-    new URL(value);
-    return true;
+    return SAFE_URL_PROTOCOLS.has(new URL(value).protocol);
   } catch {
     return false;
   }
@@ -75,7 +84,7 @@ function isValidUrl(value: string): boolean {
 export function requiredUrl(value: FormDataEntryValue | null, field: string): string {
   const trimmed = raw(value).trim();
   if (!trimmed) throw new ValidationError(`${field} is required.`);
-  if (!isValidUrl(trimmed)) throw new ValidationError(`${field} must be a valid URL.`);
+  if (!isSafeUrl(trimmed)) throw new ValidationError(`${field} must be a valid URL.`);
   return trimmed;
 }
 
@@ -83,7 +92,7 @@ export function requiredUrl(value: FormDataEntryValue | null, field: string): st
 export function optionalUrl(value: FormDataEntryValue | null, field: string): string {
   const trimmed = raw(value).trim();
   if (!trimmed) return "";
-  if (!isValidUrl(trimmed)) throw new ValidationError(`${field} must be a valid URL.`);
+  if (!isSafeUrl(trimmed)) throw new ValidationError(`${field} must be a valid URL.`);
   return trimmed;
 }
 
@@ -91,29 +100,18 @@ export function optionalUrl(value: FormDataEntryValue | null, field: string): st
 export function nullableUrl(value: FormDataEntryValue | null, field: string): string | null {
   const trimmed = raw(value).trim();
   if (!trimmed) return null;
-  if (!isValidUrl(trimmed)) throw new ValidationError(`${field} must be a valid URL.`);
+  if (!isSafeUrl(trimmed)) throw new ValidationError(`${field} must be a valid URL.`);
   return trimmed;
 }
 
 /**
  * URL-shaped text restricted to a safe `http:`/`https:` scheme, becoming
- * `null` when empty — for fields that render as an outbound link (e.g. a
- * Software option's website URL) where `javascript:`, `data:`, or a
- * scheme-relative value must never be stored.
+ * `null` when empty — kept as its own named export (same rule as the three
+ * validators above now enforce) since callers already reference it directly
+ * for a field that renders as an outbound link.
  */
 export function nullableHttpUrl(value: FormDataEntryValue | null, field: string): string | null {
-  const trimmed = raw(value).trim();
-  if (!trimmed) return null;
-  let url: URL;
-  try {
-    url = new URL(trimmed);
-  } catch {
-    throw new ValidationError(`${field} must be a valid URL.`);
-  }
-  if (url.protocol !== "http:" && url.protocol !== "https:") {
-    throw new ValidationError(`${field} must be a valid URL.`);
-  }
-  return trimmed;
+  return nullableUrl(value, field);
 }
 
 /** Normalized map coordinate — finite number within the map's established 0–100 range (see MapEditor's clamp). */

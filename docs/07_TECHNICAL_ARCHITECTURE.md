@@ -473,3 +473,13 @@ The following must never happen:
 - Performance is a feature, not an afterthought.
 - Documentation evolves with the code.
 - Build for tomorrow, not only today.
+
+---
+
+# 21. Deployment Operations
+
+Short operational note (Sprint 2 Closure Audit) — do not confuse the two separate mechanisms below:
+
+- **Vercel native Git integration is not connected.** The Vercel project (`portfolio_website`) has no linked GitHub repository at the platform level (confirmed via the Vercel project record — no `Git` connection present); a push to `main` alone does not trigger a Vercel-side build.
+- **`.github/workflows/deploy.yml`** is the actual auto-deploy mechanism: a GitHub Actions workflow, triggered on push to `main`, that installs the Vercel CLI and runs `vercel deploy --prod` using repository secrets (`VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`). It has deployed successfully many times in this project's history. It stopped triggering for a run of pushes after commit `cc429d1` (Task 2.8) — no run was recorded for the following four commits (Tasks 2.9–2.12) — for a cause that could not be diagnosed further without repository-admin-level GitHub Actions/billing access (not available to an automated session); the workflow file itself has no evident bug (correct branch filter, valid syntax, previously working).
+- **Safe fallback**, when the Actions workflow doesn't trigger: `vercel deploy --prod --yes` from the existing linked project (`.vercel/project.json`, already correct — do not edit it or the Vercel dashboard's project/domain/env settings to "fix" this).

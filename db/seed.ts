@@ -11,8 +11,29 @@ import {
   siteSettings,
 } from "./schema";
 
+// Demo/local-only seed data — never meant to run against the real,
+// owner-maintained content database (Sprint 2 Closure Audit, finding 6).
+// `npm run db:seed:demo` is the only entry point; the script name itself
+// says "demo" so it's never mistaken for a real deploy/migration step, and
+// nothing in package.json's build/deploy scripts calls it automatically.
 async function seed() {
-  console.log("Seeding database with current site content...");
+  if (process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production") {
+    console.error("Refusing to run the demo seed against a production environment.");
+    process.exit(1);
+  }
+
+  // Idempotent guard: this script only ever inserts starter rows into an
+  // empty table set. If Services (the first table it writes) already has
+  // rows — from a prior run of this same script, or real content — every
+  // insert below is skipped rather than appending duplicates. It never
+  // drops, truncates, or modifies existing rows.
+  const [existingService] = await db.select({ id: services.id }).from(services).limit(1);
+  if (existingService) {
+    console.log("Demo content already present (services has existing rows) — skipping, nothing changed.");
+    return;
+  }
+
+  console.log("Seeding database with demo content...");
 
   await db.insert(services).values([
     { icon: "▲", title: "Environment Design", desc: "Atmospheric, narrative-driven environments built in Unreal Engine 5 — spaces that carry story through light, scale, and detail.", sortOrder: 0 },

@@ -45,13 +45,19 @@ export default function MultiSelect({
   const [selected, setSelected] = useState<MultiSelectChip[]>(initialSelected ?? []);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
+  // -1 = nothing highlighted yet. Distinct from "index 0 highlighted" so the
+  // first ArrowDown after opening (via mouse/focus, with no typing) lands on
+  // the first option instead of skipping straight to the second.
+  const [activeIndex, setActiveIndex] = useState(-1);
   const rootRef = useRef<HTMLDivElement>(null);
   const listboxId = id ? `${id}-listbox` : undefined;
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
+        setOpen(false);
+        setActiveIndex(-1);
+      }
     }
     document.addEventListener("mousedown", onDocClick);
     return () => document.removeEventListener("mousedown", onDocClick);
@@ -81,19 +87,30 @@ export default function MultiSelect({
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setOpen(true);
-      setActiveIndex((i) => Math.min(i + 1, Math.max(filtered.length - 1, 0)));
+      if (!open) {
+        // First ArrowDown opens the dropdown and highlights the first
+        // option, rather than opening on index 0 and immediately advancing
+        // past it.
+        setOpen(true);
+        setActiveIndex(0);
+      } else if (activeIndex < 0) {
+        // Already open (via mouse/focus) but nothing highlighted yet.
+        setActiveIndex(0);
+      } else {
+        setActiveIndex((i) => Math.min(i + 1, Math.max(filtered.length - 1, 0)));
+      }
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActiveIndex((i) => Math.max(i - 1, 0));
     } else if (e.key === "Enter") {
-      const opt = filtered[activeIndex];
+      const opt = activeIndex >= 0 ? filtered[activeIndex] : undefined;
       if (open && opt) {
         e.preventDefault();
         addOption(opt);
       }
     } else if (e.key === "Escape") {
       setOpen(false);
+      setActiveIndex(-1);
     }
   }
 
@@ -144,6 +161,9 @@ export default function MultiSelect({
             aria-invalid={invalid}
             aria-expanded={open}
             aria-controls={listboxId}
+            aria-activedescendant={
+              open && activeIndex >= 0 && filtered[activeIndex] ? `${listboxId}-opt-${filtered[activeIndex].id}` : undefined
+            }
             aria-autocomplete="list"
             role="combobox"
             autoComplete="off"
@@ -157,8 +177,15 @@ export default function MultiSelect({
                   <button
                     type="button"
                     key={opt.id}
+                    id={`${listboxId}-opt-${opt.id}`}
                     role="option"
-                    aria-selected={i === activeIndex}
+                    // This panel only ever lists addable (not-yet-selected)
+                    // options, so nothing rendered here is ever the true
+                    // "selected" value — aria-selected stays false and the
+                    // `active` class alone carries keyboard-highlight state,
+                    // so the two are never conflated (Sprint 2 Closure Audit,
+                    // finding 3).
+                    aria-selected={false}
                     className={`ms-opt${i === activeIndex ? " active" : ""}`}
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => addOption(opt)}

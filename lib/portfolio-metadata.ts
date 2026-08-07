@@ -73,6 +73,8 @@ export async function getPortfolioMetadataSelections(portfolioId: number): Promi
 export type ResolvedMetadataSelection = { ids: number[]; names: string[] };
 export type ResolvedMetadataSelections = Record<MetadataType, ResolvedMetadataSelection>;
 
+const NO_PREVIOUS_SELECTION: ReadonlySet<number> = new Set();
+
 /**
  * Reads the four metadata multi-select fields from submitted FormData:
  * dedupes IDs per type, then verifies every ID actually exists in
@@ -81,8 +83,19 @@ export type ResolvedMetadataSelections = Record<MetadataType, ResolvedMetadataSe
  * dropping it. Returns both the validated IDs (for the junction table) and
  * their current names (for the legacy dual-write columns — Section 8).
  * Throws `ValidationError` on the first problem found.
+ *
+ * An inactive option is only accepted if its ID is already in
+ * `previouslySelectedIds` — the item's own current junction rows before
+ * this edit (Sprint 2 Closure Audit, finding 1). This lets an edit keep or
+ * remove a selection that has since been deactivated, without allowing a
+ * newly-added selection (or any selection on create, where there is no
+ * prior state) to pick an inactive option. Each ID belongs to exactly one
+ * type, so one flat ID set — not grouped by type — is enough.
  */
-export async function readMetadataSelections(formData: FormData): Promise<ResolvedMetadataSelections> {
+export async function readMetadataSelections(
+  formData: FormData,
+  previouslySelectedIds: ReadonlySet<number> = NO_PREVIOUS_SELECTION
+): Promise<ResolvedMetadataSelections> {
   const idsByType: Record<MetadataType, number[]> = { medium: [], subject: [], software: [], tag: [] };
   const allIds = new Set<number>();
 
@@ -113,6 +126,9 @@ export async function readMetadataSelections(formData: FormData): Promise<Resolv
       const row = byId.get(id);
       if (!row) throw new ValidationError(`${METADATA_TYPE_LABELS[type]} selection no longer exists.`);
       if (row.type !== type) throw new ValidationError(`${METADATA_TYPE_LABELS[type]} selection is invalid.`);
+      if (!row.isActive && !previouslySelectedIds.has(id)) {
+        throw new ValidationError(`${METADATA_TYPE_LABELS[type]} selection is no longer available.`);
+      }
       names.push(row.name);
     }
     result[type] = { ids: idsByType[type], names };

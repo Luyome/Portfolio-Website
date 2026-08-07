@@ -11,6 +11,17 @@
 
 export type UploadCategory = "image" | "document" | "gameBuild";
 
+/**
+ * Thrown by a Blob route's `onBeforeGenerateToken` for a rejected file or
+ * category (bad extension, unrecognized/missing category tag) — distinct
+ * from an unexpected failure elsewhere in `handleUpload`, so the route can
+ * return a generic 400 for this and a generic 500 for everything else,
+ * without ever forwarding `.message` (which may include Blob/provider
+ * detail) to the client (Sprint 2 Closure Audit, finding 2). `.message`
+ * itself stays safe to log server-side, never secret.
+ */
+export class UploadPolicyError extends Error {}
+
 type ExtensionRule = {
   /** Content-Type values a browser may legitimately report for this extension. */
   mimeTypes: readonly string[];

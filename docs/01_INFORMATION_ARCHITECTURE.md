@@ -498,13 +498,12 @@ The architecture defined above should not block the following if a real need app
 - Interactive maps (a natural extension of the Location content type — already substantially underway, see `07_TECHNICAL_ARCHITECTURE.md`, section 11)
 - A structured Wiki / Lore Database view over Worldbuilding content
 - An AI Assistant (building on the Future AI Search groundwork in section 7)
-- A Marketplace (for assets, prints, or game keys)
 - Expanded Documentation (public-facing design docs, distinct from internal `/docs`)
 - A full Game Database view aggregating all Games with filterable metadata
 - Multiple Languages (i18n), without requiring URL structure to change beyond a locale prefix
 - Optional future email updates for content notifications — see `08_ROADMAP.md`; not scheduled, not a public-account feature
 
-Public accounts, comments, likes, bookmarks, followers, community feeds, and any second Worldbuilding universe are explicitly **not** on this list — see `AI_RULES.md`, Product Scope Rules. If a future feature cannot attach to the existing content types and relationships (sections 3–4) without new top-level hierarchy, that is a signal to revisit this document explicitly with the owner — not to work around it.
+Public accounts, comments, likes, bookmarks, followers, community feeds, a marketplace, and any second Worldbuilding universe are explicitly **not** on this list — see `AI_RULES.md`, Product Scope Rules, and `08_ROADMAP.md`, section 10 (Scope Lock). If a future feature cannot attach to the existing content types and relationships (sections 3–4) without new top-level hierarchy, that is a signal to revisit this document explicitly with the owner — not to work around it.
 
 ---
 
