@@ -6,6 +6,7 @@ import PortfolioBrowser from "@/components/PortfolioBrowser";
 import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
+import { parseContentItemId } from "@/lib/content-detail-href";
 
 export const metadata: Metadata = {
   title: "Portfolio",
@@ -16,9 +17,9 @@ export const metadata: Metadata = {
 export default async function PortfolioPage({
   searchParams,
 }: {
-  searchParams: Promise<{ year?: string }>;
+  searchParams: Promise<{ year?: string; item?: string | string[] }>;
 }) {
-  const { year } = await searchParams;
+  const { year, item } = await searchParams;
   const [items, imageRows, linkRows, videoRows, appearance] = await Promise.all([
     db.select().from(portfolioItems).orderBy(desc(portfolioItems.year), asc(portfolioItems.sortOrder)),
     db.select().from(portfolioImages).orderBy(asc(portfolioImages.sortOrder)),
@@ -38,7 +39,7 @@ export default async function PortfolioPage({
   return (
     <div className="page" style={pageAppearanceVars(appearance)}>
       <PageHeader watermark="作品" eyebrow="Works" title="Portfolio" subtitle="3D characters and concept art." />
-      <PortfolioBrowser items={itemsWithImages} initialYear={year} />
+      <PortfolioBrowser items={itemsWithImages} initialYear={year} initialItemId={parseContentItemId(item)} />
     </div>
   );
 }

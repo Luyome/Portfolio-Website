@@ -7,6 +7,7 @@ import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
 import { isOptimizableImageUrl } from "@/lib/image-host";
+import { findContentItemIndex } from "@/lib/content-detail-href";
 
 export type GameLink = { id: number; label: string; href: string; kind: string };
 
@@ -29,8 +30,8 @@ export type Game = {
   styles?: StylesMap;
 };
 
-export default function GamesBrowser({ items }: { items: Game[] }) {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+export default function GamesBrowser({ items, initialItemId }: { items: Game[]; initialItemId?: number | null }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(() => findContentItemIndex(items, initialItemId ?? null));
 
   const galleryItems: GalleryItem[] = items.map((g) => ({
     img: g.img,

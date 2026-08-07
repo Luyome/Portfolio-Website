@@ -11,6 +11,7 @@ import type { MediaEntry } from "@/lib/group-images";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 import { fuzzyMatch } from "@/lib/search";
 import type { CategoryFilter, LoreEntry, ViewMode } from "@/types/worldbuilding";
+import { findContentItemIndex } from "@/lib/content-detail-href";
 
 export type WorldbuildingEntry = {
   id: number;
@@ -33,15 +34,18 @@ export default function WorldbuildingBrowser({
   items,
   maps,
   locations,
+  initialItemId,
 }: {
   items: WorldbuildingEntry[];
   maps: WorldMap[];
   locations: MapLocation[];
+  initialItemId?: number | null;
 }) {
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("default");
-  const [openEntryId, setOpenEntryId] = useState<number | null>(null);
+  const initialIndex = findContentItemIndex(items, initialItemId ?? null);
+  const [openEntryId, setOpenEntryId] = useState<number | null>(() => initialIndex === null ? null : items[initialIndex].id);
 
   const filtered = useMemo(
     () =>

@@ -342,6 +342,15 @@ async function runCoverflowInteractionCheck(client, url) {
   await sleep(250);
 
   const visibleCount = await evaluate(`document.querySelectorAll('.sw-card[aria-hidden="false"]').length`);
+  const navigationContract = await evaluate(`(() => {
+    const artwork = document.querySelector('.sw-card.is-active');
+    const artworkHref = artwork?.getAttribute('href') || null;
+    const titleHref = document.querySelector('.sw-details h3 a')?.getAttribute('href') || null;
+    const actionHref = document.querySelector('.sw-open')?.getAttribute('href') || null;
+    return artworkHref
+      ? { valid: artworkHref === titleHref && artworkHref === actionHref, placeholder: false }
+      : { valid: titleHref === null && actionHref === null, placeholder: true };
+  })()`);
   const initial = await active();
   if (!(await clickSide("right"))) throw new Error("Right side work was not selectable");
   await sleep(450);
@@ -383,11 +392,11 @@ async function runCoverflowInteractionCheck(client, url) {
   const afterReduced = await active();
   await client.send("Emulation.setEmulatedMedia", { features: [] });
 
-  const ok = visibleCount === 3 && initial && afterRight !== initial && afterLeft === initial &&
+  const ok = visibleCount === 3 && navigationContract.valid && initial && afterRight !== initial && afterLeft === initial &&
     afterPrevious !== afterLeft && afterNext === afterLeft && afterAuto !== beforeAuto &&
     afterHover === beforeHover && focusPaused && afterFocus === beforeFocus && afterReduced === beforeReduced;
   if (!ok) throw new Error(`Coverflow interaction assertion failed: ${JSON.stringify({ visibleCount, initial, afterRight, afterLeft, afterPrevious, afterNext, beforeAuto, afterAuto, beforeHover, afterHover, focusPaused, beforeFocus, afterFocus, beforeReduced, afterReduced })}`);
-  log("PASS Coverflow interactions side-select/prev/next/autoplay/hover/focus/reduced-motion");
+  log(`PASS Coverflow interactions side-select/prev/next/autoplay/hover/focus/reduced-motion/navigation (${navigationContract.placeholder ? "placeholder" : "real"})`);
 }
 
 // ---------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { resolveContentDetailHref } from "@/lib/content-detail-href";
 import { asc, count, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
@@ -295,11 +296,11 @@ async function getHomeContentSelections(): Promise<ResolvedHomeContent[]> {
 
   return rows.flatMap((row): ResolvedHomeContent[] => {
     const base = { selectionId: row.selection.id, section: row.selection.section as HomeContentSection, sortOrder: row.selection.sortOrder };
-    if (row.portfolio) return [{ ...base, type: "portfolio", contentId: row.portfolio.id, title: row.portfolio.title, summary: row.portfolio.summary, image: row.portfolio.image || null, href: "/portfolio", createdAt: row.portfolio.createdAt }];
-    if (row.sketch) return [{ ...base, type: "sketch", contentId: row.sketch.id, title: row.sketch.title, summary: row.sketch.summary, image: row.sketch.image, href: "/sketches", createdAt: row.sketch.createdAt }];
-    if (row.model3d) return [{ ...base, type: "model3d", contentId: row.model3d.id, title: row.model3d.title, summary: row.model3d.summary, image: row.model3d.image, href: "/3d", createdAt: row.model3d.createdAt }];
-    if (row.worldbuilding) return [{ ...base, type: "worldbuilding", contentId: row.worldbuilding.id, title: row.worldbuilding.title, summary: row.worldbuilding.summary, image: row.worldbuilding.image || null, href: "/worldbuilding", createdAt: row.worldbuilding.createdAt }];
-    if (row.game) return [{ ...base, type: "game", contentId: row.game.id, title: row.game.title, summary: row.game.summary, image: row.game.image || null, href: "/games", createdAt: row.game.createdAt }];
+    if (row.portfolio) return [{ ...base, type: "portfolio", contentId: row.portfolio.id, title: row.portfolio.title, summary: row.portfolio.summary, image: row.portfolio.image || null, href: resolveContentDetailHref("portfolio", row.portfolio.id)!, createdAt: row.portfolio.createdAt }];
+    if (row.sketch) return [{ ...base, type: "sketch", contentId: row.sketch.id, title: row.sketch.title, summary: row.sketch.summary, image: row.sketch.image, href: resolveContentDetailHref("sketch", row.sketch.id)!, createdAt: row.sketch.createdAt }];
+    if (row.model3d) return [{ ...base, type: "model3d", contentId: row.model3d.id, title: row.model3d.title, summary: row.model3d.summary, image: row.model3d.image, href: resolveContentDetailHref("model3d", row.model3d.id)!, createdAt: row.model3d.createdAt }];
+    if (row.worldbuilding) return [{ ...base, type: "worldbuilding", contentId: row.worldbuilding.id, title: row.worldbuilding.title, summary: row.worldbuilding.summary, image: row.worldbuilding.image || null, href: resolveContentDetailHref("worldbuilding", row.worldbuilding.id)!, createdAt: row.worldbuilding.createdAt }];
+    if (row.game) return [{ ...base, type: "game", contentId: row.game.id, title: row.game.title, summary: row.game.summary, image: row.game.image || null, href: resolveContentDetailHref("game", row.game.id)!, createdAt: row.game.createdAt }];
     return [];
   });
 }

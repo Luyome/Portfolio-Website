@@ -6,6 +6,7 @@ import WorldbuildingBrowser from "@/components/WorldbuildingBrowser";
 import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
+import { parseContentItemId } from "@/lib/content-detail-href";
 
 export const metadata: Metadata = {
   title: "Worldbuilding",
@@ -13,7 +14,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/worldbuilding" },
 };
 
-export default async function WorldbuildingPage() {
+export default async function WorldbuildingPage({ searchParams }: { searchParams: Promise<{ item?: string | string[] }> }) {
+  const { item } = await searchParams;
   const [items, imageRows, linkRows, videoRows, mapRows, locationRows, appearance] = await Promise.all([
     db.select().from(worldbuildingEntries).orderBy(desc(worldbuildingEntries.year), asc(worldbuildingEntries.sortOrder)),
     db.select().from(worldbuildingImages).orderBy(asc(worldbuildingImages.sortOrder)),
@@ -40,7 +42,7 @@ export default async function WorldbuildingPage() {
         title="Worldbuilding Chronicles"
         subtitle="Explore stories, lore and characters from created worlds."
       />
-      <WorldbuildingBrowser items={itemsWithImages} maps={mapRows} locations={locationRows} />
+      <WorldbuildingBrowser items={itemsWithImages} maps={mapRows} locations={locationRows} initialItemId={parseContentItemId(item)} />
     </div>
   );
 }

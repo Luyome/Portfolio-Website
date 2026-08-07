@@ -6,6 +6,7 @@ import GamesBrowser from "@/components/GamesBrowser";
 import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
+import { parseContentItemId } from "@/lib/content-detail-href";
 
 export const metadata: Metadata = {
   title: "Games",
@@ -13,7 +14,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/games" },
 };
 
-export default async function GamesPage() {
+export default async function GamesPage({ searchParams }: { searchParams: Promise<{ item?: string | string[] }> }) {
+  const { item } = await searchParams;
   const [rows, linkRows, imageRows, videoRows, appearance] = await Promise.all([
     db.select().from(games).orderBy(asc(games.sortOrder)),
     db.select().from(gameLinks).orderBy(asc(gameLinks.sortOrder)),
@@ -39,7 +41,7 @@ export default async function GamesPage() {
         title="Games"
         subtitle="Solo and group projects. Unreal Engine 5."
       />
-      <GamesBrowser items={items} />
+      <GamesBrowser items={items} initialItemId={parseContentItemId(item)} />
     </div>
   );
 }

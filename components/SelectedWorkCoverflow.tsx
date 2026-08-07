@@ -79,34 +79,62 @@ export default function SelectedWorkCoverflow({ items }: { items: ResolvedHomeCo
         {displayItems.map((item, index) => {
           const position = selectedWorkPosition(index, activeIndex, count);
           const visible = position !== null;
+          const media = (
+            <span className="sw-media">
+              {item.image ? (
+                <Image
+                  src={item.image}
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 84vw, (max-width: 1024px) 68vw, 58vw"
+                  unoptimized={!isOptimizableImageUrl(item.image)}
+                />
+              ) : (
+                <span className="sw-placeholder-art" aria-hidden="true">
+                  <span className="sw-placeholder-orbit" />
+                  <span className="sw-placeholder-mark">{String(index + 1).padStart(2, "0")}</span>
+                </span>
+              )}
+            </span>
+          );
+          const cardClass = `sw-card ${position === 0 ? "is-active" : ""} ${item.isPlaceholder ? "is-placeholder" : ""} ${position === 0 && item.href ? "is-link" : ""}`;
+          const cardStyle = { "--sw-position": position ?? 0, "--sw-slot": index } as React.CSSProperties;
+
+          if (position === 0 && item.href) {
+            return (
+              <Link
+                key={item.key}
+                href={item.href}
+                className={cardClass}
+                style={cardStyle}
+                aria-label={`Open ${item.title}, selected work`}
+                aria-hidden="false"
+              >
+                {media}
+              </Link>
+            );
+          }
+
+          if (position === 0) {
+            return (
+              <div key={item.key} className={cardClass} style={cardStyle} aria-label={`${item.title}, selected`} aria-hidden="false">
+                {media}
+              </div>
+            );
+          }
+
           return (
             <button
               key={item.key}
               type="button"
-              className={`sw-card ${position === 0 ? "is-active" : ""} ${item.isPlaceholder ? "is-placeholder" : ""}`}
-              style={{ "--sw-position": position ?? 0, "--sw-slot": index } as React.CSSProperties}
+              className={cardClass}
+              style={cardStyle}
               onClick={() => select(index)}
-              aria-label={position === 0 ? `${item.title}, selected` : `Select ${item.title}`}
-              aria-pressed={position === 0}
+              aria-label={`Select ${item.title}`}
               aria-hidden={!visible}
-              tabIndex={visible && position !== 0 ? 0 : -1}
+              tabIndex={visible ? 0 : -1}
             >
-              <span className="sw-media">
-                {item.image ? (
-                  <Image
-                    src={item.image}
-                    alt=""
-                    fill
-                    sizes="(max-width: 640px) 84vw, (max-width: 1024px) 68vw, 58vw"
-                    unoptimized={!isOptimizableImageUrl(item.image)}
-                  />
-                ) : (
-                  <span className="sw-placeholder-art" aria-hidden="true">
-                    <span className="sw-placeholder-orbit" />
-                    <span className="sw-placeholder-mark">{String(index + 1).padStart(2, "0")}</span>
-                  </span>
-                )}
-              </span>
+              {media}
             </button>
           );
         })}
@@ -115,10 +143,10 @@ export default function SelectedWorkCoverflow({ items }: { items: ResolvedHomeCo
       <div className="sw-details" aria-live="polite">
         <div className="sw-details-copy">
           <span className="sw-type">{active.typeLabel}</span>
-          <h3>{active.title}</h3>
+          <h3>{active.href ? <Link href={active.href}>{active.title}</Link> : active.title}</h3>
           {active.summary && <p>{active.summary}</p>}
         </div>
-        {active.href && <Link href={active.href} className="sw-open">View work <span aria-hidden="true">↗</span></Link>}
+        {active.href && <Link href={active.href} className="sw-open">View More <span aria-hidden="true">↗</span></Link>}
       </div>
 
       {count > 1 && (

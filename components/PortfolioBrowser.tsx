@@ -9,6 +9,7 @@ import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
 import { resolveYearParam, yearOptions } from "@/lib/search";
 import { isOptimizableImageUrl } from "@/lib/image-host";
+import { findContentItemIndex } from "@/lib/content-detail-href";
 
 export type PortfolioItem = {
   id: number;
@@ -30,14 +31,16 @@ export type PortfolioItem = {
 export default function PortfolioBrowser({
   items,
   initialYear,
+  initialItemId,
 }: {
   items: PortfolioItem[];
   initialYear?: string;
+  initialItemId?: number | null;
 }) {
   const years = useMemo(() => yearOptions(items, (p) => p.year), [items]);
   const [year, setYear] = useState<string>(() => resolveYearParam(initialYear, years));
   const [cat, setCat] = useState<string>("all");
-  const [modalIndex, setModalIndex] = useState<number | null>(null);
+  const [modalIndex, setModalIndex] = useState<number | null>(() => findContentItemIndex(items, initialItemId ?? null));
 
   const cats = useMemo(
     () => ["all", ...Array.from(new Set(items.map((p) => p.cat)))],

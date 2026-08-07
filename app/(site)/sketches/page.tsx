@@ -6,6 +6,7 @@ import SketchGrid from "@/components/SketchGrid";
 import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
+import { parseContentItemId } from "@/lib/content-detail-href";
 
 export const metadata: Metadata = {
   title: "Sketches",
@@ -16,9 +17,9 @@ export const metadata: Metadata = {
 export default async function SketchesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ year?: string }>;
+  searchParams: Promise<{ year?: string; item?: string | string[] }>;
 }) {
-  const { year } = await searchParams;
+  const { year, item } = await searchParams;
   const [items, imageRows, linkRows, videoRows, appearance] = await Promise.all([
     db.select().from(sketches).orderBy(desc(sketches.year), asc(sketches.sortOrder)),
     db.select().from(sketchImages).orderBy(asc(sketchImages.sortOrder)),
@@ -43,7 +44,7 @@ export default async function SketchesPage({
         title="Sketches"
         subtitle="Personal sketches and studies — unfiltered."
       />
-      <SketchGrid items={itemsWithImages} initialYear={year} />
+      <SketchGrid items={itemsWithImages} initialYear={year} initialItemId={parseContentItemId(item)} />
     </div>
   );
 }

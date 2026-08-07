@@ -7,6 +7,7 @@ import { fieldStyle, remapStyles } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
 import { resolveYearParam, yearOptions } from "@/lib/search";
+import { findContentItemIndex } from "@/lib/content-detail-href";
 
 export type Sketch = {
   id: number;
@@ -22,10 +23,10 @@ export type Sketch = {
   styles?: StylesMap;
 };
 
-export default function SketchGrid({ items, initialYear }: { items: Sketch[]; initialYear?: string }) {
+export default function SketchGrid({ items, initialYear, initialItemId }: { items: Sketch[]; initialYear?: string; initialItemId?: number | null }) {
   const years = useMemo(() => yearOptions(items, (s) => s.year), [items]);
   const [year, setYear] = useState<string>(() => resolveYearParam(initialYear, years));
-  const [modalIndex, setModalIndex] = useState<number | null>(null);
+  const [modalIndex, setModalIndex] = useState<number | null>(() => findContentItemIndex(items, initialItemId ?? null));
 
 
   const filtered = items.filter((s) => year === "all" || String(s.year) === year);

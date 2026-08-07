@@ -18,7 +18,7 @@ function realItems(count: number): ResolvedHomeContent[] {
     title: `Real work ${index + 1}`,
     summary: index === 0 ? "Real summary" : "",
     image: index === 0 ? "/real.jpg" : null,
-    href: "/portfolio",
+    href: `/portfolio?item=${index + 20}`,
     createdAt: new Date(2026, 0, index + 1),
   }));
 }
@@ -34,6 +34,7 @@ test("Selected Work presentation fills every 0–6 real state to six without mut
     assert.deepEqual(source, before);
     assert.deepEqual(display.slice(0, realCount).map((item) => item.title), source.map((item) => item.title));
     assert.ok(display.filter((item) => item.isPlaceholder).every((item) => item.href === null));
+    assert.deepEqual(display.slice(0, realCount).map((item) => item.href), source.map((item) => item.href));
   }
 });
 

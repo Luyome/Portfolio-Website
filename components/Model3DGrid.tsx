@@ -7,6 +7,7 @@ import { fieldStyle, remapStyles } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
 import { resolveYearParam, yearOptions } from "@/lib/search";
+import { findContentItemIndex } from "@/lib/content-detail-href";
 
 export type Model3D = {
   id: number;
@@ -22,10 +23,10 @@ export type Model3D = {
   styles?: StylesMap;
 };
 
-export default function Model3DGrid({ items, initialYear }: { items: Model3D[]; initialYear?: string }) {
+export default function Model3DGrid({ items, initialYear, initialItemId }: { items: Model3D[]; initialYear?: string; initialItemId?: number | null }) {
   const years = useMemo(() => yearOptions(items, (s) => s.year), [items]);
   const [year, setYear] = useState<string>(() => resolveYearParam(initialYear, years));
-  const [modalIndex, setModalIndex] = useState<number | null>(null);
+  const [modalIndex, setModalIndex] = useState<number | null>(() => findContentItemIndex(items, initialItemId ?? null));
 
 
   const filtered = items.filter((s) => year === "all" || String(s.year) === year);
