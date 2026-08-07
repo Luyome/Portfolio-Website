@@ -115,7 +115,7 @@ Sprint 3 scope boundaries (deferred to their assigned sprint, not built here): F
 
 **Selected Work Coverflow (Task 3.5):** Added the media-led, user-controlled Selected Work section directly after the Identity Hero using the existing Home-specific ordered curation (maximum 6, separate from any global Featured/status model), real content metadata, and currently valid destination routes; invalid/deleted references continue to be omitted by the data boundary and the legacy Showcase no longer duplicates it publicly. Owner-approved Home direction is now sans-serif, with primary positioning centered on Game Designer + Worldbuilding while engine/software remains supporting metadata. The Home narrative proceeds from identity (“Who I am”) to work (“What I made”) and will continue through capabilities, production range, worldbuilding, current work, and contact in assigned tasks. Placeholder replacement remains later content work, and full Header/Nav visual refinement remains deferred to Task 3.12. Task 3.6 remains Not Started.
 
-**Task 3.5 desktop refinement:** Rebalanced the Hero around a centered, wider information composition with larger identity/supporting content, a reduced desktop height, and a clearer first-viewport transition into Selected Work. Tablet and mobile retain their own controlled scaling; Task 3.6 remains Not Started.
+**Task 3.5 final Hero refinement:** Locked the desktop Hero as a full first-viewport cinematic opening with a centered, wider composition and an approximately 10% larger sans-serif information scale; Selected Work begins after scroll. Tablet and mobile retain independent scaling; Task 3.6 remains Not Started.
 
 Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 
