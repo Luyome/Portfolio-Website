@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
 import { heroButtons, homeHeroSlides } from "@/db/schema";
@@ -16,6 +17,7 @@ import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { getHomeData, getHomeFeaturedWorks } from "@/lib/home-data";
 import { resolveContactSocialLinks } from "@/lib/contact-social";
+import { isOptimizableImageUrl } from "@/lib/image-host";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -134,7 +136,7 @@ export default async function HomePage() {
               <ol className="hp-skill-list">
                 {homeData.skills.map((skill, index) => (
                   <li key={skill.id}>
-                    <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                    {skill.iconUrl ? <Image src={skill.iconUrl} alt="" width={30} height={30} unoptimized={!isOptimizableImageUrl(skill.iconUrl)} /> : <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>}
                     <strong>{skill.label}</strong>
                   </li>
                 ))}
@@ -180,7 +182,10 @@ export default async function HomePage() {
         <Reveal>
           <HomeContactSocial
             links={contactSocialLinks}
-            backgroundImage={settings.contactBgImage}
+            images={[settings.contactBgImage, ...featuredWorks.map((item) => item.image), ...homeData.worldbuildingHighlights.map((item) => item.image)]
+              .filter((image): image is string => Boolean(image))
+              .filter((image, index, all) => all.indexOf(image) === index)
+              .slice(0, 3)}
             backgroundOpacity={settings.contactBgOpacity}
           />
         </Reveal>

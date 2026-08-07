@@ -78,22 +78,35 @@ export function useDragZoom(
     // eslint-disable-next-line react-hooks/exhaustive-deps -- zoomBy/step are stable in effect via functional updaters; see comment above
   }, []);
 
-  function onMouseDown(e: React.MouseEvent) {
+  function beginDrag(clientX: number, clientY: number) {
     if (zoom <= minZoom) return;
-    dragRef.current = { startX: e.clientX, startY: e.clientY, panX: pan.x, panY: pan.y, moved: false };
+    dragRef.current = { startX: clientX, startY: clientY, panX: pan.x, panY: pan.y, moved: false };
   }
 
-  function onMouseMove(e: React.MouseEvent) {
+  function moveDrag(clientX: number, clientY: number, primaryPressed: boolean) {
     const drag = dragRef.current;
     if (!drag) return;
-    if ((e.buttons & 1) === 0) {
+    if (!primaryPressed) {
       dragRef.current = null;
       return;
     }
-    const dx = e.clientX - drag.startX;
-    const dy = e.clientY - drag.startY;
+    const dx = clientX - drag.startX;
+    const dy = clientY - drag.startY;
     if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) drag.moved = true;
     setPan(drag.panX + dx, drag.panY + dy, zoom);
+  }
+
+  function onMouseDown(e: React.MouseEvent) { beginDrag(e.clientX, e.clientY); }
+  function onMouseMove(e: React.MouseEvent) { moveDrag(e.clientX, e.clientY, (e.buttons & 1) !== 0); }
+  function onPointerDown(e: React.PointerEvent) {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    beginDrag(e.clientX, e.clientY);
+    if (zoom > minZoom) e.currentTarget.setPointerCapture(e.pointerId);
+  }
+  function onPointerMove(e: React.PointerEvent) { moveDrag(e.clientX, e.clientY, e.buttons !== 0 || e.pointerType === "touch"); }
+  function onPointerUp(e: React.PointerEvent) {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+    onMouseUp();
   }
 
   function onMouseUp() {
@@ -110,5 +123,5 @@ export function useDragZoom(
     return justDraggedRef.current;
   }
 
-  return { zoom, pan, zoomBy, reset, onMouseDown, onMouseMove, onMouseUp, wasDragging, minZoom, maxZoom };
+  return { zoom, pan, zoomBy, reset, onMouseDown, onMouseMove, onMouseUp, onPointerDown, onPointerMove, onPointerUp, wasDragging, minZoom, maxZoom };
 }

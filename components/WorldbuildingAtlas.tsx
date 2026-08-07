@@ -11,16 +11,19 @@ export default function WorldbuildingAtlas({
   maps,
   locations,
   onOpenLore,
+  initialMapId,
 }: {
   maps: WorldMap[];
   locations: MapLocation[];
   onOpenLore: (entryId: number) => void;
+  initialMapId?: number | null;
 }) {
   const rootMap = useMemo(() => maps.find((m) => m.parentMapId === null) ?? maps[0] ?? null, [maps]);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [naturalSize, setNaturalSize] = useState<{ w: number; h: number } | null>(null);
   const [frame, setFrame] = useState<{ w: number; h: number; pad: number } | null>(null);
-  const [zoomOpen, setZoomOpen] = useState(false);
+  const initialMap = initialMapId && maps.some((map) => map.id === initialMapId) ? initialMapId : null;
+  const [zoomOpen, setZoomOpen] = useState(initialMap !== null);
 
   const pins = useMemo(
     () => (rootMap === null ? [] : locations.filter((l) => l.mapId === rootMap.id)),
@@ -132,7 +135,7 @@ export default function WorldbuildingAtlas({
         <MapZoomPanel
           maps={maps}
           locations={locations}
-          initialMapId={rootMap.id}
+          initialMapId={initialMap ?? rootMap.id}
           onOpenLore={onOpenLore}
           onClose={() => setZoomOpen(false)}
         />

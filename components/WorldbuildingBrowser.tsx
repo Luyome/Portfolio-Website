@@ -35,11 +35,13 @@ export default function WorldbuildingBrowser({
   maps,
   locations,
   initialItemId,
+  initialMapId,
 }: {
   items: WorldbuildingEntry[];
   maps: WorldMap[];
   locations: MapLocation[];
   initialItemId?: number | null;
+  initialMapId?: number | null;
 }) {
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [search, setSearch] = useState("");
@@ -96,7 +98,7 @@ export default function WorldbuildingBrowser({
 
   return (
     <>
-      {maps.length > 0 && <WorldbuildingAtlas maps={maps} locations={locations} onOpenLore={setOpenEntryId} />}
+      {maps.length > 0 && <WorldbuildingAtlas maps={maps} locations={locations} onOpenLore={setOpenEntryId} initialMapId={initialMapId} />}
       <WorldbuildingControls
         search={search}
         onSearchChange={setSearch}

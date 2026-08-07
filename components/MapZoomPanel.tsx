@@ -31,7 +31,7 @@ export default function MapZoomPanel({
   const contentRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const pinPanelRef = useRef<HTMLDivElement>(null);
-  const { zoom, pan, zoomBy, reset, onMouseDown, onMouseMove, onMouseUp, wasDragging, minZoom } = useDragZoom(
+  const { zoom, pan, zoomBy, reset, onPointerDown, onPointerMove, onPointerUp, wasDragging, minZoom } = useDragZoom(
     { viewportRef, contentRef },
     { minZoom: 1, maxZoom: 4 }
   );
@@ -131,10 +131,10 @@ export default function MapZoomPanel({
       <div
         className="mzp-viewport"
         ref={viewportRef}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
-        onMouseLeave={onMouseUp}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
         style={{ cursor: zoom > minZoom ? "grab" : "default" }}
       >
         <AnimatePresence mode="wait" initial={false}>

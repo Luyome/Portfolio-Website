@@ -75,7 +75,7 @@ export default function Header({ settings }: { settings: SiteSettings }) {
 
   return (
     <header className="site-header w-full">
-      <div className="hn-bar mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-12">
+      <div className="hn-bar mx-auto flex items-center justify-between gap-4 px-6 py-4 md:px-12">
         <Link href="/" className="hn-brand shrink-0" onClick={() => setMobileOpen(false)}>
           {settings.name.toLocaleUpperCase("tr-TR")}
         </Link>

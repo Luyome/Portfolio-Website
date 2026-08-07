@@ -10,6 +10,7 @@ import {
   homeSkills,
   homeStatSettings,
   mapLocations,
+  metadataOptions,
   models3d,
   portfolioItems,
   services,
@@ -40,20 +41,26 @@ export const HOME_MAP_PINS_LIMIT = 5;
 type HomeMapConfig = { isVisible: boolean; mapId: number | null };
 type HomeMap = typeof worldMaps.$inferSelect;
 type HomeMapPin = typeof mapLocations.$inferSelect;
+export type ResolvedHomeContinentPin = HomeMapPin & { href: string; targetTitle: string };
 
 export function resolveHomeMapPreview(
   config: HomeMapConfig | null,
   map: HomeMap | null,
-  pins: readonly HomeMapPin[]
+  pins: readonly HomeMapPin[],
+  childMaps: readonly HomeMap[] = []
 ) {
   if (!config?.isVisible || !config.mapId || !map || map.id !== config.mapId) return null;
 
   const seen = new Set<number>();
-  const validPins = pins.filter((pin) => {
-    if (seen.has(pin.id) || pin.mapId !== map.id || !pin.name.trim()) return false;
-    if (!Number.isFinite(pin.x) || !Number.isFinite(pin.y) || pin.x < 0 || pin.x > 100 || pin.y < 0 || pin.y > 100) return false;
+  const childMapsById = new Map(childMaps.map((child) => [child.id, child]));
+  const validPins = pins.flatMap((pin): ResolvedHomeContinentPin[] => {
+    if (seen.has(pin.id) || pin.mapId !== map.id || !pin.name.trim()) return [];
+    if (!Number.isFinite(pin.x) || !Number.isFinite(pin.y) || pin.x < 0 || pin.x > 100 || pin.y < 0 || pin.y > 100) return [];
+    if (pin.pinType !== "submap" || pin.targetMapId === null) return [];
+    const targetMap = childMapsById.get(pin.targetMapId);
+    if (!targetMap || targetMap.parentMapId !== map.id) return [];
     seen.add(pin.id);
-    return true;
+    return [{ ...pin, href: `/worldbuilding?map=${targetMap.id}`, targetTitle: targetMap.title }];
   }).slice(0, HOME_MAP_PINS_LIMIT);
 
   return { map, pins: validPins };
@@ -429,12 +436,13 @@ async function getHomeMapData() {
     .innerJoin(mapLocations, eq(homeMapPreviewPins.locationId, mapLocations.id))
     .where(eq(homeMapPreviewPins.previewId, 1))
     .orderBy(asc(homeMapPreviewPins.sortOrder), asc(homeMapPreviewPins.id));
-  return resolveHomeMapPreview(preview.config, preview.map, pins.map((row) => row.location));
+  const childMaps = await db.select().from(worldMaps).where(eq(worldMaps.parentMapId, preview.map.id));
+  return resolveHomeMapPreview(preview.config, preview.map, pins.map((row) => row.location), childMaps);
 }
 
 /** Consolidated, request-deduplicated read boundary for future Home tasks. */
 export const getHomeData = cache(async () => {
-  const [settings, capabilities, skills, selections, stats, mapPreview, fallbackWorldbuilding] = await Promise.all([
+  const [settings, capabilities, skills, selections, stats, mapPreview, fallbackWorldbuilding, softwareOptions] = await Promise.all([
     getSiteSettings(),
     db.select().from(services).where(eq(services.isHomeVisible, true)).orderBy(asc(services.sortOrder), asc(services.id)),
     db.select().from(homeSkills).where(eq(homeSkills.isVisible, true)).orderBy(asc(homeSkills.sortOrder), asc(homeSkills.id)),
@@ -449,7 +457,10 @@ export const getHomeData = cache(async () => {
       category: worldbuildingEntries.cat,
       createdAt: worldbuildingEntries.createdAt,
     }).from(worldbuildingEntries).orderBy(asc(worldbuildingEntries.sortOrder), asc(worldbuildingEntries.id)).limit(HOME_SECTION_LIMITS.worldbuilding_highlight),
+    db.select({ name: metadataOptions.name, iconUrl: metadataOptions.iconUrl })
+      .from(metadataOptions).where(eq(metadataOptions.type, "software")),
   ]);
+  const softwareIcons = new Map(softwareOptions.map((option) => [option.name.trim().toLocaleLowerCase("en-US"), option.iconUrl]));
   const curatedWorldbuilding = selections.filter((item) => item.section === "worldbuilding_highlight");
   const fallbackHighlights: ResolvedHomeContent[] = fallbackWorldbuilding.map((item, sortOrder) => ({
     selectionId: -(sortOrder + 1),
@@ -467,7 +478,7 @@ export const getHomeData = cache(async () => {
   return {
     settings,
     capabilities,
-    skills,
+    skills: skills.map((skill) => ({ ...skill, iconUrl: softwareIcons.get(skill.label.trim().toLocaleLowerCase("en-US")) ?? null })),
     featuredWorks: selections.filter((item) => item.section === "featured_work"),
     worldbuildingHighlights: resolveHomeWorldbuildingHighlights(curatedWorldbuilding, fallbackHighlights),
     latestDispatches: resolveHomeLatestDispatches(selections),

@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/worldbuilding" },
 };
 
-export default async function WorldbuildingPage({ searchParams }: { searchParams: Promise<{ item?: string | string[] }> }) {
-  const { item } = await searchParams;
+export default async function WorldbuildingPage({ searchParams }: { searchParams: Promise<{ item?: string | string[]; map?: string | string[] }> }) {
+  const { item, map } = await searchParams;
   const [items, imageRows, linkRows, videoRows, mapRows, locationRows, appearance] = await Promise.all([
     db.select().from(worldbuildingEntries).orderBy(desc(worldbuildingEntries.year), asc(worldbuildingEntries.sortOrder)),
     db.select().from(worldbuildingImages).orderBy(asc(worldbuildingImages.sortOrder)),
@@ -42,7 +42,7 @@ export default async function WorldbuildingPage({ searchParams }: { searchParams
         title="Worldbuilding Chronicles"
         subtitle="Explore stories, lore and characters from created worlds."
       />
-      <WorldbuildingBrowser items={itemsWithImages} maps={mapRows} locations={locationRows} initialItemId={parseContentItemId(item)} />
+      <WorldbuildingBrowser items={itemsWithImages} maps={mapRows} locations={locationRows} initialItemId={parseContentItemId(item)} initialMapId={parseContentItemId(map)} />
     </div>
   );
 }
