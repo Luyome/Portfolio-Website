@@ -7,12 +7,13 @@ import { getSiteSettings } from "@/lib/site-settings";
 import InlineBold from "@/components/InlineBold";
 import HeroCarousel from "@/components/HeroCarousel";
 import SelectedWorkCoverflow from "@/components/SelectedWorkCoverflow";
+import HomeMapPreview from "@/components/HomeMapPreview";
 import Reveal from "@/components/Reveal";
 import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { isOptimizableImageUrl } from "@/lib/image-host";
-import { getHomeCapabilitiesAndSkills, getHomeFeaturedWorks, getHomeProductionStats } from "@/lib/home-data";
+import { getHomeData, getHomeFeaturedWorks } from "@/lib/home-data";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -24,25 +25,23 @@ function alignPrimaryPositioning(copy: string): string {
 
 export default async function HomePage() {
   const [
-    homePractice,
     settings,
     buttons,
     appearance,
     heroSlideRows,
     featuredWorks,
-    productionStats,
+    homeData,
   ] = await Promise.all([
-    getHomeCapabilitiesAndSkills(),
     getSiteSettings(),
     db.select().from(heroButtons).orderBy(asc(heroButtons.sortOrder)),
     getPageAppearance("home"),
     db.select().from(homeHeroSlides).orderBy(asc(homeHeroSlides.sortOrder)),
     getHomeFeaturedWorks(),
-    getHomeProductionStats(),
+    getHomeData(),
   ]);
 
-  const visibleProductionStats = productionStats.filter(
-    (stat): stat is (typeof productionStats)[number] & { count: number } =>
+  const visibleProductionStats = homeData.stats.filter(
+    (stat): stat is (typeof homeData.stats)[number] & { count: number } =>
       stat.available && stat.isVisible && stat.count !== null
   );
 
@@ -109,9 +108,9 @@ export default async function HomePage() {
             <p>Disciplines I bring together to shape playable ideas, visual spaces, and coherent worlds.</p>
           </div>
 
-          {homePractice.capabilities.length > 0 && (
+          {homeData.capabilities.length > 0 && (
             <ol className="hp-capability-list">
-              {homePractice.capabilities.map((capability, index) => (
+              {homeData.capabilities.map((capability, index) => (
                 <li key={capability.id} className="hp-capability">
                   <span className="hp-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
                   <h3>{capability.title}</h3>
@@ -128,9 +127,9 @@ export default async function HomePage() {
               <h2>Skills &amp; Tools</h2>
               <p>A focused set of disciplines and production tools used across the work.</p>
             </div>
-          {homePractice.skills.length > 0 ? (
+          {homeData.skills.length > 0 ? (
               <ol className="hp-skill-list">
-                {homePractice.skills.map((skill, index) => (
+                {homeData.skills.map((skill, index) => (
                   <li key={skill.id}>
                     <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
                     <strong>{skill.label}</strong>
@@ -155,6 +154,12 @@ export default async function HomePage() {
           )}
         </Reveal>
       </section>
+
+      {homeData.mapPreview && (
+        <Reveal>
+          <HomeMapPreview map={homeData.mapPreview.map} pins={homeData.mapPreview.pins} />
+        </Reveal>
+      )}
 
       {settings.narrativeImage && settings.narrativeText && (
         <Reveal className="home-narrative">

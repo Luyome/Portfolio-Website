@@ -37,6 +37,28 @@ export const HOME_SKILLS_LIMIT = 6;
 export const HOME_CAPABILITIES_LIMIT = 4;
 export const HOME_MAP_PINS_LIMIT = 5;
 
+type HomeMapConfig = { isVisible: boolean; mapId: number | null };
+type HomeMap = typeof worldMaps.$inferSelect;
+type HomeMapPin = typeof mapLocations.$inferSelect;
+
+export function resolveHomeMapPreview(
+  config: HomeMapConfig | null,
+  map: HomeMap | null,
+  pins: readonly HomeMapPin[]
+) {
+  if (!config?.isVisible || !config.mapId || !map || map.id !== config.mapId) return null;
+
+  const seen = new Set<number>();
+  const validPins = pins.filter((pin) => {
+    if (seen.has(pin.id) || pin.mapId !== map.id || !pin.name.trim()) return false;
+    if (!Number.isFinite(pin.x) || !Number.isFinite(pin.y) || pin.x < 0 || pin.x > 100 || pin.y < 0 || pin.y > 100) return false;
+    seen.add(pin.id);
+    return true;
+  }).slice(0, HOME_MAP_PINS_LIMIT);
+
+  return { map, pins: validPins };
+}
+
 export const HOME_STAT_KEYS = [
   "3d_works",
   "2d_works",
@@ -360,14 +382,14 @@ async function getHomeMapData() {
     .from(homeMapPreview)
     .leftJoin(worldMaps, eq(homeMapPreview.mapId, worldMaps.id))
     .where(eq(homeMapPreview.id, 1));
-  if (!preview?.config.mapId || !preview.map) return { config: preview?.config ?? null, map: null, pins: [] };
+  if (!preview?.config.mapId || !preview.map) return null;
   const pins = await db
     .select({ selection: homeMapPreviewPins, location: mapLocations })
     .from(homeMapPreviewPins)
     .innerJoin(mapLocations, eq(homeMapPreviewPins.locationId, mapLocations.id))
     .where(eq(homeMapPreviewPins.previewId, 1))
     .orderBy(asc(homeMapPreviewPins.sortOrder), asc(homeMapPreviewPins.id));
-  return { config: preview.config, map: preview.map, pins: pins.map((row) => row.location) };
+  return resolveHomeMapPreview(preview.config, preview.map, pins.map((row) => row.location));
 }
 
 /** Consolidated, request-deduplicated read boundary for future Home tasks. */
