@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 import { BLOB_HOST_SUFFIX } from "./lib/image-host";
 
 const nextConfig: NextConfig = {
+  // Allows isolated production QA while an owner development server is
+  // using `.next`; the default remains unchanged for every normal command.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   async redirects() {
     return [{ source: "/cv", destination: "/about", permanent: true }];
   },

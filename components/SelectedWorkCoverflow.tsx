@@ -1,36 +1,61 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { ResolvedHomeContent } from "@/lib/home-data";
 import { isOptimizableImageUrl } from "@/lib/image-host";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { buildSelectedWorkDisplayItems, selectedWorkPosition, wrapSelectedWorkIndex } from "@/lib/selected-work";
 
-const TYPE_LABELS: Record<ResolvedHomeContent["type"], string> = {
-  portfolio: "Portfolio",
-  sketch: "Sketch",
-  model3d: "3D Work",
-  worldbuilding: "Worldbuilding",
-  game: "Game Design",
-};
+const AUTO_ADVANCE_MS = 5000;
 
 export default function SelectedWorkCoverflow({ items }: { items: ResolvedHomeContent[] }) {
+  const displayItems = useMemo(() => buildSelectedWorkDisplayItems(items), [items]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const count = items.length;
+  const [isHovered, setIsHovered] = useState(false);
+  const [hasFocus, setHasFocus] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [interactionVersion, setInteractionVersion] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const reduceMotion = usePrefersReducedMotion();
+  const count = displayItems.length;
 
-  const select = useCallback((index: number) => {
+  const select = useCallback((index: number, manual = true) => {
     if (!count) return;
-    setActiveIndex((index + count) % count);
+    setActiveIndex(wrapSelectedWorkIndex(index, count));
+    if (manual) setInteractionVersion((version) => version + 1);
   }, [count]);
 
-  if (!count) return null;
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), { threshold: 0.2 });
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
-  const active = items[activeIndex];
+  useEffect(() => {
+    if (reduceMotion || isHovered || hasFocus || !isVisible || count <= 1) return;
+    const timer = window.setTimeout(() => select(activeIndex + 1, false), AUTO_ADVANCE_MS);
+    return () => window.clearTimeout(timer);
+  }, [activeIndex, count, hasFocus, interactionVersion, isHovered, isVisible, reduceMotion, select]);
+
+  const active = displayItems[activeIndex];
 
   return (
     <section
       className="selected-work"
+      id="selected-work"
+      ref={sectionRef}
       aria-labelledby="selected-work-title"
+      data-autoplay-paused={reduceMotion || isHovered || hasFocus || !isVisible ? "true" : "false"}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onFocusCapture={() => setHasFocus(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHasFocus(false);
+      }}
       onKeyDown={(event) => {
         if (event.key === "ArrowLeft") {
           event.preventDefault();
@@ -50,21 +75,21 @@ export default function SelectedWorkCoverflow({ items }: { items: ResolvedHomeCo
         <p className="sw-intro">A focused selection across game design, visual craft, and constructed worlds.</p>
       </div>
 
-      <div className={`sw-stage sw-count-${Math.min(count, 3)}`}>
-        {items.map((item, index) => {
-          const offset = index - activeIndex;
-          const visible = Math.abs(offset) <= 2;
+      <div className="sw-stage">
+        {displayItems.map((item, index) => {
+          const position = selectedWorkPosition(index, activeIndex, count);
+          const visible = position !== null;
           return (
             <button
-              key={item.selectionId}
+              key={item.key}
               type="button"
-              className={`sw-card ${offset === 0 ? "is-active" : ""}`}
-              style={{ "--sw-offset": offset } as React.CSSProperties}
+              className={`sw-card ${position === 0 ? "is-active" : ""} ${item.isPlaceholder ? "is-placeholder" : ""}`}
+              style={{ "--sw-position": position ?? 0, "--sw-slot": index } as React.CSSProperties}
               onClick={() => select(index)}
-              aria-label={offset === 0 ? `${item.title}, selected` : `Select ${item.title}`}
-              aria-pressed={offset === 0}
+              aria-label={position === 0 ? `${item.title}, selected` : `Select ${item.title}`}
+              aria-pressed={position === 0}
               aria-hidden={!visible}
-              tabIndex={visible && offset !== 0 ? 0 : -1}
+              tabIndex={visible && position !== 0 ? 0 : -1}
             >
               <span className="sw-media">
                 {item.image ? (
@@ -76,7 +101,10 @@ export default function SelectedWorkCoverflow({ items }: { items: ResolvedHomeCo
                     unoptimized={!isOptimizableImageUrl(item.image)}
                   />
                 ) : (
-                  <span className="sw-media-missing" aria-hidden="true">{TYPE_LABELS[item.type]}</span>
+                  <span className="sw-placeholder-art" aria-hidden="true">
+                    <span className="sw-placeholder-orbit" />
+                    <span className="sw-placeholder-mark">{String(index + 1).padStart(2, "0")}</span>
+                  </span>
                 )}
               </span>
             </button>
@@ -86,11 +114,11 @@ export default function SelectedWorkCoverflow({ items }: { items: ResolvedHomeCo
 
       <div className="sw-details" aria-live="polite">
         <div className="sw-details-copy">
-          <span className="sw-type">{TYPE_LABELS[active.type]}</span>
+          <span className="sw-type">{active.typeLabel}</span>
           <h3>{active.title}</h3>
           {active.summary && <p>{active.summary}</p>}
         </div>
-        <Link href={active.href} className="sw-open">View work <span aria-hidden="true">↗</span></Link>
+        {active.href && <Link href={active.href} className="sw-open">View work <span aria-hidden="true">↗</span></Link>}
       </div>
 
       {count > 1 && (

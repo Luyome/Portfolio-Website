@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { heroButtons, homeHeroSlides, worldbuildingEntries, games, models3d } from "@/db/schema";
+import { heroButtons, homeHeroSlides } from "@/db/schema";
 import { getSiteSettings } from "@/lib/site-settings";
 import InlineBold from "@/components/InlineBold";
 import HeroCarousel from "@/components/HeroCarousel";
@@ -31,9 +30,6 @@ export default async function HomePage() {
     appearance,
     heroSlideRows,
     featuredWorks,
-    wbFeatured,
-    gameFeatured,
-    modelFeatured,
   ] = await Promise.all([
     getHomeCapabilitiesAndSkills(),
     getSiteSettings(),
@@ -41,9 +37,6 @@ export default async function HomePage() {
     getPageAppearance("home"),
     db.select().from(homeHeroSlides).orderBy(asc(homeHeroSlides.sortOrder)),
     getHomeFeaturedWorks(),
-    db.select().from(worldbuildingEntries).orderBy(asc(worldbuildingEntries.sortOrder)).limit(1),
-    db.select().from(games).orderBy(asc(games.sortOrder)).limit(1),
-    db.select().from(models3d).orderBy(asc(models3d.sortOrder)).limit(1),
   ]);
 
   const heroSlides =
@@ -52,12 +45,6 @@ export default async function HomePage() {
       : settings.homeBgImage
         ? [{ id: -1, url: settings.homeBgImage, title: null, subtitle: null, linkUrl: null }]
         : [];
-
-  const pillars = [
-    { label: "Worldbuilding Chronicles", href: "/worldbuilding", img: wbFeatured[0]?.img ?? "" },
-    { label: "Game Projects", href: "/games", img: gameFeatured[0]?.img ?? "" },
-    { label: "3D Renders & Environments", href: "/3d", img: modelFeatured[0]?.img ?? "" },
-  ];
 
   return (
     <div className="page home-page" style={pageAppearanceVars(appearance)}>
@@ -128,23 +115,25 @@ export default async function HomePage() {
           )}
         </Reveal>
 
-        {homePractice.skills.length > 0 && (
-          <Reveal className="hp-skills">
+        <Reveal className="hp-skills">
             <div className="hp-skills-intro">
               <div className="hp-kicker">Working Practice</div>
               <h2>Skills &amp; Tools</h2>
               <p>A focused set of disciplines and production tools used across the work.</p>
             </div>
-            <ol className="hp-skill-list">
-              {homePractice.skills.map((skill, index) => (
-                <li key={skill.id}>
-                  <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                  <strong>{skill.label}</strong>
-                </li>
-              ))}
-            </ol>
-          </Reveal>
-        )}
+          {homePractice.skills.length > 0 ? (
+              <ol className="hp-skill-list">
+                {homePractice.skills.map((skill, index) => (
+                  <li key={skill.id}>
+                    <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                    <strong>{skill.label}</strong>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="hp-skills-empty">Tools and disciplines are being curated.</p>
+            )}
+        </Reveal>
       </section>
 
       {settings.narrativeImage && settings.narrativeText && (
@@ -167,27 +156,6 @@ export default async function HomePage() {
           </div>
         </Reveal>
       )}
-
-      <Reveal className="home-pillars">
-        <div className="pillar-grid">
-          {pillars.map((p) => (
-            <Link key={p.href} href={p.href} className="pillar-card">
-              {p.img && (
-                <Image
-                  src={p.img}
-                  alt=""
-                  fill
-                  sizes="(max-width: 820px) 100vw, (max-width: 1060px) 50vw, 33vw"
-                  unoptimized={!isOptimizableImageUrl(p.img)}
-                />
-              )}
-              <div className="pillar-label">
-                {p.label} <span className="pillar-arrow">→</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </Reveal>
 
       <Reveal className="home-contact">
         {settings.contactBgImage && (

@@ -10,7 +10,7 @@
 // visual QA.
 
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, writeSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync, writeSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -47,7 +47,13 @@ const VIEWPORTS = [
   { width: 390, height: 844 },
   { width: 768, height: 1024 },
   { width: 1440, height: 900 },
+  { width: 1920, height: 1080 },
 ];
+
+const SCROLL_SELECTOR = process.env.QA_SCROLL_SELECTOR || "";
+const SCROLL_BLOCK = process.env.QA_SCROLL_BLOCK === "start" ? "start" : "center";
+const CHECK_COVERFLOW = process.env.QA_COVERFLOW === "1";
+const SCREENSHOT_DIR = process.env.QA_SCREENSHOT_DIR || "";
 
 const CDP_PORT = Number(process.env.QA_CDP_PORT || 9339);
 const RENDER_WAIT_MS = 500;
@@ -283,6 +289,14 @@ async function runOneCheck(client, url, vp) {
   await waitForPageLoad(client, NAV_TIMEOUT_MS);
   await sleep(RENDER_WAIT_MS);
 
+  if (SCROLL_SELECTOR) {
+    const selector = JSON.stringify(SCROLL_SELECTOR);
+    await client.send("Runtime.evaluate", {
+      expression: `(() => { const target = document.querySelector(${selector}); target?.scrollIntoView({ block: ${JSON.stringify(SCROLL_BLOCK)} }); if (target && ${JSON.stringify(SCROLL_BLOCK)} === "start") window.scrollBy(0, -(document.querySelector(".site-header")?.getBoundingClientRect().height || 0)); })()`,
+    });
+    await sleep(RENDER_WAIT_MS);
+  }
+
   const evalResult = await client.send("Runtime.evaluate", {
     expression: OVERFLOW_CHECK_EXPRESSION,
     returnByValue: true,
@@ -294,7 +308,86 @@ async function runOneCheck(client, url, vp) {
     );
   }
 
+  if (SCREENSHOT_DIR) {
+    mkdirSync(SCREENSHOT_DIR, { recursive: true });
+    const capture = await client.send("Page.captureScreenshot", { format: "png", captureBeyondViewport: false });
+    const selectorName = (SCROLL_SELECTOR || "top").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "");
+    writeFileSync(path.join(SCREENSHOT_DIR, `${selectorName}-${vp.width}x${vp.height}.png`), capture.data, "base64");
+  }
+
   return evalResult.result.value; // { scrollWidth, clientWidth, innerWidth, overflow, offenders }
+}
+
+async function runCoverflowInteractionCheck(client, url) {
+  const evaluate = async (expression) => {
+    const result = await client.send("Runtime.evaluate", { expression, returnByValue: true });
+    if (result.exceptionDetails) throw new Error("Coverflow evaluation failed");
+    return result.result.value;
+  };
+  const active = () => evaluate(`document.querySelector(".sw-card.is-active")?.getAttribute("aria-label") || ""`);
+  const clickSide = (side) => evaluate(`(() => {
+    const active = document.querySelector(".sw-card.is-active")?.getBoundingClientRect();
+    const cards = [...document.querySelectorAll('.sw-card[aria-hidden="false"]:not(.is-active)')];
+    const card = cards.find((item) => ${JSON.stringify(side)} === "right"
+      ? item.getBoundingClientRect().left > active.left
+      : item.getBoundingClientRect().left < active.left);
+    card?.click(); return Boolean(card);
+  })()`);
+
+  await client.send("Emulation.setEmulatedMedia", { features: [] });
+  await client.send("Page.navigate", { url });
+  await waitForPageLoad(client, NAV_TIMEOUT_MS);
+  await sleep(RENDER_WAIT_MS);
+  await evaluate(`document.querySelector(".selected-work")?.scrollIntoView({ block: "center" })`);
+  await sleep(250);
+
+  const visibleCount = await evaluate(`document.querySelectorAll('.sw-card[aria-hidden="false"]').length`);
+  const initial = await active();
+  if (!(await clickSide("right"))) throw new Error("Right side work was not selectable");
+  await sleep(450);
+  const afterRight = await active();
+  if (!(await clickSide("left"))) throw new Error("Left side work was not selectable");
+  await sleep(450);
+  const afterLeft = await active();
+  await evaluate(`document.querySelector('button[aria-label="Previous work"]')?.click()`);
+  await sleep(450);
+  const afterPrevious = await active();
+  await evaluate(`document.querySelector('button[aria-label="Next work"]')?.click()`);
+  await sleep(450);
+  const afterNext = await active();
+
+  const beforeAuto = await active();
+  await sleep(5300);
+  const afterAuto = await active();
+
+  await evaluate(`document.querySelector(".selected-work")?.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }))`);
+  const beforeHover = await active();
+  await sleep(5300);
+  const afterHover = await active();
+  await evaluate(`document.querySelector(".selected-work")?.dispatchEvent(new MouseEvent("mouseout", { bubbles: true, relatedTarget: document.body }))`);
+
+  await evaluate(`(() => { const button = document.querySelector('button[aria-label="Next work"]'); button?.focus(); button?.dispatchEvent(new FocusEvent("focusin", { bubbles: true })); return document.activeElement === button; })()`);
+  await sleep(200);
+  const focusPaused = await evaluate(`document.querySelector(".selected-work")?.dataset.autoplayPaused === "true"`);
+  const beforeFocus = await active();
+  await sleep(5300);
+  const afterFocus = await active();
+  await evaluate(`document.activeElement?.blur()`);
+
+  await client.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+  await client.send("Page.navigate", { url });
+  await waitForPageLoad(client, NAV_TIMEOUT_MS);
+  await sleep(RENDER_WAIT_MS);
+  const beforeReduced = await active();
+  await sleep(5300);
+  const afterReduced = await active();
+  await client.send("Emulation.setEmulatedMedia", { features: [] });
+
+  const ok = visibleCount === 3 && initial && afterRight !== initial && afterLeft === initial &&
+    afterPrevious !== afterLeft && afterNext === afterLeft && afterAuto !== beforeAuto &&
+    afterHover === beforeHover && focusPaused && afterFocus === beforeFocus && afterReduced === beforeReduced;
+  if (!ok) throw new Error(`Coverflow interaction assertion failed: ${JSON.stringify({ visibleCount, initial, afterRight, afterLeft, afterPrevious, afterNext, beforeAuto, afterAuto, beforeHover, afterHover, focusPaused, beforeFocus, afterFocus, beforeReduced, afterReduced })}`);
+  log("PASS Coverflow interactions side-select/prev/next/autoplay/hover/focus/reduced-motion");
 }
 
 // ---------------------------------------------------------------------------
@@ -307,12 +400,16 @@ async function launchBrowserSession(chromePath) {
   const chromeArgs = [
     "--headless=new",
     `--remote-debugging-port=${CDP_PORT}`,
+    "--remote-allow-origins=*",
     `--user-data-dir=${userDataDir}`,
     "--no-first-run",
     "--no-default-browser-check",
     "--disable-extensions",
     "--disable-popup-blocking",
-    "--disable-gpu",
+    "--no-sandbox",
+    "--use-gl=swiftshader",
+    "--enable-unsafe-swiftshader",
+    "--disable-dev-shm-usage",
     "--hide-scrollbars",
     "--mute-audio",
     "about:blank",
@@ -353,13 +450,19 @@ async function teardownSession(session) {
   if (session.client) session.client.close();
   // Close only the Chrome process this script launched.
   if (!session.exitedEarly) await closeChromeProcess(session.chromeProc.pid);
-  await rm(session.userDataDir, { recursive: true, force: true }).catch(() => {});
+  await Promise.race([
+    rm(session.userDataDir, { recursive: true, force: true }).catch(() => {}),
+    sleep(3000),
+  ]);
 }
 
 async function closeChromeProcess(pid) {
   if (!pid) return;
   if (process.platform === "win32") {
-    spawnSync("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore" });
+    // Windows can leave taskkill waiting indefinitely while a crashed GPU
+    // subprocess is being reaped. Bound cleanup so completed QA results do
+    // not hang the caller; the profile removal below remains best-effort.
+    spawnSync("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore", timeout: 5000 });
   } else {
     try {
       process.kill(pid, "SIGTERM");
@@ -409,10 +512,14 @@ async function main() {
   }
 
   let consoleErrorCount = 0;
+  let consoleErrorMessages = [];
   let exceptionCount = 0;
   function attachCounters(client) {
     client.on("Runtime.consoleAPICalled", (params) => {
-      if (params.type === "error") consoleErrorCount++;
+      if (params.type === "error") {
+        consoleErrorCount++;
+        consoleErrorMessages.push(params.args.map((arg) => arg.value ?? arg.description ?? "").join(" "));
+      }
     });
     client.on("Runtime.exceptionThrown", () => {
       exceptionCount++;
@@ -437,6 +544,7 @@ async function main() {
       // page defect, so it shouldn't be reported as a FAIL on that route.
       for (;;) {
         consoleErrorCount = 0;
+        consoleErrorMessages = [];
         exceptionCount = 0;
         try {
           const { overflow, offenders } = await runOneCheck(session.client, url, vp);
@@ -451,6 +559,7 @@ async function main() {
             passed++;
           } else {
             failed++;
+            for (const message of consoleErrorMessages.slice(0, 3)) log(`  console error: ${message}`);
             if (overflow > 0 && offenders.length) {
               for (const o of offenders) {
                 log(`  overflow source: ${o.selector} right=${o.right}px excess=${o.excess}px`);
@@ -497,6 +606,16 @@ async function main() {
     }
   }
 
+  if (CHECK_COVERFLOW && failed === 0 && skipped === 0) {
+    try {
+      await session.client.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+      await runCoverflowInteractionCheck(session.client, BASE_URL + "/");
+    } catch (err) {
+      failed++;
+      log(`FAIL Coverflow interactions error=${err.message}`);
+    }
+  }
+
   log(
     `Responsive QA: ${passed} passed, ${failed} failed` +
       (skipped > 0 ? `, ${skipped} skipped` : "")
@@ -507,4 +626,10 @@ async function main() {
   process.exitCode = failed > 0 || skipped > 0 ? 1 : 0;
 }
 
-main();
+main().then(
+  () => process.exit(process.exitCode || 0),
+  (err) => {
+    logErr(`ERROR: ${err?.message || err}`);
+    process.exit(1);
+  }
+);

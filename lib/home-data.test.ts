@@ -19,6 +19,7 @@ test("Home content limits accept the boundary and reject overflow", async () => 
     /at most 6/
   );
   assert.equal(HOME_SKILLS_LIMIT, 6);
+  assert.equal(HOME_SECTION_LIMITS.featured_work, 6);
 });
 
 test("Home content selections reject duplicates and invalid section targets", async () => {
