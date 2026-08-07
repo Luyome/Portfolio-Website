@@ -11,6 +11,7 @@ import HomeMapPreview from "@/components/HomeMapPreview";
 import HomeWorldbuildingHighlights from "@/components/HomeWorldbuildingHighlights";
 import HomeLatestDispatches from "@/components/HomeLatestDispatches";
 import HomeContactSocial from "@/components/HomeContactSocial";
+import BackToTop from "@/components/BackToTop";
 import Reveal from "@/components/Reveal";
 import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
@@ -58,6 +59,7 @@ export default async function HomePage() {
         : [];
 
   return (
+    <>
     <div className="page home-page" style={pageAppearanceVars(appearance)}>
       {heroSlides.length > 0 && (
         // The hero background is a CSS background-image (HeroCarousel), so it
@@ -207,5 +209,7 @@ export default async function HomePage() {
         </Reveal>
       )}
     </div>
+    <BackToTop />
+    </>
   );
 }
