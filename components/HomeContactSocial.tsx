@@ -32,45 +32,46 @@ export default function HomeContactSocial({ links, images = [], backgroundOpacit
         {images.map((image, index) => <Image key={image} src={image} alt="" fill sizes="100vw" loading="lazy" unoptimized={!isOptimizableImageUrl(image)} style={{ opacity: index === activeImage ? washOpacity * 0.6 : 0 }} />)}
       </div>}
       <div className="hcs-inner">
-        <div className="hcs-top">
-          <div className="hcs-heading">
-            <p className="hcs-kicker">Contact + Social</p>
-            <h2 id="home-contact-title">Let’s continue the conversation.</h2>
-            <p>For collaborations, opportunities, or a closer look at the work.</p>
-          </div>
-          {images.length > 0 && (
-            <div className="hcs-visual" aria-hidden="true">
-              <div className="hcs-frame hcs-frame-main">
-                {images.map((image, index) => (
-                  <Image key={image} src={image} alt="" fill sizes="(max-width: 820px) 60vw, 300px" unoptimized={!isOptimizableImageUrl(image)} style={{ opacity: index === activeImage ? 1 : 0 }} />
-                ))}
-              </div>
-              {secondary[0] && (
-                <div className="hcs-frame hcs-frame-a">
-                  <Image src={secondary[0]} alt="" fill sizes="180px" unoptimized={!isOptimizableImageUrl(secondary[0])} />
-                </div>
-              )}
-              {secondary[1] && (
-                <div className="hcs-frame hcs-frame-b">
-                  <Image src={secondary[1]} alt="" fill sizes="150px" unoptimized={!isOptimizableImageUrl(secondary[1])} />
-                </div>
-              )}
-            </div>
-          )}
+        <div className="hcs-heading">
+          <p className="hcs-kicker">Contact + Social</p>
+          <h2 id="home-contact-title">Let’s continue the conversation.</h2>
+          <p>For collaborations, opportunities, or a closer look at the work.</p>
         </div>
 
-        <div className="hcs-directory">
-          <ul className="hcs-links">{links.map((link, index) => <li key={link.key}><a href={link.href} {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}>
-            <span className="hcs-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><span className="hcs-label">{link.label}</span><span className="hcs-value">{link.value}</span><span className="hcs-arrow" aria-hidden="true">↗</span>
-          </a></li>)}</ul>
+        <div className="hcs-body">
+          <div className="hcs-col hcs-col-primary">
+            <ul className="hcs-links">{links.map((link, index) => <li key={link.key}><a href={link.href} {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}>
+              <span className="hcs-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><span className="hcs-label">{link.label}</span><span className="hcs-value">{link.value}</span><span className="hcs-arrow" aria-hidden="true">↗</span>
+            </a></li>)}</ul>
 
-          <div className="hcs-nav-block">
             <nav className="hcs-shortcuts" aria-label="Continue exploring">
               <p className="hcs-nav-kicker">Index / Continue</p>
               <Link href="/portfolio" className="hcs-shortcut"><span aria-hidden="true">01</span>Work</Link>
               <Link href="/worldbuilding" className="hcs-shortcut"><span aria-hidden="true">02</span>Worldbuilding</Link>
               <Link href="/about" className="hcs-shortcut"><span aria-hidden="true">03</span>About / CV</Link>
             </nav>
+          </div>
+
+          <div className="hcs-col hcs-col-visual">
+            {images.length > 0 && (
+              <div className="hcs-visual" aria-hidden="true">
+                <div className="hcs-frame hcs-frame-main">
+                  {images.map((image, index) => (
+                    <Image key={image} src={image} alt="" fill sizes="(max-width: 820px) 70vw, 380px" unoptimized={!isOptimizableImageUrl(image)} style={{ opacity: index === activeImage ? 1 : 0 }} />
+                  ))}
+                </div>
+                {secondary[0] && (
+                  <div className="hcs-frame hcs-frame-a">
+                    <Image src={secondary[0]} alt="" fill sizes="220px" unoptimized={!isOptimizableImageUrl(secondary[0])} />
+                  </div>
+                )}
+                {secondary[1] && (
+                  <div className="hcs-frame hcs-frame-b">
+                    <Image src={secondary[1]} alt="" fill sizes="180px" unoptimized={!isOptimizableImageUrl(secondary[1])} />
+                  </div>
+                )}
+              </div>
+            )}
             <button type="button" className="hcs-top-btn" onClick={backToTop}>Back to top <span aria-hidden="true">↑</span></button>
           </div>
         </div>
