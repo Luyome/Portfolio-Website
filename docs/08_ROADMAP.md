@@ -99,7 +99,7 @@ Sprint 3 tasks:
 - Task 3.9 — Worldbuilding Highlights: **Complete.**
 - Task 3.10 — Latest Dispatches: **Complete.**
 - Task 3.11 — Contact + Social: **Complete.**
-- Task 3.12 — Responsive + Motion + Accessibility + Performance: **In Progress.** — 3.12.1 Public Home Refinement: **Complete.** 3.12.2 Shared Admin Visual Refinement: **Next.**
+- Task 3.12 — Responsive + Motion + Accessibility + Performance: **In Progress.** — 3.12.1 Public Home Refinement: **Complete.** 3.12.1B Home Visual Composition Correction: **Complete.** 3.12.2 Shared Admin Visual Refinement: **Next.**
 - Task 3.13 — Integration + Browser QA: Not started.
 - Task 3.14 — Production Deploy + Sprint Close: Not started.
 
@@ -132,6 +132,8 @@ Sprint 3 scope boundaries (deferred to their assigned sprint, not built here): F
 **Contact + Social (Task 3.11):** Replaced the legacy Home contact CTA with a concise final editorial section sourced exclusively from canonical Site Settings contact and social fields. Configured email and HTTP(S) social destinations retain their exact canonical targets, invalid or empty values are omitted, partial configurations render without placeholders, and a fully empty configuration omits the section. Existing optional Home contact artwork remains an atmospheric background treatment, while the genuine global Footer remains separate and unchanged. No contact form, duplicate profile/contact model, schema change, fabricated personal data, or Task 3.12 polish was added.
 
 **Public Home Refinement (Task 3.12.1):** Refined the public Header, Home rhythm, Selected Work hierarchy, Skills/Stats presentation, Highlights/Dispatches integration, and Contact closing scene. Replaced the KRUPNI preview treatment with a large bounded zoom/pan map whose maximum five Home pins resolve only legitimate continent submaps and open their exact canonical map state; no nested Home marker layer was introduced. Task 3.12 remains in progress; 3.12.2 Shared Admin Visual Refinement is next.
+
+**Home Visual Composition Correction (Task 3.12.1B):** Tightened Selected Work into one connected Coverflow composition, consolidated sparse Skills and canonical Production Stats into a compact production-profile region, enlarged the KRUPNI map as the section's primary media object, and normalized the intervening Home rhythm. Existing interactions, canonical data/routes, and frozen Home/Admin areas remain unchanged. Task 3.12 remains in progress; 3.12.2 Shared Admin Visual Refinement is next.
 
 Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 
@@ -189,7 +191,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 
 ## 8. Current Status
 
-- Current sprint: Sprint 3 — Home Page + Home Admin (In Progress; Tasks 3.1–3.11 and implementation pass 3.12.1 complete; 3.12.2 next). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
+- Current sprint: Sprint 3 — Home Page + Home Admin (In Progress; Tasks 3.1–3.11 and implementation passes 3.12.1 and 3.12.1B complete; 3.12.2 next). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
 - Sprint 2 final baseline commit: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 - Task 1.1 — Existing Core Systems Audit: Complete.
 - Task 1.2 — Final Product Scope and Documentation Alignment: Complete.
@@ -232,7 +234,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 3.9 — Worldbuilding Highlights: **Complete.**
 - Task 3.10 — Latest Dispatches: **Complete.**
 - Task 3.11 — Contact + Social: **Complete.**
-- Task 3.12 — Responsive + Motion + Accessibility + Performance: **In Progress.** — 3.12.1 Public Home Refinement: **Complete.** 3.12.2 Shared Admin Visual Refinement: **Next.**
+- Task 3.12 — Responsive + Motion + Accessibility + Performance: **In Progress.** — 3.12.1 Public Home Refinement: **Complete.** 3.12.1B Home Visual Composition Correction: **Complete.** 3.12.2 Shared Admin Visual Refinement: **Next.**
 - Task 3.13 — Integration + Browser QA: Not started.
 - Task 3.14 — Production Deploy + Sprint Close: Not started.
 - The Admin Panel, CRUD systems, and public map foundation already exist and are being extended, not built from zero.

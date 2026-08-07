@@ -140,22 +140,24 @@ export default function SelectedWorkCoverflow({ items }: { items: ResolvedHomeCo
         })}
       </div>
 
-      <div className="sw-details" aria-live="polite">
-        <div className="sw-details-copy">
-          <span className="sw-type">{active.typeLabel}</span>
-          <h3>{active.href ? <Link href={active.href}>{active.title}</Link> : active.title}</h3>
-          {active.summary && <p>{active.summary}</p>}
+      <div className="sw-footer">
+        <div className="sw-details" aria-live="polite">
+          <div className="sw-details-copy">
+            <span className="sw-type">{active.typeLabel}</span>
+            <h3>{active.href ? <Link href={active.href}>{active.title}</Link> : active.title}</h3>
+            {active.summary && <p>{active.summary}</p>}
+          </div>
+          {active.href && <Link href={active.href} className="sw-open">View More <span aria-hidden="true">↗</span></Link>}
         </div>
-        {active.href && <Link href={active.href} className="sw-open">View More <span aria-hidden="true">↗</span></Link>}
-      </div>
 
-      {count > 1 && (
-        <div className="sw-controls" aria-label="Selected work controls">
-          <button type="button" onClick={() => select(activeIndex - 1)} aria-label="Previous work">←</button>
-          <span><strong>{String(activeIndex + 1).padStart(2, "0")}</strong> / {String(count).padStart(2, "0")}</span>
-          <button type="button" onClick={() => select(activeIndex + 1)} aria-label="Next work">→</button>
-        </div>
-      )}
+        {count > 1 && (
+          <div className="sw-controls" aria-label="Selected work controls">
+            <button type="button" onClick={() => select(activeIndex - 1)} aria-label="Previous work">←</button>
+            <span><strong>{String(activeIndex + 1).padStart(2, "0")}</strong> / {String(count).padStart(2, "0")}</span>
+            <button type="button" onClick={() => select(activeIndex + 1)} aria-label="Next work">→</button>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

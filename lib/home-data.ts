@@ -460,7 +460,17 @@ export const getHomeData = cache(async () => {
     db.select({ name: metadataOptions.name, iconUrl: metadataOptions.iconUrl })
       .from(metadataOptions).where(eq(metadataOptions.type, "software")),
   ]);
-  const softwareIcons = new Map(softwareOptions.map((option) => [option.name.trim().toLocaleLowerCase("en-US"), option.iconUrl]));
+  const softwareKey = (name: string) => name
+    .trim()
+    .toLocaleLowerCase("en-US")
+    .replace(/\s+(?:v(?:ersion)?\s*)?\d+(?:\.\d+)*$/u, "");
+  const softwareIcons = new Map<string, string>();
+  for (const option of softwareOptions) {
+    if (option.iconUrl) softwareIcons.set(softwareKey(option.name), option.iconUrl);
+  }
+  const knownSoftwareIcons = new Map([
+    ["unreal engine", "https://cdn.simpleicons.org/unrealengine/FFFFFF"],
+  ]);
   const curatedWorldbuilding = selections.filter((item) => item.section === "worldbuilding_highlight");
   const fallbackHighlights: ResolvedHomeContent[] = fallbackWorldbuilding.map((item, sortOrder) => ({
     selectionId: -(sortOrder + 1),
@@ -478,7 +488,10 @@ export const getHomeData = cache(async () => {
   return {
     settings,
     capabilities,
-    skills: skills.map((skill) => ({ ...skill, iconUrl: softwareIcons.get(skill.label.trim().toLocaleLowerCase("en-US")) ?? null })),
+    skills: skills.map((skill) => {
+      const key = softwareKey(skill.label);
+      return { ...skill, iconUrl: softwareIcons.get(key) ?? knownSoftwareIcons.get(key) ?? null };
+    }),
     featuredWorks: selections.filter((item) => item.section === "featured_work"),
     worldbuildingHighlights: resolveHomeWorldbuildingHighlights(curatedWorldbuilding, fallbackHighlights),
     latestDispatches: resolveHomeLatestDispatches(selections),
