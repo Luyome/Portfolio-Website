@@ -470,6 +470,8 @@ export const getHomeData = cache(async () => {
   }
   const knownSoftwareIcons = new Map([
     ["unreal engine", "https://cdn.simpleicons.org/unrealengine/FFFFFF"],
+    ["blender", "https://cdn.simpleicons.org/blender/FFFFFF"],
+    ["maya", "https://cdn.simpleicons.org/autodeskmaya/FFFFFF"],
   ]);
   const curatedWorldbuilding = selections.filter((item) => item.section === "worldbuilding_highlight");
   const fallbackHighlights: ResolvedHomeContent[] = fallbackWorldbuilding.map((item, sortOrder) => ({

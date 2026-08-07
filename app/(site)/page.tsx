@@ -125,44 +125,56 @@ export default async function HomePage() {
             </ol>
           )}
         </Reveal>
+      </section>
 
-        <Reveal className="hp-skills">
-            <div className="hp-skills-intro">
-              <div className="hp-kicker">Working Practice</div>
-              <h2>Skills &amp; Tools</h2>
-              <p>A focused set of disciplines and production tools used across the work.</p>
+      <section id="skills" className="home-skills" aria-labelledby="home-skills-title">
+        <Reveal className="hsk-inner">
+          <div className="hsk-heading">
+            <div>
+              <div className="hsk-kicker">Working Practice</div>
+              <h2 id="home-skills-title">Skills &amp; Tools</h2>
             </div>
-          <div className={`hp-profile ${visibleProductionStats.length === 0 ? "has-no-stats" : ""}`}>
-            <div className="hp-profile-skills">
-              {homeData.skills.length > 0 ? (
-                <ol className="hp-skill-list">
-                  {homeData.skills.map((skill, index) => (
-                    <li key={skill.id}>
-                      {skill.iconUrl ? <Image src={skill.iconUrl} alt="" width={30} height={30} unoptimized={!isOptimizableImageUrl(skill.iconUrl)} /> : <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>}
-                      <strong>{skill.label}</strong>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <p className="hp-skills-empty">Tools and disciplines are being curated.</p>
-              )}
-            </div>
-            {visibleProductionStats.length > 0 && (
-              <div className="hp-stats" aria-labelledby="home-production-stats-title">
-                <h3 id="home-production-stats-title">Production Stats</h3>
-                <dl>
-                  {visibleProductionStats.map((stat) => (
-                    <div key={stat.key}>
-                      <dd>{stat.count.toLocaleString("en-US")}</dd>
-                      <dt>{stat.label}</dt>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            )}
+            <p>A focused set of disciplines and production tools used across the work.</p>
           </div>
+          {homeData.skills.length > 0 ? (
+            <ul className="hsk-grid">
+              {homeData.skills.map((skill) => (
+                <li key={skill.id} className="hsk-tile">
+                  <span className="hsk-tile-icon">
+                    {skill.iconUrl ? (
+                      <Image src={skill.iconUrl} alt="" width={30} height={30} unoptimized={!isOptimizableImageUrl(skill.iconUrl)} />
+                    ) : (
+                      <span className="hsk-tile-glyph" aria-hidden="true">{skill.label.trim().slice(0, 2).toUpperCase()}</span>
+                    )}
+                  </span>
+                  <span className="hsk-tile-name">{skill.label}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="hsk-empty">Tools and disciplines are being curated.</p>
+          )}
         </Reveal>
       </section>
+
+      {visibleProductionStats.length > 0 && (
+        <section id="stats" className="home-stats" aria-labelledby="home-stats-title">
+          <Reveal className="st-inner">
+            <div className="st-heading">
+              <div className="st-kicker">Production Range</div>
+              <h2 id="home-stats-title">By The Numbers</h2>
+            </div>
+            <dl className="st-row">
+              {visibleProductionStats.map((stat) => (
+                <div key={stat.key}>
+                  <dd>{stat.count.toLocaleString("en-US")}</dd>
+                  <dt>{stat.label}</dt>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
+        </section>
+      )}
 
       {homeData.mapPreview && (
         <Reveal>
