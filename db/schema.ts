@@ -1,4 +1,5 @@
-import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb, boolean, uniqueIndex, index, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb, boolean, uniqueIndex, index, check, type AnyPgColumn } from "drizzle-orm/pg-core";
 
 export type ThemedColor = { dark?: string; light?: string };
 export type FieldStyle = { color?: ThemedColor; fontSize?: string };
@@ -14,6 +15,7 @@ export const services = pgTable("services", {
   title: text("title").notNull(),
   desc: text("desc").notNull(),
   sortOrder: integer("sort_order").notNull().default(0),
+  isHomeVisible: boolean("is_home_visible").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -307,6 +309,91 @@ export const homeShowcase = pgTable("home_showcase", {
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// Sprint 3 Home-only curation. This deliberately is not a universal content
+// table: each row points through a real FK to exactly one content record that
+// exists today. `section` only distinguishes the three confirmed Home
+// collections that share this identical ordered-reference shape.
+export const homeContentSelections = pgTable(
+  "home_content_selections",
+  {
+    id: serial("id").primaryKey(),
+    section: text("section").notNull(),
+    portfolioId: integer("portfolio_id").references(() => portfolioItems.id, { onDelete: "cascade" }),
+    sketchId: integer("sketch_id").references(() => sketches.id, { onDelete: "cascade" }),
+    model3dId: integer("model_3d_id").references(() => models3d.id, { onDelete: "cascade" }),
+    worldbuildingEntryId: integer("worldbuilding_entry_id").references(() => worldbuildingEntries.id, { onDelete: "cascade" }),
+    gameId: integer("game_id").references(() => games.id, { onDelete: "cascade" }),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    check(
+      "home_content_selections_section_check",
+      sql`${table.section} in ('featured_work', 'worldbuilding_highlight', 'latest_dispatch')`
+    ),
+    check(
+      "home_content_selections_one_target_check",
+      sql`num_nonnulls(${table.portfolioId}, ${table.sketchId}, ${table.model3dId}, ${table.worldbuildingEntryId}, ${table.gameId}) = 1`
+    ),
+    check(
+      "home_content_selections_worldbuilding_target_check",
+      sql`${table.section} <> 'worldbuilding_highlight' or ${table.worldbuildingEntryId} is not null`
+    ),
+    uniqueIndex("home_content_selections_portfolio_unique_idx").on(table.section, table.portfolioId),
+    uniqueIndex("home_content_selections_sketch_unique_idx").on(table.section, table.sketchId),
+    uniqueIndex("home_content_selections_model_3d_unique_idx").on(table.section, table.model3dId),
+    uniqueIndex("home_content_selections_worldbuilding_unique_idx").on(table.section, table.worldbuildingEntryId),
+    uniqueIndex("home_content_selections_game_unique_idx").on(table.section, table.gameId),
+    index("home_content_selections_section_order_idx").on(table.section, table.sortOrder, table.id),
+  ]
+);
+
+export const homeSkills = pgTable(
+  "home_skills",
+  {
+    id: serial("id").primaryKey(),
+    label: text("label").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+    isVisible: boolean("is_visible").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("home_skills_label_unique_idx").on(table.label),
+    index("home_skills_visibility_order_idx").on(table.isVisible, table.sortOrder, table.id),
+  ]
+);
+
+export const homeStatSettings = pgTable("home_stat_settings", {
+  key: text("key").primaryKey(),
+  isVisible: boolean("is_visible").notNull().default(false),
+});
+
+// A singleton row owns the selected existing KRUPNI map. Pins remain real
+// map_locations rows and are only referenced by the ordered child table.
+export const homeMapPreview = pgTable(
+  "home_map_preview",
+  {
+    id: integer("id").primaryKey().default(1),
+    mapId: integer("map_id").references(() => worldMaps.id, { onDelete: "set null" }),
+    isVisible: boolean("is_visible").notNull().default(false),
+  },
+  (table) => [check("home_map_preview_singleton_check", sql`${table.id} = 1`)]
+);
+
+export const homeMapPreviewPins = pgTable(
+  "home_map_preview_pins",
+  {
+    id: serial("id").primaryKey(),
+    previewId: integer("preview_id").notNull().default(1).references(() => homeMapPreview.id, { onDelete: "cascade" }),
+    locationId: integer("location_id").notNull().references(() => mapLocations.id, { onDelete: "cascade" }),
+    sortOrder: integer("sort_order").notNull().default(0),
+  },
+  (table) => [
+    uniqueIndex("home_map_preview_pins_location_unique_idx").on(table.previewId, table.locationId),
+    index("home_map_preview_pins_order_idx").on(table.previewId, table.sortOrder, table.id),
+  ]
+);
 
 export const pageAppearance = pgTable("page_appearance", {
   id: serial("id").primaryKey(),

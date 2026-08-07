@@ -89,7 +89,7 @@ Identity note: Tetsunaru is the brand/internet identity; Demir Ünal is the real
 Sprint 3 tasks:
 
 - Task 3.1 — Existing Home System Audit + Scope Lock: **Complete.**
-- Task 3.2 — Home Data Architecture: Not started.
+- Task 3.2 — Home Data Architecture: **Complete.**
 - Task 3.3 — Home Admin Architecture: Not started.
 - Task 3.4 — Identity Hero: Not started.
 - Task 3.5 — Selected Work Coverflow: Not started.
@@ -106,6 +106,8 @@ Sprint 3 tasks:
 Sprint 3 scope boundaries (deferred to their assigned sprint, not built here): Full Map Explorer + Map Editor refinement → Sprint 4; Games → Sprint 5; Projects → Sprint 6; Portfolio final redesign → Sprint 7; Stories/Devlogs → Sprint 8; full About/Creator Profile + detailed Skills → Sprint 9; multi-language → Sprint 10; public accounts/community remain out of scope (section 6).
 
 **Verified Home audit / scope lock (Task 3.1):** Preserve and extend the existing server-rendered Home route, Site Settings identity/contact/social data, Hero media/buttons, ordered manual showcase foundation, Services/Focus Areas CRUD, shared media/motion/reduced-motion/layout/metadata systems, and existing Portfolio/2D/3D/Games/Worldbuilding/Map records. Sprint 3 must add only Home-scoped Skills, automatic broad-stat visibility, content-linked ordered Featured Works (max 6), Map Preview selection (approx. 3–5 markers), ordered Worldbuilding Highlights (max 3), and Latest Dispatches configuration (approx. 3–4); it must not expand the deferred destination systems. The global editorial status/visibility/Featured model remains unresolved and is not required for Home-specific ordered curation, but the owner must define what counts as a “Published Entry” (or approve hiding that stat) before Task 3.2 can finalize that automatic count because current content tables have no publication field.
+
+**Home data architecture (Task 3.2):** Added Home-scoped ordered content references for Featured Works (max 6), Worldbuilding Highlights (max 3), and Latest Dispatches (max 4), with real foreign keys to existing Portfolio, Sketch, 3D, Worldbuilding, and Game records plus database checks enforcing one target per row and Worldbuilding-only highlights. Added Home Skills (max 6 in the application boundary), Services-based Capability visibility/order (max 4), broad production-stat visibility settings, and a singleton KRUPNI map preview with ordered pins tied to existing map locations (max 5). Unsupported Stories & Devlogs and Published Entries stats remain explicitly unavailable/hidden until their source models exist or the pending publication definition is resolved. `lib/home-data.ts` is the consolidated read/write data boundary for later Home tasks; no Task 3.3 Admin UI was started. Additive migration `0020_flashy_thunderbolts` was applied only to the verified Neon `development` branch. Development integrity checks, 4 targeted tests, type-check, lint (0 errors; same 28 existing warnings), production build, and `git diff --check` passed.
 
 Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 
@@ -163,7 +165,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 
 ## 8. Current Status
 
-- Current sprint: Sprint 3 — Home Page + Home Admin (Next / Roadmap Approved / Implementation Not Started). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
+- Current sprint: Sprint 3 — Home Page + Home Admin (In Progress; Tasks 3.1–3.2 complete). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
 - Sprint 2 final baseline commit: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 - Task 1.1 — Existing Core Systems Audit: Complete.
 - Task 1.2 — Final Product Scope and Documentation Alignment: Complete.
@@ -196,7 +198,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 2.11 — Admin Integration QA: Complete.
 - Task 2.12 — Production Sync & Sprint 2 Close: Complete.
 - Task 3.1 — Existing Home System Audit + Scope Lock: Complete.
-- Task 3.2 — Home Data Architecture: Not started.
+- Task 3.2 — Home Data Architecture: Complete.
 - Task 3.3 — Home Admin Architecture: Not started.
 - Task 3.4 — Identity Hero: Not started.
 - Task 3.5 — Selected Work Coverflow: Not started.
