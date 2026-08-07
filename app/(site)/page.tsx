@@ -9,6 +9,7 @@ import HeroCarousel from "@/components/HeroCarousel";
 import SelectedWorkCoverflow from "@/components/SelectedWorkCoverflow";
 import HomeMapPreview from "@/components/HomeMapPreview";
 import HomeWorldbuildingHighlights from "@/components/HomeWorldbuildingHighlights";
+import HomeLatestDispatches from "@/components/HomeLatestDispatches";
 import Reveal from "@/components/Reveal";
 import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
@@ -165,6 +166,12 @@ export default async function HomePage() {
       {homeData.worldbuildingHighlights.length > 0 && (
         <Reveal>
           <HomeWorldbuildingHighlights items={homeData.worldbuildingHighlights} />
+        </Reveal>
+      )}
+
+      {homeData.latestDispatches.length > 0 && (
+        <Reveal>
+          <HomeLatestDispatches items={homeData.latestDispatches} />
         </Reveal>
       )}
 

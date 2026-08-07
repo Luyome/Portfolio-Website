@@ -318,6 +318,29 @@ export function resolveHomeWorldbuildingHighlights(
   return (selected.length > 0 ? selected : valid(eligible)).slice(0, HOME_SECTION_LIMITS.worldbuilding_highlight);
 }
 
+export function resolveHomeLatestDispatches(
+  items: readonly ResolvedHomeContent[]
+): ResolvedHomeContent[] {
+  return items
+    .filter((item) => {
+      const canonicalHref = resolveContentDetailHref(item.type, item.contentId);
+      return item.section === "latest_dispatch" &&
+        Number.isSafeInteger(item.contentId) &&
+        item.contentId > 0 &&
+        item.title.trim().length > 0 &&
+        canonicalHref !== null &&
+        item.href === canonicalHref &&
+        item.createdAt instanceof Date &&
+        Number.isFinite(item.createdAt.getTime());
+    })
+    .sort((a, b) =>
+      b.createdAt.getTime() - a.createdAt.getTime() ||
+      b.contentId - a.contentId ||
+      a.type.localeCompare(b.type)
+    )
+    .slice(0, HOME_SECTION_LIMITS.latest_dispatch);
+}
+
 async function getHomeContentSelections(): Promise<ResolvedHomeContent[]> {
   const rows = await db
     .select({
@@ -447,7 +470,7 @@ export const getHomeData = cache(async () => {
     skills,
     featuredWorks: selections.filter((item) => item.section === "featured_work"),
     worldbuildingHighlights: resolveHomeWorldbuildingHighlights(curatedWorldbuilding, fallbackHighlights),
-    latestDispatches: selections.filter((item) => item.section === "latest_dispatch"),
+    latestDispatches: resolveHomeLatestDispatches(selections),
     stats,
     mapPreview,
   };

@@ -75,6 +75,45 @@ test("Worldbuilding highlights support zero and partial states while dropping in
   ], []), [valid]);
 });
 
+test("Latest dispatches validate canonical records, sort newest first, and cap at four", async () => {
+  const { resolveHomeLatestDispatches } = await homeData;
+  type Resolved = Parameters<typeof resolveHomeLatestDispatches>[0][number];
+  const dispatch = (id: number, date: string, overrides: Partial<Resolved> = {}): Resolved => ({
+    selectionId: id,
+    section: "latest_dispatch",
+    sortOrder: id,
+    type: "portfolio",
+    contentId: id,
+    title: `Dispatch ${id}`,
+    summary: "Real supporting text",
+    image: null,
+    href: `/portfolio?item=${id}`,
+    createdAt: new Date(date),
+    ...overrides,
+  });
+
+  const resolved = resolveHomeLatestDispatches([
+    dispatch(1, "2026-01-01T00:00:00.000Z"),
+    dispatch(2, "2026-04-01T00:00:00.000Z"),
+    dispatch(3, "2026-03-01T00:00:00.000Z", { href: "/portfolio?item=99" }),
+    dispatch(4, "invalid"),
+    dispatch(5, "2026-05-01T00:00:00.000Z", { section: "featured_work" }),
+    dispatch(6, "2026-06-01T00:00:00.000Z", { title: " " }),
+    dispatch(7, "2026-02-01T00:00:00.000Z"),
+    dispatch(8, "2026-05-01T00:00:00.000Z"),
+    dispatch(9, "2026-07-01T00:00:00.000Z"),
+  ]);
+
+  assert.deepEqual(resolved.map((item) => item.contentId), [9, 8, 2, 7]);
+  assert.deepEqual(resolved.map((item) => item.href), [
+    "/portfolio?item=9",
+    "/portfolio?item=8",
+    "/portfolio?item=2",
+    "/portfolio?item=7",
+  ]);
+  assert.deepEqual(resolveHomeLatestDispatches([]), []);
+});
+
 test("Home map preview pin limits and uniqueness are enforced", async () => {
   const { HOME_MAP_PINS_LIMIT, validateHomeMapPinSet } = await homeData;
   assert.doesNotThrow(() => validateHomeMapPinSet(Array.from({ length: HOME_MAP_PINS_LIMIT }, (_, index) => index + 1)));
