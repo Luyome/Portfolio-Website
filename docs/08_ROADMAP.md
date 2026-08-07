@@ -80,7 +80,7 @@ Comments, likes, bookmarks, notifications, and public accounts are not part of t
 
 **Sprint 2 scope boundaries** — not part of this sprint: Home Page composition, public KRUPNI or Map Explorer, a new Projects system, a Stories or Devlog system, Portfolio public art direction, a multi-language system, public users, comments/likes/bookmarks/community, newsletter, multi-admin or role systems. These remain in their assigned future sprints or out of scope.
 
-**Sprint 3 — Home Page + Home Admin** — *In Progress; Tasks 3.1–3.6 Complete.* Public Home, in section order: (1) Identity Hero, (2) Selected Work Coverflow, (3) Capabilities/Focus Areas, (4) Skills + Production Stats, (5) KRUPNI Map Preview, (6) Worldbuilding Highlights, (7) Latest Dispatches, (8) Contact + Social. Home Admin: hero management; selection and ordering of Featured Works; Capabilities; Home Skills; automatic Production Stats visibility; map preview; Worldbuilding Highlights; Latest Dispatches; contact/social. Production Stats stay at general categories — 3D Works, 2D Works, Worldbuilding Entries, Game Projects, Stories & Devlogs, Published Entries — without adding overly specific subcategories to Home. Only the minimal creator data actually needed for Home (identity, Home Skills) is created here — the full Creator Profile foundation is Sprint 9 scope.
+**Sprint 3 — Home Page + Home Admin** — *In Progress; Tasks 3.1–3.7 Complete.* Public Home, in section order: (1) Identity Hero, (2) Selected Work Coverflow, (3) Capabilities/Focus Areas, (4) Skills + Production Stats, (5) KRUPNI Map Preview, (6) Worldbuilding Highlights, (7) Latest Dispatches, (8) Contact + Social. Home Admin: hero management; selection and ordering of Featured Works; Capabilities; Home Skills; automatic Production Stats visibility; map preview; Worldbuilding Highlights; Latest Dispatches; contact/social. Production Stats stay at general categories — 3D Works, 2D Works, Worldbuilding Entries, Game Projects, Stories & Devlogs, Published Entries — without adding overly specific subcategories to Home. Only the minimal creator data actually needed for Home (identity, Home Skills) is created here — the full Creator Profile foundation is Sprint 9 scope.
 
 Content limits for this sprint: Featured Works max 6; Home Skills max 6; Capabilities approx. 3–4; Map Preview markers approx. 3–5; Worldbuilding Highlights max 3; Latest Dispatches approx. 3–4.
 
@@ -94,7 +94,7 @@ Sprint 3 tasks:
 - Task 3.4 — Identity Hero: **Complete.**
 - Task 3.5 — Selected Work Coverflow: **Complete.**
 - Task 3.6 — Capabilities + Home Skills: **Complete.**
-- Task 3.7 — Automatic Production Stats: Not started.
+- Task 3.7 — Automatic Production Stats: **Complete.**
 - Task 3.8 — KRUPNI Home Map Preview: Not started.
 - Task 3.9 — Worldbuilding Highlights: Not started.
 - Task 3.10 — Latest Dispatches: Not started.
@@ -119,7 +119,9 @@ Sprint 3 scope boundaries (deferred to their assigned sprint, not built here): F
 
 **Capabilities + Home Skills (Task 3.6):** Finalized the Home sequence as Hero → Selected Work → Capabilities → Home Skills. Selected Work retains the owner-controlled maximum of 6 while the public Coverflow exposes only left/active/right positions; remaining works stay off-stage, side selection centers that work, Previous/Next wrap circularly, and calm approximately five-second autoplay pauses for hover/focus and is disabled with spatial motion under reduced-motion. Non-persistent presentation placeholders fill uncurated slots and disappear automatically as real owner curation reaches six; final artwork replacement remains late-stage content work. Removed the conflicting three-category Home portal presentation. Refined the existing Services-backed editorial Capabilities section to be approximately 5% more compact with stronger description readability, and preserved the minimal ordered Home Skills model (0–6 entries, no proficiency scoring). Production Stats remain Task 3.7 and are not rendered. Header/Nav and shared Admin refinement remain Task 3.12; domain-specific Admin refinement remains Sprints 4–9.
 
-**Task 3.6 detail-route UX fix:** Real Selected Work items resolve to their exact existing content-detail modal through canonical item deep links; the active artwork, title, and View More share that destination, while side cards remain selection controls and placeholders remain non-navigable. Task 3.7 remains Not Started.
+**Task 3.6 detail-route UX fix:** Real Selected Work items resolve to their exact existing content-detail modal through canonical item deep links; the active artwork, title, and View More share that destination, while side cards remain selection controls and placeholders remain non-navigable.
+
+**Automatic Production Stats (Task 3.7):** Integrated a compact editorial stats row with the existing Home Skills area. Counts are automatic aggregate queries over the canonical 3D, Sketch/2D, Worldbuilding, and Game tables and respect the existing Home visibility configuration and canonical category order. The public section omits itself when no stats are enabled and supports partial configurations; unsupported Stories & Devlogs and Published Entries remain unavailable and cannot render a fake zero. No manual value field, schema change, publication model, or future content model was added. Task 3.8 remains Not Started.
 
 Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 
@@ -177,7 +179,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 
 ## 8. Current Status
 
-- Current sprint: Sprint 3 — Home Page + Home Admin (In Progress; Tasks 3.1–3.6 complete). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
+- Current sprint: Sprint 3 — Home Page + Home Admin (In Progress; Tasks 3.1–3.7 complete). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
 - Sprint 2 final baseline commit: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 - Task 1.1 — Existing Core Systems Audit: Complete.
 - Task 1.2 — Final Product Scope and Documentation Alignment: Complete.
@@ -215,7 +217,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 3.4 — Identity Hero: Complete.
 - Task 3.5 — Selected Work Coverflow: Complete.
 - Task 3.6 — Capabilities + Home Skills: Complete.
-- Task 3.7 — Automatic Production Stats: Not started.
+- Task 3.7 — Automatic Production Stats: Complete.
 - Task 3.8 — KRUPNI Home Map Preview: Not started.
 - Task 3.9 — Worldbuilding Highlights: Not started.
 - Task 3.10 — Latest Dispatches: Not started.

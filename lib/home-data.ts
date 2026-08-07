@@ -66,6 +66,9 @@ export type HomeProductionStat = {
   isVisible: boolean;
 };
 
+type HomeStatCounts = Partial<Record<HomeStatKey, number>>;
+type HomeStatSetting = { key: string; isVisible: boolean };
+
 const STAT_LABELS: Record<HomeStatKey, string> = {
   "3d_works": "3D Works",
   "2d_works": "2D Works",
@@ -320,7 +323,21 @@ export const getHomeCapabilitiesAndSkills = cache(async () => {
   return { capabilities, skills };
 });
 
-export async function getHomeProductionStats(): Promise<HomeProductionStat[]> {
+export function resolveHomeProductionStats(
+  counts: HomeStatCounts,
+  settings: readonly HomeStatSetting[]
+): HomeProductionStat[] {
+  const visibility = new Map(settings.map((setting) => [setting.key, setting.isVisible]));
+  return HOME_STAT_KEYS.map((key) => ({
+    key,
+    label: STAT_LABELS[key],
+    count: isHomeStatSupported(key) ? (counts[key] ?? 0) : null,
+    available: isHomeStatSupported(key),
+    isVisible: isHomeStatSupported(key) && (visibility.get(key) ?? false),
+  }));
+}
+
+export const getHomeProductionStats = cache(async (): Promise<HomeProductionStat[]> => {
   const [modelCount, sketchCount, worldbuildingCount, gameCount, settings] = await Promise.all([
     db.select({ value: count() }).from(models3d),
     db.select({ value: count() }).from(sketches),
@@ -328,21 +345,14 @@ export async function getHomeProductionStats(): Promise<HomeProductionStat[]> {
     db.select({ value: count() }).from(games),
     db.select().from(homeStatSettings),
   ]);
-  const counts: Partial<Record<HomeStatKey, number>> = {
+  const counts: HomeStatCounts = {
     "3d_works": modelCount[0]?.value ?? 0,
     "2d_works": sketchCount[0]?.value ?? 0,
     worldbuilding_entries: worldbuildingCount[0]?.value ?? 0,
     game_projects: gameCount[0]?.value ?? 0,
   };
-  const visibility = new Map(settings.map((setting) => [setting.key, setting.isVisible]));
-  return HOME_STAT_KEYS.map((key) => ({
-    key,
-    label: STAT_LABELS[key],
-    count: counts[key] ?? null,
-    available: isHomeStatSupported(key),
-    isVisible: isHomeStatSupported(key) && (visibility.get(key) ?? false),
-  }));
-}
+  return resolveHomeProductionStats(counts, settings);
+});
 
 async function getHomeMapData() {
   const [preview] = await db

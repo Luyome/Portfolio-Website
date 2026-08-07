@@ -47,10 +47,42 @@ test("Home map preview pin limits and uniqueness are enforced", async () => {
 });
 
 test("unsupported production stats remain unavailable", async () => {
-  const { isHomeStatSupported } = await homeData;
+  const { isHomeStatSupported, resolveHomeProductionStats } = await homeData;
   assert.equal(isHomeStatSupported("stories_devlogs"), false);
   assert.equal(isHomeStatSupported("published_entries"), false);
   assert.equal(isHomeStatSupported("3d_works"), true);
+  const stats = resolveHomeProductionStats(
+    { "3d_works": 12, "2d_works": 8, worldbuilding_entries: 5, game_projects: 2 },
+    [
+      { key: "worldbuilding_entries", isVisible: true },
+      { key: "published_entries", isVisible: true },
+      { key: "3d_works", isVisible: true },
+      { key: "2d_works", isVisible: false },
+    ]
+  );
+  assert.deepEqual(
+    stats.filter((stat) => stat.available && stat.isVisible).map(({ key, count }) => ({ key, count })),
+    [
+      { key: "3d_works", count: 12 },
+      { key: "worldbuilding_entries", count: 5 },
+    ]
+  );
+  assert.deepEqual(
+    stats.find((stat) => stat.key === "published_entries"),
+    { key: "published_entries", label: "Published Entries", count: null, available: false, isVisible: false }
+  );
+});
+
+test("production stats support partial and zero public availability without manual values", async () => {
+  const { resolveHomeProductionStats } = await homeData;
+  const partial = resolveHomeProductionStats({ game_projects: 0 }, [{ key: "game_projects", isVisible: true }]);
+  assert.deepEqual(
+    partial.filter((stat) => stat.available && stat.isVisible).map(({ key, count }) => ({ key, count })),
+    [{ key: "game_projects", count: 0 }]
+  );
+  const none = resolveHomeProductionStats({ "3d_works": 4 }, []);
+  assert.equal(none.some((stat) => stat.isVisible), false);
+  assert.equal(Object.values(partial).some((stat) => "manualValue" in stat || "value" in stat), false);
 });
 
 test("Home Skills enforce the limit, required labels, and case-insensitive uniqueness", async () => {

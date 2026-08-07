@@ -12,7 +12,7 @@ import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { isOptimizableImageUrl } from "@/lib/image-host";
-import { getHomeCapabilitiesAndSkills, getHomeFeaturedWorks } from "@/lib/home-data";
+import { getHomeCapabilitiesAndSkills, getHomeFeaturedWorks, getHomeProductionStats } from "@/lib/home-data";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -30,6 +30,7 @@ export default async function HomePage() {
     appearance,
     heroSlideRows,
     featuredWorks,
+    productionStats,
   ] = await Promise.all([
     getHomeCapabilitiesAndSkills(),
     getSiteSettings(),
@@ -37,7 +38,13 @@ export default async function HomePage() {
     getPageAppearance("home"),
     db.select().from(homeHeroSlides).orderBy(asc(homeHeroSlides.sortOrder)),
     getHomeFeaturedWorks(),
+    getHomeProductionStats(),
   ]);
+
+  const visibleProductionStats = productionStats.filter(
+    (stat): stat is (typeof productionStats)[number] & { count: number } =>
+      stat.available && stat.isVisible && stat.count !== null
+  );
 
   const heroSlides =
     heroSlideRows.length > 0
@@ -133,6 +140,19 @@ export default async function HomePage() {
             ) : (
               <p className="hp-skills-empty">Tools and disciplines are being curated.</p>
             )}
+          {visibleProductionStats.length > 0 && (
+            <div className="hp-stats" aria-labelledby="home-production-stats-title">
+              <h3 id="home-production-stats-title">Production Stats</h3>
+              <dl>
+                {visibleProductionStats.map((stat) => (
+                  <div key={stat.key}>
+                    <dd>{stat.count.toLocaleString("en-US")}</dd>
+                    <dt>{stat.label}</dt>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
         </Reveal>
       </section>
 

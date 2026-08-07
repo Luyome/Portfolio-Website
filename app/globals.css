@@ -451,6 +451,13 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .hp-skill-list span{font-family:var(--M);font-size:.58rem;letter-spacing:.14em;color:var(--muted)}
 .hp-skill-list strong{font-family:var(--S);font-size:clamp(1.05rem,1.45vw,1.4rem);font-weight:650;line-height:1.2}
 .hp-skills-empty{align-self:start;border-top:1px solid rgba(255,255,255,.18);border-bottom:1px solid var(--border);padding:28px 0;font-family:var(--S);font-size:1rem;line-height:1.7;color:var(--text2)}
+.hp-stats{grid-column:1/-1;display:grid;grid-template-columns:minmax(180px,.72fr) minmax(0,1.28fr);gap:clamp(48px,8.5vw,142px);padding-top:clamp(42px,5.4vw,74px)}
+.hp-stats h3{align-self:start;font-family:var(--M);font-size:.64rem;font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:var(--red);padding-top:5px}
+.hp-stats dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));border-top:1px solid rgba(255,255,255,.18)}
+.hp-stats dl>div{min-width:0;padding:20px 18px 22px 0;border-bottom:1px solid var(--border)}
+.hp-stats dl>div+div{padding-left:18px;border-left:1px solid var(--border)}
+.hp-stats dd{font-family:var(--S);font-size:clamp(2rem,3.3vw,3.45rem);font-weight:800;line-height:.92;letter-spacing:-.055em;color:var(--text)}
+.hp-stats dt{margin-top:11px;font-family:var(--S);font-size:.76rem;font-weight:600;line-height:1.35;letter-spacing:.08em;text-transform:uppercase;color:var(--text2)}
 
 /* HOME CONTACT */
 .home-contact{
@@ -1466,9 +1473,10 @@ a.arv-row:hover{background:var(--bg2)}
   .game-row-media,.game-row.rev .game-row-media{order:1;height:280px}
   .game-row-content,.game-row.rev .game-row-content{order:2}
   .about-grid{grid-template-columns:1fr}
-  .hp-heading,.hp-skills{grid-template-columns:1fr}
+  .hp-heading,.hp-skills,.hp-stats{grid-template-columns:1fr}
   .hp-heading{align-items:start;gap:24px}
   .hp-skills{gap:36px}
+  .hp-stats{gap:20px}
   .hp-capability{grid-template-columns:44px minmax(0,1fr)}
   .hp-capability p{grid-column:2}
   /* Single-column stack needs its own two-row track list — the desktop
