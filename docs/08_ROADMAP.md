@@ -80,7 +80,32 @@ Comments, likes, bookmarks, notifications, and public accounts are not part of t
 
 **Sprint 2 scope boundaries** — not part of this sprint: Home Page composition, public KRUPNI or Map Explorer, a new Projects system, a Stories or Devlog system, Portfolio public art direction, a multi-language system, public users, comments/likes/bookmarks/community, newsletter, multi-admin or role systems. These remain in their assigned future sprints or out of scope.
 
-**Sprint 3 — Home Page + Home Admin** — *Next.* Public Home: Identity Hero; Selected Work Coverflow; Capabilities/Focus Areas; Skills & Production Stats; Interactive KRUPNI Map; Worldbuilding Highlights; Latest Dispatches; Contact & Social. Home Admin: hero management; selection and ordering of at most 5–6 Featured Works; Capabilities; at most 5–6 skills shown on Home; automatic Production Stats visibility; map preview; Worldbuilding Highlights; Latest Dispatches; contact/social. Production Stats stay at general categories — 3D Works, 2D Works, Worldbuilding Entries, Game Projects, Stories & Devlogs, Published Entries — without adding overly specific subcategories to Home. Only the minimal creator data actually needed for Home (identity, at most 5–6 Home skills) is created here — the full Creator Profile foundation is Sprint 9 scope.
+**Sprint 3 — Home Page + Home Admin** — *Next. Roadmap Approved / Implementation Not Started.* Public Home, in section order: (1) Identity Hero, (2) Selected Work Coverflow, (3) Capabilities/Focus Areas, (4) Skills + Production Stats, (5) KRUPNI Map Preview, (6) Worldbuilding Highlights, (7) Latest Dispatches, (8) Contact + Social. Home Admin: hero management; selection and ordering of Featured Works; Capabilities; Home Skills; automatic Production Stats visibility; map preview; Worldbuilding Highlights; Latest Dispatches; contact/social. Production Stats stay at general categories — 3D Works, 2D Works, Worldbuilding Entries, Game Projects, Stories & Devlogs, Published Entries — without adding overly specific subcategories to Home. Only the minimal creator data actually needed for Home (identity, Home Skills) is created here — the full Creator Profile foundation is Sprint 9 scope.
+
+Content limits for this sprint: Featured Works max 6; Home Skills max 6; Capabilities approx. 3–4; Map Preview markers approx. 3–5; Worldbuilding Highlights max 3; Latest Dispatches approx. 3–4.
+
+Identity note: Tetsunaru is the brand/internet identity; Demir Ünal is the real/professional name. The exact name and brand hierarchy inside the Hero is not locked yet — to be decided visually during implementation, not here.
+
+Sprint 3 tasks (all **Not Started** — planning only, no implementation begun):
+
+- Task 3.1 — Existing Home System Audit + Scope Lock: Not started.
+- Task 3.2 — Home Data Architecture: Not started.
+- Task 3.3 — Home Admin Architecture: Not started.
+- Task 3.4 — Identity Hero: Not started.
+- Task 3.5 — Selected Work Coverflow: Not started.
+- Task 3.6 — Capabilities + Home Skills: Not started.
+- Task 3.7 — Automatic Production Stats: Not started.
+- Task 3.8 — KRUPNI Home Map Preview: Not started.
+- Task 3.9 — Worldbuilding Highlights: Not started.
+- Task 3.10 — Latest Dispatches: Not started.
+- Task 3.11 — Contact + Social: Not started.
+- Task 3.12 — Responsive + Motion + Accessibility + Performance: Not started.
+- Task 3.13 — Integration + Browser QA: Not started.
+- Task 3.14 — Production Deploy + Sprint Close: Not started.
+
+Sprint 3 scope boundaries (deferred to their assigned sprint, not built here): Full Map Explorer + Map Editor refinement → Sprint 4; Games → Sprint 5; Projects → Sprint 6; Portfolio final redesign → Sprint 7; Stories/Devlogs → Sprint 8; full About/Creator Profile + detailed Skills → Sprint 9; multi-language → Sprint 10; public accounts/community remain out of scope (section 6).
+
+Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 
 **Sprint 4 — Worldbuilding + Map Admin** — Visual listing/grid; taxonomy filters; a shared Content Detail Shell; Character, Location, Corporation, Technology, and Lore variations; Interactive Map Explorer; Worldbuilding relations; Map Editor usability and touch/pointer improvements. No multi-universe system is required or built here.
 
@@ -136,7 +161,8 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 
 ## 8. Current Status
 
-- Current sprint: Sprint 3 — Home Page + Home Admin (Next). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
+- Current sprint: Sprint 3 — Home Page + Home Admin (Next / Roadmap Approved / Implementation Not Started). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
+- Sprint 2 final baseline commit: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 - Task 1.1 — Existing Core Systems Audit: Complete.
 - Task 1.2 — Final Product Scope and Documentation Alignment: Complete.
 - Task 1.2.1 — Documentation Consistency Patch: Complete.
@@ -167,6 +193,20 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 2.10 — Portfolio Metadata Selectors & Legacy Migration: Complete.
 - Task 2.11 — Admin Integration QA: Complete.
 - Task 2.12 — Production Sync & Sprint 2 Close: Complete.
+- Task 3.1 — Existing Home System Audit + Scope Lock: Not started.
+- Task 3.2 — Home Data Architecture: Not started.
+- Task 3.3 — Home Admin Architecture: Not started.
+- Task 3.4 — Identity Hero: Not started.
+- Task 3.5 — Selected Work Coverflow: Not started.
+- Task 3.6 — Capabilities + Home Skills: Not started.
+- Task 3.7 — Automatic Production Stats: Not started.
+- Task 3.8 — KRUPNI Home Map Preview: Not started.
+- Task 3.9 — Worldbuilding Highlights: Not started.
+- Task 3.10 — Latest Dispatches: Not started.
+- Task 3.11 — Contact + Social: Not started.
+- Task 3.12 — Responsive + Motion + Accessibility + Performance: Not started.
+- Task 3.13 — Integration + Browser QA: Not started.
+- Task 3.14 — Production Deploy + Sprint Close: Not started.
 - The Admin Panel, CRUD systems, and public map foundation already exist and are being extended, not built from zero.
 - No second Worldbuilding universe is planned scope.
 
