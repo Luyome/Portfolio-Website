@@ -552,7 +552,7 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .hmp-controls>span{min-width:58px;text-align:center;font-family:var(--M);font-size:.6rem;color:var(--text2)}
 .hmp-viewport{position:relative;width:100%;aspect-ratio:2.08/1;min-height:clamp(520px,48vw,760px);max-height:850px;overflow:hidden;touch-action:none;user-select:none}
 .hmp-canvas{position:absolute;inset:0;transform-origin:center;will-change:transform}
-.hmp-canvas>img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;filter:saturate(.78) contrast(1.05)}
+.hmp-canvas>img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;filter:saturate(.78) contrast(1.05)}
 .hmp-canvas::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(7,6,6,.4),transparent 24%),radial-gradient(circle at center,transparent 60%,rgba(7,6,6,.28))}
 .hmp-pin{position:absolute;z-index:4;display:flex;align-items:center;gap:9px;width:auto;min-width:44px;height:44px;transform:translate(-22px,-22px);color:#fff}
 .hmp-pin::before{position:relative;flex:none;width:15px;height:15px}
@@ -1833,8 +1833,8 @@ a.arv-row:hover{background:var(--bg2)}
    nothing sits flush against the sidebar or the browser edge. Bottom
    padding keeps a visible gap between the map and the codex/controls
    section below instead of the two backgrounds touching edge-to-edge. */
-.wa-wrap{padding:40px var(--space-xl) 40px}
-.wa-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.wa-wrap{padding:24px var(--space-xl) 28px}
+.wa-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:8px}
 .wa-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;font-family:var(--M);font-size:0.72rem}
 .wa-crumb-item{display:flex;align-items:center}
 .wa-crumb-sep{margin:0 8px;color:var(--muted)}
@@ -1867,7 +1867,7 @@ a.arv-row:hover{background:var(--bg2)}
    framer-motion element, which only carries the enter/exit opacity+scale
    animation) so layout and animation concerns don't mix on the same node. */
 .wa-transition{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-.wa-frame-inner{position:absolute;inset:24px}
+.wa-frame-inner{position:absolute;inset:12px}
 .wa-canvas{position:absolute;inset:0}
 .wa-img{width:100%;height:100%;object-fit:contain;display:block;user-select:none}
 .wa-img-empty{

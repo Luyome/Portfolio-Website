@@ -41,6 +41,11 @@ export function useDragZoom(
   // lose the image entirely (and unrecoverably, since zooming back out alone
   // wouldn't otherwise re-center an over-panned position).
   function clampPan(x: number, y: number, z: number) {
+    // `minZoom` is the canonical fitted state: the canvas itself already
+    // matches the viewport and its media uses object-fit. Leaving even the
+    // normal edge slack here lets an old pan survive after zooming back out,
+    // which crops the supposedly full-map framing.
+    if (z <= minZoom) return { x: 0, y: 0 };
     const vp = refs.viewportRef.current;
     const content = refs.contentRef.current;
     if (!vp || !content) return { x, y };
@@ -89,6 +94,21 @@ export function useDragZoom(
     return () => vp.removeEventListener("wheel", handleWheel);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- zoomBy/step are stable in effect via functional updaters; see comment above
   }, []);
+
+  // A fullscreen viewer can resize while open (orientation changes, browser
+  // chrome changes, desktop window resize). Re-clamp against the current box;
+  // at the fit scale this also deterministically restores the centred frame.
+  useEffect(() => {
+    const vp = refs.viewportRef.current;
+    if (!vp || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => {
+      setPanState((p) => clampPan(p.x, p.y, zoom));
+    });
+    observer.observe(vp);
+    return () => observer.disconnect();
+  // `zoom` intentionally drives the latest canonical fit/bounds.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zoom]);
 
   function beginDrag(clientX: number, clientY: number) {
     if (zoom <= minZoom) return;

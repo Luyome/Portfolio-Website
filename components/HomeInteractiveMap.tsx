@@ -58,17 +58,26 @@ export default function HomeInteractiveMap({
         <span aria-live="polite">{Math.round(zoom * 100)}%</span>
         <button type="button" onClick={() => zoomBy(0.25)} aria-label="Zoom in">+</button>
         <button type="button" onClick={reset}>Reset</button>
-        <button type="button" className="hmp-expand" onClick={() => openExplorer()} aria-haspopup="dialog">Open atlas</button>
       </div>
       <div
         className="hmp-viewport"
         ref={viewportRef}
         role="region"
         aria-label={`Atlas preview of ${map.title}. Use controls or the mouse wheel to zoom; drag to pan.`}
+        tabIndex={0}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onClick={(event) => {
+          if (!wasDragging() && !(event.target instanceof Element && event.target.closest(".map-pin"))) openExplorer();
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openExplorer();
+          }
+        }}
         style={{ cursor: zoom > minZoom ? "grab" : "default" }}
       >
         <div className="hmp-canvas" ref={contentRef} style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}>

@@ -61,7 +61,10 @@ export default function WorldbuildingAtlas({
       if (!availW) return;
       // -5px so the image itself reads slightly larger against its own
       // background mat than the raw equal-gap value alone would give.
-      const pad = Math.max(0, Math.min(48, Math.max(20, availW * 0.035)) - 5);
+      // The embedded atlas is a visual map surface, not a matted thumbnail.
+      // Keep a small breathing edge without giving the artwork a large empty
+      // border on wide displays.
+      const pad = Math.max(8, Math.min(24, availW * 0.018));
       const ratio = naturalSize!.w / naturalSize!.h;
       const w = availW;
       const h = (availW - 2 * pad) / ratio + 2 * pad;
