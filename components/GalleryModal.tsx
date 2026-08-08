@@ -30,8 +30,10 @@ export type GalleryItem = {
   tags?: string[];
   link?: string;
   links?: GalleryLink[];
-  /** Related entries (e.g. Task 4.2 Worldbuilding relationships). Only
-   * populated by consumers that have real relationship data. */
+  /** Related entries (Task 4.2 Worldbuilding relationships). Kept on the
+   * shared item shape (Worldbuilding's own detail components reuse it) but
+   * GalleryModal itself no longer renders it — see WorldbuildingArtworkDetail
+   * / WorldbuildingLoreReader (Task 4.4B). */
   related?: GalleryRelatedEntry[];
   styles?: StylesMap;
 };
@@ -49,25 +51,11 @@ export default function GalleryModal({
   index,
   onClose,
   onNavigate,
-  onRelatedSelect,
-  variant = "default",
 }: {
   items: GalleryItem[];
   index: number | null;
   onClose: () => void;
   onNavigate: (index: number) => void;
-  /** Opens a related entry by id (not by array index — related entries may
-   * sit outside the currently filtered/navigable `items` sequence). */
-  onRelatedSelect?: (id: number) => void;
-  /**
-   * "worldbuilding" switches the same shell into a viewport-scale, media-
-   * dominant composition (Task 4.4B, media entries) and a single-column,
-   * full-bleed reading composition (Task 4.4B, long-form lore entries) —
-   * see gm-panel--wb / gm-panel--wb-reading in globals.css. Every other
-   * consumer (Portfolio/Games/Sketches/3D) omits this prop and keeps the
-   * original centered-card layout unchanged.
-   */
-  variant?: "default" | "worldbuilding";
 }) {
   const open = index !== null;
   const item = open ? items[index] : null;
@@ -82,11 +70,6 @@ export default function GalleryModal({
   function goTo(next: number) {
     setZoomSrc(null);
     onNavigate(next);
-  }
-
-  function selectRelated(id: number) {
-    setZoomSrc(null);
-    onRelatedSelect?.(id);
   }
 
   // Spread onto the clickable image/cover elements below so opening the zoom
@@ -156,14 +139,6 @@ export default function GalleryModal({
     el?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  // Task 4.4B: "worldbuilding" reuses this same shell in two compositions —
-  // a viewport-scale media viewer (gm-panel--wb) for artwork-led entries,
-  // and a single-column full-bleed reading layout (gm-panel--wb-reading,
-  // added on top) once an entry actually has long-form content. Every other
-  // consumer keeps the original centered-card markup untouched.
-  const isWb = variant === "worldbuilding";
-  const isWbReading = isWb && hasRichContent;
-
   const infoHeader = item && (
     <>
       <div className="gm-bar">
@@ -217,36 +192,6 @@ export default function GalleryModal({
           ))}
         </div>
       )}
-      {item.related && item.related.length > 0 && (
-        <div className="gm-related">
-          <div className="gm-related-lbl">Related Worldbuilding Entries</div>
-          <div className="gm-related-list">
-            {item.related.map((r) => (
-              <div
-                key={r.id}
-                className="gm-related-card"
-                role="button"
-                tabIndex={0}
-                onClick={() => selectRelated(r.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    selectRelated(r.id);
-                  }
-                }}
-              >
-                <div className="gm-related-thumb">
-                  {r.img && <img src={r.img} alt="" />}
-                </div>
-                <div className="gm-related-meta">
-                  <div className="gm-related-type">{r.typeLabel}</div>
-                  <div className="gm-related-title">{r.title}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
       {item.links && item.links.length > 0 ? (
         <div className="gm-link-area">
           <div className="gm-link-lbl">Links</div>
@@ -278,22 +223,19 @@ export default function GalleryModal({
     </>
   );
 
-  const panelClassName = `gm-panel${isWb ? " gm-panel--wb" : ""}${isWbReading ? " gm-panel--wb-reading" : ""}`;
-
   return (
     <div
-      className={`gm-overlay ${open ? "open" : ""} ${isWb ? "gm-overlay--wb" : ""}`}
+      className={`gm-overlay ${open ? "open" : ""}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       {item && (
-        <div className={panelClassName} ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="gm-modal-title">
+        <div className="gm-panel" ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="gm-modal-title">
           <div className="gm-img-side">
             <div className="gm-img-scroll" ref={readingRef}>
               {hasRichContent ? (
                 <div className="gm-reading">
-                  {isWbReading && <div className="gm-reading-header">{infoHeader}</div>}
                   {item.img ? (
                     <div className="gm-reading-cover" {...zoomTrigger(item.img!)}>
                       <img src={item.img} alt={item.title} />
@@ -369,7 +311,6 @@ export default function GalleryModal({
                       />
                     );
                   })}
-                  {isWbReading && <div className="gm-reading-footer">{infoFooter}</div>}
                 </div>
               ) : (
                 <div className="gm-img-list">
@@ -422,12 +363,10 @@ export default function GalleryModal({
               </button>
             </div>
           </div>
-          {!isWbReading && (
-            <div className="gm-info">
-              {infoHeader}
-              {infoFooter}
-            </div>
-          )}
+          <div className="gm-info">
+            {infoHeader}
+            {infoFooter}
+          </div>
         </div>
       )}
       {zoomSrc && <ImageZoomOverlay src={zoomSrc} alt={item?.title ?? ""} onClose={() => setZoomSrc(null)} />}

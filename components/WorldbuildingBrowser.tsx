@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import GalleryModal, { GalleryItem } from "./GalleryModal";
+import { GalleryItem } from "./GalleryModal";
+import WorldbuildingArtworkDetail from "./worldbuilding/WorldbuildingArtworkDetail";
+import WorldbuildingLoreReader from "./worldbuilding/WorldbuildingLoreReader";
 import WorldbuildingAtlas from "./WorldbuildingAtlas";
 import WorldbuildingControls from "./WorldbuildingControls";
 import WorldbuildingGrid from "./WorldbuildingGrid";
@@ -131,6 +133,13 @@ export default function WorldbuildingBrowser({
   }));
 
   const modalIndex = openEntryId === null ? null : items.findIndex((i) => i.id === openEntryId);
+  const openIndex = modalIndex === -1 ? null : modalIndex;
+  // Task 4.4B: the two Worldbuilding detail experiences are separate
+  // presentation components, chosen by real content/type — canonical
+  // entityType === "lore" opens the dedicated article reader, every other
+  // supported type (and any untyped/legacy entry, never guessed into a
+  // type) opens the media-dominant Artwork/Entity Detail viewer.
+  const isLoreOpen = openIndex !== null && items[openIndex]?.entityType === "lore";
 
   return (
     <>
@@ -142,14 +151,23 @@ export default function WorldbuildingBrowser({
         onEntityFilterChange={setEntityFilter}
       />
       <WorldbuildingGrid items={loreEntries} onSelect={setOpenEntryId} hasEntries={items.length > 0} />
-      <GalleryModal
-        items={galleryItems}
-        index={modalIndex === -1 ? null : modalIndex}
-        onClose={() => setOpenEntryId(null)}
-        onNavigate={(next) => setOpenEntryId(items[next]?.id ?? null)}
-        onRelatedSelect={setOpenEntryId}
-        variant="worldbuilding"
-      />
+      {isLoreOpen ? (
+        <WorldbuildingLoreReader
+          items={galleryItems}
+          index={openIndex}
+          onClose={() => setOpenEntryId(null)}
+          onNavigate={(next) => setOpenEntryId(items[next]?.id ?? null)}
+          onRelatedSelect={setOpenEntryId}
+        />
+      ) : (
+        <WorldbuildingArtworkDetail
+          items={galleryItems}
+          index={openIndex}
+          onClose={() => setOpenEntryId(null)}
+          onNavigate={(next) => setOpenEntryId(items[next]?.id ?? null)}
+          onRelatedSelect={setOpenEntryId}
+        />
+      )}
     </>
   );
 }
