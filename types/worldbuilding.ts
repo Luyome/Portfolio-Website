@@ -25,6 +25,22 @@ export const ENTITY_TYPE_LABELS: Record<WorldbuildingEntityType, string> = {
   lore: "Lore",
 };
 
+/** Resolves the display label for an entry: canonical entityType label when
+ * classified (Task 4.2), legacy `cat` free-text otherwise. Shared by the
+ * Task 4.3 discovery grid and the Task 4.4 detail shell so both agree. */
+export function resolveEntityTypeLabel(entityType: WorldbuildingEntityType | string | null, cat: string): string {
+  return entityType && entityType in ENTITY_TYPE_LABELS ? ENTITY_TYPE_LABELS[entityType as WorldbuildingEntityType] : cat;
+}
+
+/** A related Worldbuilding entity surfaced in the Task 4.4 detail shell,
+ * resolved from the Task 4.2 relationship foundation. */
+export type RelatedWorldbuildingEntry = {
+  id: number;
+  title: string;
+  img: string | null;
+  typeLabel: string;
+};
+
 export type LoreEntry = {
   id: number;
   title: string;

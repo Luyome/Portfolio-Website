@@ -13,6 +13,8 @@ import { useModalFocus } from "@/hooks/useModalFocus";
 
 export type GalleryLink = { id: number | string; label: string; href: string; kind?: string };
 
+export type GalleryRelatedEntry = { id: number; title: string; img: string | null; typeLabel: string };
+
 export type GalleryItem = {
   img: string | null;
   images?: MediaEntry[];
@@ -28,6 +30,9 @@ export type GalleryItem = {
   tags?: string[];
   link?: string;
   links?: GalleryLink[];
+  /** Related entries (e.g. Task 4.2 Worldbuilding relationships). Only
+   * populated by consumers that have real relationship data. */
+  related?: GalleryRelatedEntry[];
   styles?: StylesMap;
 };
 
@@ -44,11 +49,15 @@ export default function GalleryModal({
   index,
   onClose,
   onNavigate,
+  onRelatedSelect,
 }: {
   items: GalleryItem[];
   index: number | null;
   onClose: () => void;
   onNavigate: (index: number) => void;
+  /** Opens a related entry by id (not by array index — related entries may
+   * sit outside the currently filtered/navigable `items` sequence). */
+  onRelatedSelect?: (id: number) => void;
 }) {
   const open = index !== null;
   const item = open ? items[index] : null;
@@ -63,6 +72,11 @@ export default function GalleryModal({
   function goTo(next: number) {
     setZoomSrc(null);
     onNavigate(next);
+  }
+
+  function selectRelated(id: number) {
+    setZoomSrc(null);
+    onRelatedSelect?.(id);
   }
 
   // Spread onto the clickable image/cover elements below so opening the zoom
@@ -317,6 +331,36 @@ export default function GalleryModal({
                 {item.feats.map((f) => (
                   <div className="gm-feat" key={f}>{f}</div>
                 ))}
+              </div>
+            )}
+            {item.related && item.related.length > 0 && (
+              <div className="gm-related">
+                <div className="gm-related-lbl">Related Worldbuilding Entries</div>
+                <div className="gm-related-list">
+                  {item.related.map((r) => (
+                    <div
+                      key={r.id}
+                      className="gm-related-card"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => selectRelated(r.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          selectRelated(r.id);
+                        }
+                      }}
+                    >
+                      <div className="gm-related-thumb">
+                        {r.img && <img src={r.img} alt="" />}
+                      </div>
+                      <div className="gm-related-meta">
+                        <div className="gm-related-type">{r.typeLabel}</div>
+                        <div className="gm-related-title">{r.title}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             {item.links && item.links.length > 0 ? (

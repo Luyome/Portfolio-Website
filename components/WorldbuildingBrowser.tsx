@@ -10,8 +10,15 @@ import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 import { fuzzyMatch } from "@/lib/search";
+import { resolveEntityTypeLabel } from "@/types/worldbuilding";
 import type { EntityTypeFilter, LoreEntry, WorldbuildingEntityType } from "@/types/worldbuilding";
 import { findContentItemIndex } from "@/lib/content-detail-href";
+
+export type WorldbuildingRelationshipEdge = {
+  sourceEntryId: number;
+  targetEntryId: number;
+  sortOrder: number;
+};
 
 export type WorldbuildingEntry = {
   id: number;
@@ -33,12 +40,14 @@ export type WorldbuildingEntry = {
 
 export default function WorldbuildingBrowser({
   items,
+  relationships,
   maps,
   locations,
   initialItemId,
   initialMapId,
 }: {
   items: WorldbuildingEntry[];
+  relationships: WorldbuildingRelationshipEdge[];
   maps: WorldMap[];
   locations: MapLocation[];
   initialItemId?: number | null;
@@ -77,12 +86,34 @@ export default function WorldbuildingBrowser({
     styles: w.styles,
   }));
 
+  // Related-entity ids per entry, from the Task 4.2 relationship foundation
+  // (edges are undirected for display purposes — either side of a
+  // relationship counts as "related" to the other).
+  const relatedIdsByEntry = useMemo(() => {
+    const map = new Map<number, number[]>();
+    const add = (from: number, to: number) => {
+      const list = map.get(from);
+      if (list) {
+        if (!list.includes(to)) list.push(to);
+      } else {
+        map.set(from, [to]);
+      }
+    };
+    for (const r of relationships) {
+      add(r.sourceEntryId, r.targetEntryId);
+      add(r.targetEntryId, r.sourceEntryId);
+    }
+    return map;
+  }, [relationships]);
+
+  const itemsById = useMemo(() => new Map(items.map((w) => [w.id, w])), [items]);
+
   const galleryItems: GalleryItem[] = items.map((w) => ({
     img: w.img,
     images: w.images,
     videos: w.videos,
     title: w.title,
-    catLabel: w.cat,
+    catLabel: resolveEntityTypeLabel(w.entityType, w.cat),
     metaRows: [
       { label: "Year", value: String(w.year) },
       { label: "Date", value: w.date },
@@ -92,6 +123,10 @@ export default function WorldbuildingBrowser({
     contentOrder: w.contentOrder,
     tags: w.chips,
     links: w.links,
+    related: (relatedIdsByEntry.get(w.id) ?? [])
+      .map((id) => itemsById.get(id))
+      .filter((r): r is WorldbuildingEntry => !!r)
+      .map((r) => ({ id: r.id, title: r.title, img: r.img, typeLabel: resolveEntityTypeLabel(r.entityType, r.cat) })),
     styles: remapStyles(w.styles, { title: "title", excerpt: "desc" }),
   }));
 
@@ -112,6 +147,7 @@ export default function WorldbuildingBrowser({
         index={modalIndex === -1 ? null : modalIndex}
         onClose={() => setOpenEntryId(null)}
         onNavigate={(next) => setOpenEntryId(items[next]?.id ?? null)}
+        onRelatedSelect={setOpenEntryId}
       />
     </>
   );

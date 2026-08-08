@@ -4,8 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import EmptyState from "./EmptyState";
 import { isOptimizableImageUrl } from "@/lib/image-host";
-import { ENTITY_TYPE_LABELS } from "@/types/worldbuilding";
-import type { LoreEntry, WorldbuildingEntityType } from "@/types/worldbuilding";
+import { resolveEntityTypeLabel } from "@/types/worldbuilding";
+import type { LoreEntry } from "@/types/worldbuilding";
 
 export default function WorldbuildingGrid({
   items,
@@ -30,8 +30,7 @@ export default function WorldbuildingGrid({
     <div className="wb-disc-grid">
       <AnimatePresence initial={false}>
         {items.map((w) => {
-          const typeLabel = w.entityType && w.entityType in ENTITY_TYPE_LABELS ? ENTITY_TYPE_LABELS[w.entityType as WorldbuildingEntityType] : null;
-          const badge = typeLabel ?? w.cat;
+          const badge = resolveEntityTypeLabel(w.entityType, w.cat);
           const meta = [w.date, badge].filter(Boolean).join(" — ");
           return (
             <motion.div

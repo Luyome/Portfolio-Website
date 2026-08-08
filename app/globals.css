@@ -1066,6 +1066,16 @@ a.arv-row:hover{background:var(--bg2)}
 .gm-feats-lbl{font-family:var(--M);font-size:0.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
 .gm-feat{font-family:var(--B);font-size:0.88rem;color:var(--text2);padding:6px 0;border-bottom:1px solid rgba(var(--red-rgb),.07)}
 .gm-feat::before{content:'→ ';color:var(--red);font-family:var(--M)}
+.gm-related{margin-bottom:22px}
+.gm-related-lbl{font-family:var(--M);font-size:0.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.gm-related-list{display:flex;flex-direction:column;gap:2px}
+.gm-related-card{display:flex;align-items:center;gap:10px;padding:7px 6px;border:1px solid transparent;cursor:pointer;transition:all .18s}
+.gm-related-card:hover,.gm-related-card:focus-visible{border-color:var(--red);background:var(--red-dim);outline:none}
+.gm-related-thumb{width:42px;height:42px;flex-shrink:0;overflow:hidden;background:var(--bg3)}
+.gm-related-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.gm-related-meta{min-width:0}
+.gm-related-type{font-family:var(--M);font-size:0.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.gm-related-title{font-family:var(--B);font-size:0.86rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gm-link-area{margin-top:auto;padding-top:22px;border-top:1px solid var(--border)}
 .gm-link-lbl{font-family:var(--M);font-size:0.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
 .gm-link-row{display:flex;gap:8px}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
-import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingVideos, worldMaps, mapLocations } from "@/db/schema";
+import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingVideos, worldbuildingRelationships, worldMaps, mapLocations } from "@/db/schema";
 import WorldbuildingBrowser from "@/components/WorldbuildingBrowser";
 import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
@@ -16,11 +16,12 @@ export const metadata: Metadata = {
 
 export default async function WorldbuildingPage({ searchParams }: { searchParams: Promise<{ item?: string | string[]; map?: string | string[] }> }) {
   const { item, map } = await searchParams;
-  const [items, imageRows, linkRows, videoRows, mapRows, locationRows, appearance] = await Promise.all([
+  const [items, imageRows, linkRows, videoRows, relationshipRows, mapRows, locationRows, appearance] = await Promise.all([
     db.select().from(worldbuildingEntries).orderBy(desc(worldbuildingEntries.year), asc(worldbuildingEntries.sortOrder)),
     db.select().from(worldbuildingImages).orderBy(asc(worldbuildingImages.sortOrder)),
     db.select().from(worldbuildingLinks).orderBy(asc(worldbuildingLinks.sortOrder)),
     db.select().from(worldbuildingVideos).orderBy(asc(worldbuildingVideos.sortOrder)),
+    db.select().from(worldbuildingRelationships).orderBy(asc(worldbuildingRelationships.sortOrder)),
     db.select().from(worldMaps).orderBy(asc(worldMaps.sortOrder)),
     db.select().from(mapLocations).orderBy(asc(mapLocations.sortOrder)),
     getPageAppearance("worldbuilding"),
@@ -42,7 +43,7 @@ export default async function WorldbuildingPage({ searchParams }: { searchParams
         title="Worldbuilding Chronicles"
         subtitle="Explore stories, lore and characters from created worlds."
       />
-      <WorldbuildingBrowser items={itemsWithImages} maps={mapRows} locations={locationRows} initialItemId={parseContentItemId(item)} initialMapId={parseContentItemId(map)} />
+      <WorldbuildingBrowser items={itemsWithImages} relationships={relationshipRows} maps={mapRows} locations={locationRows} initialItemId={parseContentItemId(item)} initialMapId={parseContentItemId(map)} />
     </div>
   );
 }
