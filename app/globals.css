@@ -551,14 +551,13 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .hmp-controls button:first-child{border-left:0}.hmp-controls button:hover{color:#fff;background:var(--red-dim)}
 .hmp-controls button:focus-visible,.hmp-pin:focus-visible,.hmp-cta:focus-visible{outline:2px solid #fff;outline-offset:3px}
 .hmp-controls>span{min-width:58px;text-align:center;font-family:var(--M);font-size:.6rem;color:var(--text2)}
-.hmp-viewport{position:relative;width:100%;aspect-ratio:2.08/1;min-height:clamp(520px,48vw,760px);max-height:850px;overflow:hidden;touch-action:pan-y;user-select:none}
-.hmp-viewport--interactive{touch-action:none}
+.hmp-viewport{position:relative;width:100%;height:auto;aspect-ratio:16/9;overflow:hidden;touch-action:manipulation;user-select:none;cursor:pointer}
 .hmp-viewport:focus-visible{outline:2px solid #fff;outline-offset:-5px}
 .hmp-activation-hint{position:absolute;z-index:5;top:50%;left:50%;display:flex;flex-direction:column;align-items:center;gap:7px;padding:11px 16px;transform:translate(-50%,-50%);border:1px solid rgba(255,255,255,.2);background:rgba(10,9,9,.58);color:#fff;text-align:center;pointer-events:none}
 .hmp-activation-hint strong{font-family:var(--M);font-size:.66rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
 .hmp-activation-hint small{font-family:var(--S);font-size:.72rem;line-height:1.2;color:rgba(255,255,255,.72);white-space:nowrap}
 .hmp-canvas{position:absolute;inset:0;transform-origin:center;will-change:transform}
-.hmp-canvas>img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;filter:saturate(.78) contrast(1.05)}
+.hmp-canvas>img{position:absolute;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;filter:saturate(.78) contrast(1.05)}
 .hmp-canvas::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(7,6,6,.4),transparent 24%),radial-gradient(circle at center,transparent 60%,rgba(7,6,6,.28))}
 .hmp-pin{position:absolute;z-index:4;display:flex;align-items:center;gap:9px;width:auto;min-width:44px;height:44px;transform:translate(-22px,-22px);color:#fff}
 .hmp-pin::before{position:relative;flex:none;width:15px;height:15px}
@@ -568,8 +567,8 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .hmp-footer>p{max-width:70ch;font-family:var(--S);font-size:.92rem;line-height:1.65;color:var(--text2)}
 .hmp-cta{flex:none;min-width:220px;margin:0}
 @media(max-width:1179px){.hmp-interactive{width:100%;margin-inline:auto}}
-@media(max-width:820px){.hmp-viewport{aspect-ratio:4/3;min-height:480px}.hmp-footer{flex-direction:column}.hmp-pin strong{font-size:.68rem}}
-@media(max-width:520px){.hmp-heading h2{font-size:clamp(2rem,10vw,3rem)}.hmp-viewport{aspect-ratio:1/1;min-height:390px}.hmp-controls{top:10px;right:10px}.hmp-controls button{padding-inline:9px}.hmp-controls>span{display:none}.hmp-activation-hint{padding:9px 12px}.hmp-activation-hint strong{font-size:.6rem}.hmp-activation-hint small{font-size:.66rem}.hmp-pin strong{max-width:100px;overflow:hidden;text-overflow:ellipsis}.hmp-footer>p{display:block}}
+@media(max-width:820px){.hmp-footer{flex-direction:column}.hmp-pin strong{font-size:.68rem}}
+@media(max-width:520px){.hmp-heading h2{font-size:clamp(2rem,10vw,3rem)}.hmp-activation-hint{padding:9px 12px}.hmp-activation-hint strong{font-size:.6rem}.hmp-activation-hint small{font-size:.66rem}.hmp-pin strong{max-width:100px;overflow:hidden;text-overflow:ellipsis}.hmp-footer>p{display:block}}
 @media(prefers-reduced-motion:reduce){.hmp-canvas{will-change:auto}.hmp-controls button{transition:none}}
 
 /* Home / Worldbuilding highlights */
@@ -1256,9 +1255,10 @@ a.arv-row:hover{background:var(--bg2)}
   align-items:center;justify-content:center;animation:fi .2s ease;
 }
 .iz-overlay{z-index:600}
-/* Below .gm-overlay (500) so a pin clicked while exploring the map opens its
-   location gallery on top of the map, not hidden behind it. */
-.mz-overlay{z-index:450}
+/* Portalled above every site stacking context. Nested pin detail remains
+   inside this overlay, so it stays above the map without exposing the page. */
+.mz-overlay{z-index:2147483647;width:100vw;height:100dvh;overflow:hidden}
+.mz-overlay{background:#060404}
 .iz-controls{
   position:absolute;top:20px;left:50%;transform:translateX(-50%);
   display:flex;align-items:center;gap:8px;z-index:1;
@@ -1926,23 +1926,25 @@ a.arv-row:hover{background:var(--bg2)}
 }
 .mzp-legend-item{display:flex;align-items:center;gap:6px}
 .mzp-viewport{
-  position:relative;width:92vw;height:88vh;overflow:hidden;
+  position:absolute;inset:0;width:100%;height:100%;overflow:hidden;
   /* Prevent the browser's own native pinch-zoom/pan gestures from fighting
      the panel's own pointer-based pinch/drag handling (useDragZoom). */
   touch-action:none;
 }
-.mzp-canvas{position:absolute;inset:0}
-.mzp-img{width:100%;height:100%;object-fit:contain;display:block;user-select:none}
+.mzp-canvas{position:absolute;transform-origin:center;will-change:transform}
+.mzp-img{width:100%;height:100%;object-fit:fill;display:block;user-select:none}
+.mzp-controls{top:20px;left:auto;right:24px;transform:none;z-index:3}
 /* Narrow screens: the breadcrumb (top-left) and zoom toolbar (top-center)
    collide at ~390px width. Move the toolbar to the bottom edge instead of
    stacking guesswork under the breadcrumb, and let it wrap so Close never
    gets pushed off-screen. */
 @media(max-width:600px){
   .mz-overlay .mzp-topleft{left:12px;right:12px;top:10px;max-width:calc(100% - 24px)}
-  .mz-overlay .iz-controls{
-    top:auto;bottom:14px;left:12px;right:12px;transform:none;
-    flex-wrap:wrap;justify-content:center;row-gap:8px;
+  .mz-overlay .mzp-controls{
+    top:10px;right:12px;left:auto;bottom:auto;transform:none;
+    gap:4px;
   }
+  .mz-overlay .mzp-controls button{padding-inline:9px}
 }
 
 /* ══ MAP PIN DETAIL — read-only, resizes to the pin image's orientation ══ */

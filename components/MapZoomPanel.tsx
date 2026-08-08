@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDragZoom } from "@/hooks/useDragZoom";
 import { useModalFocus } from "@/hooks/useModalFocus";
@@ -54,7 +55,16 @@ export default function MapZoomPanel({
     { minZoom: EXPLORER_MIN_ZOOM, maxZoom: EXPLORER_MAX_ZOOM }
   );
   const [pinDetail, setPinDetail] = useState<MapLocation | null>(null);
+  const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
+  const [fitFrame, setFitFrame] = useState<{ width: number; height: number; left: number; top: number } | null>(null);
   const reducedMotion = usePrefersReducedMotion();
+  // Render nothing during SSR and the first hydration pass. The portal is
+  // then mounted only in the browser, avoiding a server/client tree mismatch.
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   // Focus goes to the pin-detail panel while it's open (it visually and
   // functionally sits on top), and back to the map panel once it closes.
@@ -76,6 +86,28 @@ export default function MapZoomPanel({
   const iconGroups = useMemo(() => groupByIconType(pins), [pins]);
 
   const childMaps = useMemo(() => getChildMaps(maps, currentMapId), [maps, currentMapId]);
+
+  // 100% is the actual artwork contained within the actual fullscreen box.
+  // Markers use this measured frame too, so no artwork edge can be cropped.
+  const updateFitFrame = useCallback(() => {
+    const viewport = viewportRef.current;
+    if (!viewport || !imageSize) return;
+    const scaleX = viewport.clientWidth / imageSize.width;
+    const scaleY = viewport.clientHeight / imageSize.height;
+    const fitScale = Math.min(scaleX, scaleY);
+    const width = imageSize.width * fitScale;
+    const height = imageSize.height * fitScale;
+    setFitFrame({ width, height, left: (viewport.clientWidth - width) / 2, top: (viewport.clientHeight - height) / 2 });
+  }, [imageSize]);
+
+  useEffect(() => {
+    updateFitFrame();
+    const viewport = viewportRef.current;
+    if (!viewport || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(updateFitFrame);
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, [updateFitFrame]);
 
   const breadcrumb = useMemo(() => {
     const chain: WorldMap[] = [];
@@ -123,8 +155,9 @@ export default function MapZoomPanel({
   }, []);
 
   if (!currentMap) return null;
+  if (!isMounted) return null;
 
-  return (
+  return createPortal(
     <div
       className="mz-overlay"
       ref={overlayRef}
@@ -174,7 +207,7 @@ export default function MapZoomPanel({
         )}
       </div>
 
-      <div className="iz-controls">
+      <div className="iz-controls mzp-controls">
         <button type="button" aria-label="Zoom out" onClick={() => zoomBy(-0.25)}>−</button>
         <span className="iz-zoom-label">{Math.round(zoom * 100)}%</span>
         <button type="button" aria-label="Zoom in" onClick={() => zoomBy(0.25)}>+</button>
@@ -203,10 +236,22 @@ export default function MapZoomPanel({
             <div
               className="mzp-canvas"
               ref={contentRef}
-              style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
+              style={{
+                width: fitFrame?.width,
+                height: fitFrame?.height,
+                left: fitFrame?.left,
+                top: fitFrame?.top,
+                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+              }}
             >
               {currentMap.imageUrl ? (
-                <img src={currentMap.imageUrl} alt={currentMap.title} className="mzp-img" draggable={false} />
+                <img
+                  src={currentMap.imageUrl}
+                  alt={currentMap.title}
+                  className="mzp-img"
+                  draggable={false}
+                  onLoad={(event) => setImageSize({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })}
+                />
               ) : (
                 <div className="wa-img-empty">No map image uploaded yet.</div>
               )}
@@ -254,6 +299,7 @@ export default function MapZoomPanel({
           </div>
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }
