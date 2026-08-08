@@ -122,6 +122,14 @@ export function coordinate(value: number, field: string): number {
   return value;
 }
 
+/** Whole number within an inclusive `[min, max]` range — typed input, not FormData. Rejects NaN/non-integer/out-of-range. */
+export function boundedInt(value: number, min: number, max: number, field: string): number {
+  if (!Number.isFinite(value) || !Number.isInteger(value) || value < min || value > max) {
+    throw new ValidationError(`${field} must be a whole number between ${min} and ${max}.`);
+  }
+  return value;
+}
+
 /** Safe, user-facing message for a caught mutation error — never exposes internals. */
 export function safeErrorMessage(err: unknown): string {
   if (err instanceof ValidationError) return err.message;

@@ -16,6 +16,11 @@ export type MapLocation = {
   iconType: string;
   info: string;
   img: string | null;
+  // Task 4.5 semantic zoom foundation — see lib/map-zoom.ts for the shared
+  // constants and helpers these fields are validated and read against.
+  priority: number;
+  minZoom: number;
+  maxZoom: number;
 };
 
 export type WorldMap = {

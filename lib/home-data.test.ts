@@ -127,7 +127,7 @@ test("Home map preview pin limits and uniqueness are enforced", async () => {
 test("Home map preview respects visibility, canonical map, order, limit, and invalid pins", async () => {
   const { HOME_MAP_PINS_LIMIT, resolveHomeMapPreview } = await homeData;
   const map = { id: 7, title: "KRUPNI", parentMapId: null, imageUrl: "/map.webp", description: "", sortOrder: 0, createdAt: new Date() };
-  const pin = (id: number, mapId = 7, x = 50) => ({ id, mapId, name: `Pin ${id}`, x, y: 50, pinType: "lore", targetMapId: null, entryId: null, iconType: "default", info: "", img: null, sortOrder: id });
+  const pin = (id: number, mapId = 7, x = 50) => ({ id, mapId, name: `Pin ${id}`, x, y: 50, pinType: "lore", targetMapId: null, entryId: null, iconType: "default", info: "", img: null, sortOrder: id, priority: 0, minZoom: 1, maxZoom: 5 });
   const rows = [pin(3), pin(1), pin(2, 99), pin(4, 7, 120), pin(3), pin(5), pin(6), pin(7), pin(8)];
 
   assert.equal(resolveHomeMapPreview({ isVisible: false, mapId: 7 }, map, rows), null);

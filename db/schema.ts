@@ -252,7 +252,25 @@ export const mapLocations = pgTable("map_locations", {
   info: text("info").notNull().default(""),
   img: text("img"),
   sortOrder: integer("sort_order").notNull().default(0),
-});
+  // Task 4.5 semantic zoom foundation. `priority` breaks ties when several
+  // markers are visible at once (higher shows/orders first — used for
+  // dense-zoom declutter and legend ordering by Task 4.6, not for filtering
+  // by itself). `minZoom`/`maxZoom` are an abstract 1 (fully zoomed out) to
+  // 5 (fully zoomed in) semantic scale, decoupled from any single viewer's
+  // pixel zoom range (public MapZoomPanel: 1-4, admin MapEditor: 1-3) so
+  // Task 4.6 can normalize either viewer's actual zoom into this scale. The
+  // full-range default (1-5) preserves every existing pin's current
+  // always-visible behavior after migration.
+  priority: integer("priority").notNull().default(0),
+  minZoom: integer("min_zoom").notNull().default(1),
+  maxZoom: integer("max_zoom").notNull().default(5),
+}, (table) => [
+  check("map_locations_priority_range_check", sql`${table.priority} between 0 and 100`),
+  check("map_locations_min_zoom_range_check", sql`${table.minZoom} between 1 and 5`),
+  check("map_locations_max_zoom_range_check", sql`${table.maxZoom} between 1 and 5`),
+  check("map_locations_zoom_order_check", sql`${table.minZoom} <= ${table.maxZoom}`),
+  index("map_locations_map_priority_idx").on(table.mapId, table.priority, table.id),
+]);
 
 export const aboutContent = pgTable("about_content", {
   id: serial("id").primaryKey(),

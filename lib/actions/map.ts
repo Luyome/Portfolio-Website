@@ -18,6 +18,7 @@ import {
   requiredText,
   safeErrorMessage,
 } from "@/lib/validation";
+import { validatePriority, validateZoomRange } from "@/lib/map-zoom";
 import type { IconType, PinType } from "@/lib/map-types";
 
 const PIN_TYPES: readonly PinType[] = ["submap", "lore"];
@@ -135,6 +136,28 @@ export async function updateMapLocationInfo(
       entryId: nullableId(fields.entryId, "Lore entry"),
       iconType: oneOf(fields.iconType, ICON_TYPES, "Icon type"),
     };
+  } catch {
+    return;
+  }
+  await db.update(mapLocations).set(parsed).where(eq(mapLocations.id, id));
+  revalidateAll();
+}
+
+// Task 4.5 foundation for Task 4.6/4.7's semantic zoom controls — no admin
+// UI calls this yet (Task 4.7 is the Map Editor refinement that wires it
+// up), same pre-wiring pattern as the other typed sub-resource actions
+// above. Validated through the shared lib/map-zoom.ts rules so every write
+// path enforces the same bounded ranges as the schema's own CHECK constraints.
+export async function updateMapLocationZoom(
+  id: number,
+  fields: { priority: number; minZoom: number; maxZoom: number }
+) {
+  await requireAdminSession();
+  let parsed;
+  try {
+    requiredId(id, "Location");
+    const { minZoom, maxZoom } = validateZoomRange(fields.minZoom, fields.maxZoom);
+    parsed = { priority: validatePriority(fields.priority), minZoom, maxZoom };
   } catch {
     return;
   }
