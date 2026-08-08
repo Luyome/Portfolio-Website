@@ -13,6 +13,7 @@ import Field from "./Field";
 import FormError from "./FormError";
 import FormActions from "./FormActions";
 import AdminSection from "./AdminSection";
+import AdminEditorLayout from "./AdminEditorLayout";
 import type { games } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
@@ -79,6 +80,7 @@ export default function GameForm({
       <form action={formAction} className="adm-form" onChange={handleFormChange}>
         <FormError message={actionState?.error} />
 
+        <AdminEditorLayout main={<>
         <AdminSection title="Basic Information">
           <div className="adm-form-row">
             <Field
@@ -138,7 +140,6 @@ export default function GameForm({
         </AdminSection>
 
         <AdminSection title="Content & Media">
-          <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
           <ContentEditor name="content" defaultValue={item?.content} />
           <div className="adm-field">
             <label>Content Order</label>
@@ -149,13 +150,18 @@ export default function GameForm({
           </div>
         </AdminSection>
 
+        </>} rail={<>
+        <AdminSection title="Cover Media" description="Primary image used by the games grid.">
+          <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
+        </AdminSection>
         <AdminSection title="Display">
           <Field id="sortOrder" label="Sort Order" required={false}>
             <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
           </Field>
         </AdminSection>
 
-        <FormActions cancelHref="/admin/games" />
+        <div className="adm-editor-save"><FormActions cancelHref="/admin/games" /></div>
+        </>} />
       </form>
     </PreviewToggle>
   );

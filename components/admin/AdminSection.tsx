@@ -8,14 +8,17 @@ import type { ReactNode } from "react";
 export default function AdminSection({
   title,
   description,
+  className,
   children,
 }: {
   title: string;
   description?: ReactNode;
+  /** Editor forms use this to place real field groups in their settings rail. */
+  className?: string;
   children: ReactNode;
 }) {
   return (
-    <section className="adm-section">
+    <section className={`adm-section ${className ?? ""}`}>
       <div className="adm-section-head">
         <h2>{title}</h2>
         {description && <p>{description}</p>}

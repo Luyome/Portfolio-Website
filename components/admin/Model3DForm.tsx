@@ -11,6 +11,7 @@ import Field from "./Field";
 import FormError from "./FormError";
 import FormActions from "./FormActions";
 import AdminSection from "./AdminSection";
+import AdminEditorLayout from "./AdminEditorLayout";
 import type { models3d } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
 
@@ -71,6 +72,7 @@ export default function Model3DForm({
       <form action={formAction} className="adm-form" onChange={handleFormChange}>
         <FormError message={actionState?.error} />
 
+        <AdminEditorLayout main={<>
         <AdminSection title="Basic Information">
           <div className="adm-form-row">
             <Field
@@ -96,6 +98,7 @@ export default function Model3DForm({
           </Field>
         </AdminSection>
 
+        </>} rail={<>
         <AdminSection title="Media & Display">
           <ImageUploadField name="img" initialUrl={item?.img ?? undefined} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
           <div className="adm-form-row">
@@ -111,7 +114,8 @@ export default function Model3DForm({
           </Field>
         </AdminSection>
 
-        <FormActions cancelHref="/admin/3d" />
+        <div className="adm-editor-save"><FormActions cancelHref="/admin/3d" /></div>
+        </>} />
       </form>
     </PreviewToggle>
   );

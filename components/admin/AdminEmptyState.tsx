@@ -16,7 +16,8 @@ type AdminEmptyStateProps = {
  */
 export default function AdminEmptyState({ label, createHref, createLabel }: AdminEmptyStateProps) {
   return (
-    <div className="empty-state" role="status">
+    <div className="empty-state adm-empty-state" role="status">
+      <span className="adm-empty-state-mark" aria-hidden="true">+</span>
       <p className="empty-state-title">{label}</p>
       {createHref && (
         <p className="empty-state-desc">

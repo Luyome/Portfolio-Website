@@ -17,6 +17,7 @@ export default function AdminPageHeader({
   return (
     <header className="adm-page-header">
       <div className="adm-page-header-text">
+        <span className="adm-page-kicker">Tetsunaru / Admin workspace</span>
         <h1 className="adm-title">{title}</h1>
         {description && <p className="adm-sub">{description}</p>}
       </div>

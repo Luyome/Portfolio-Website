@@ -11,6 +11,7 @@ import Field from "./Field";
 import FormError from "./FormError";
 import FormActions from "./FormActions";
 import AdminSection from "./AdminSection";
+import AdminEditorLayout from "./AdminEditorLayout";
 import MultiSelect, { type MultiSelectChip } from "./MultiSelect";
 import type { portfolioItems } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
@@ -95,6 +96,7 @@ export default function PortfolioForm({
       <form action={formAction} className="adm-form" onChange={handleFormChange}>
         <FormError message={actionState?.error} />
 
+        <AdminEditorLayout main={<>
         <AdminSection title="Basic Information">
           <div className="adm-form-row">
             <Field
@@ -143,6 +145,7 @@ export default function PortfolioForm({
           ))}
         </AdminSection>
 
+        </>} rail={<>
         <AdminSection title="Media & Display">
           <Field id="link" label="External Link" required={false}>
             <input name="link" defaultValue={item?.link} placeholder="https://www.artstation.com/..." />
@@ -153,7 +156,8 @@ export default function PortfolioForm({
           </Field>
         </AdminSection>
 
-        <FormActions cancelHref="/admin/portfolio" />
+        <div className="adm-editor-save"><FormActions cancelHref="/admin/portfolio" /></div>
+        </>} />
       </form>
     </PreviewToggle>
   );

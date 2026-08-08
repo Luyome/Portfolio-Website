@@ -97,7 +97,7 @@ export default function MapEditor({
   }
 
   return (
-    <div>
+    <section className="adm-map-workspace">
       <div className="map-admin-toolbar">
         <select
           value={currentMapId ?? ""}
@@ -184,8 +184,12 @@ export default function MapEditor({
         </div>
       </div>
 
-      <div className="adm-title" style={{ fontSize: "1rem", marginTop: 28, marginBottom: 8 }}>
-        Pins on {currentMap.title}
+      <div className="adm-workspace-section-head">
+        <div>
+          <span>Location index</span>
+          <h2>Pins on {currentMap.title}</h2>
+        </div>
+        <span>{mapLocationsHere.length} configured</span>
       </div>
       {mapLocationsHere.length === 0 ? (
         <div className="adm-hint">No pins placed on this map yet.</div>
@@ -253,6 +257,6 @@ export default function MapEditor({
           }}
         />
       )}
-    </div>
+    </section>
   );
 }
