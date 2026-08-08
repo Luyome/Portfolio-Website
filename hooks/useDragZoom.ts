@@ -13,7 +13,7 @@ const EDGE_SLACK = 60;
 // (ImageZoomOverlay) and the worldbuilding atlas (WorldbuildingAtlas).
 export function useDragZoom(
   refs: { viewportRef: RefObject<HTMLElement | null>; contentRef: RefObject<HTMLElement | null> },
-  { minZoom = 1, maxZoom = 5, step = 0.15 } = {}
+  { minZoom = 1, maxZoom = 5, step = 0.15, interactionEnabled = true } = {}
 ) {
   const [zoom, setZoomState] = useState(minZoom);
   const [pan, setPanState] = useState({ x: 0, y: 0 });
@@ -31,6 +31,16 @@ export function useDragZoom(
     startMid: { x: number; y: number };
     startPan: { x: number; y: number };
   } | null>(null);
+  const interactionEnabledRef = useRef(interactionEnabled);
+
+  useEffect(() => {
+    interactionEnabledRef.current = interactionEnabled;
+    if (!interactionEnabled) {
+      dragRef.current = null;
+      activePointersRef.current.clear();
+      pinchRef.current = null;
+    }
+  }, [interactionEnabled]);
 
   function clampZoom(z: number) {
     return Math.min(maxZoom, Math.max(minZoom, +z.toFixed(2)));
@@ -87,6 +97,7 @@ export function useDragZoom(
     const vp = refs.viewportRef.current;
     if (!vp) return;
     function handleWheel(e: WheelEvent) {
+      if (!interactionEnabledRef.current) return;
       e.preventDefault();
       zoomBy(e.deltaY > 0 ? -step : step);
     }
@@ -139,6 +150,7 @@ export function useDragZoom(
   }
 
   function onPointerDown(e: React.PointerEvent) {
+    if (!interactionEnabledRef.current) return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
     activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (activePointersRef.current.size === 2) {
@@ -151,6 +163,7 @@ export function useDragZoom(
     if (zoom > minZoom) e.currentTarget.setPointerCapture(e.pointerId);
   }
   function onPointerMove(e: React.PointerEvent) {
+    if (!interactionEnabledRef.current) return;
     if (activePointersRef.current.has(e.pointerId)) activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (activePointersRef.current.size === 2 && pinchRef.current) {
       const { startDist, startZoom, startMid, startPan } = pinchRef.current;
@@ -164,6 +177,7 @@ export function useDragZoom(
     moveDrag(e.clientX, e.clientY, e.buttons !== 0 || e.pointerType === "touch");
   }
   function onPointerUp(e: React.PointerEvent) {
+    if (!interactionEnabledRef.current) return;
     activePointersRef.current.delete(e.pointerId);
     if (activePointersRef.current.size < 2) pinchRef.current = null;
     if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);

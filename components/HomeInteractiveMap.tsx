@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import MapZoomPanel from "./MapZoomPanel";
 import { useDragZoom } from "@/hooks/useDragZoom";
@@ -22,9 +22,10 @@ export default function HomeInteractiveMap({
   const router = useRouter();
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isInteractive, setIsInteractive] = useState(false);
   const { zoom, pan, zoomBy, reset, onPointerDown, onPointerMove, onPointerUp, wasDragging, minZoom } = useDragZoom(
     { viewportRef, contentRef },
-    { minZoom: 1, maxZoom: 2.5, step: 0.2 }
+    { minZoom: 1, maxZoom: 2.5, step: 0.2, interactionEnabled: isInteractive }
   );
   const [explorerMapId, setExplorerMapId] = useState<number | null>(null);
   const mapIds = useMemo(() => new Set(maps.map((candidate) => candidate.id)), [maps]);
@@ -36,6 +37,18 @@ export default function HomeInteractiveMap({
   function openExplorer(mapId = map.id) {
     setExplorerMapId(mapId);
   }
+
+  useEffect(() => {
+    if (!isInteractive) return;
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsInteractive(false);
+        viewportRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isInteractive]);
 
   function handlePinClick(location: MapLocation) {
     if (wasDragging()) return;
@@ -60,26 +73,35 @@ export default function HomeInteractiveMap({
         <button type="button" onClick={reset}>Reset</button>
       </div>
       <div
-        className="hmp-viewport"
+        className={`hmp-viewport${isInteractive ? " hmp-viewport--interactive" : ""}`}
         ref={viewportRef}
         role="region"
-        aria-label={`Atlas preview of ${map.title}. Use controls or the mouse wheel to zoom; drag to pan.`}
+        aria-label={isInteractive ? `Interactive atlas preview of ${map.title}. Press Escape to return to page scrolling.` : "Activate interactive atlas"}
         tabIndex={0}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onPointerLeave={() => setIsInteractive(false)}
         onClick={(event) => {
-          if (!wasDragging() && !(event.target instanceof Element && event.target.closest(".map-pin"))) openExplorer();
-        }}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            openExplorer();
+          if (!isInteractive && !wasDragging() && !(event.target instanceof Element && event.target.closest(".map-pin"))) {
+            setIsInteractive(true);
           }
         }}
-        style={{ cursor: zoom > minZoom ? "grab" : "default" }}
+        onKeyDown={(event) => {
+          if (!isInteractive && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
+            setIsInteractive(true);
+          }
+        }}
+        style={{ cursor: isInteractive && zoom > minZoom ? "grab" : "default" }}
       >
+        {!isInteractive && (
+          <span className="hmp-activation-hint" aria-hidden="true">
+            <strong>Click to explore</strong>
+            <small>Scroll to zoom · Drag to pan</small>
+          </span>
+        )}
         <div className="hmp-canvas" ref={contentRef} style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}>
           {map.imageUrl ? (
             // The shared explorer intentionally uses a raw image so arbitrary
@@ -102,7 +124,10 @@ export default function HomeInteractiveMap({
                 key={location.id}
                 className={`map-pin map-pin-${location.pinType} map-pin-icon-${location.iconType}`}
                 style={{ left: `${location.x}%`, top: `${location.y}%` }}
-                onClick={() => handlePinClick(location)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handlePinClick(location);
+                }}
                 aria-label={label}
               >
                 <span className="map-pin-dot" />
