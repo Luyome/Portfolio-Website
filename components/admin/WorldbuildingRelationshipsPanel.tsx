@@ -33,9 +33,9 @@ export default function WorldbuildingRelationshipsPanel({
   const [actionState, formAction] = useActionState(createAction, undefined);
 
   return (
-    <div>
-      <p className="adm-sub" style={{ marginTop: 48 }}>Relationships</p>
-      <p className="adm-sub" style={{ marginTop: 0 }}>
+    <section className="adm-relationship-panel" aria-labelledby="worldbuilding-relationships">
+      <header className="adm-relationship-head"><div><span>Worldbuilding network</span><h2 id="worldbuilding-relationships">Relationships</h2></div></header>
+      <p className="adm-relationship-copy">
         Related Worldbuilding entries shown in the public detail view. A relationship can be created from either entry — both directions appear here.
       </p>
 
@@ -70,11 +70,10 @@ export default function WorldbuildingRelationshipsPanel({
           </table>
         </div>
       ) : (
-        <div className="adm-hint">No relationships yet.</div>
+        <div className="adm-relationship-empty">No relationships yet. Add an entry below to create the first connection.</div>
       )}
 
-      <p className="adm-sub" style={{ marginTop: 32 }}>Add Relationship</p>
-      <form action={formAction} className="adm-form">
+      <div className="adm-relationship-add"><h3>Add relationship</h3><form action={formAction} className="adm-form">
         <FormError message={actionState?.error} />
         <input type="hidden" name="sourceEntryId" value={entryId} />
         <div className="adm-field">
@@ -98,7 +97,7 @@ export default function WorldbuildingRelationshipsPanel({
           <OrderPicker name="sortOrder" defaultValue={relationships.length} />
         </div>
         <SaveButton>Add Relationship</SaveButton>
-      </form>
-    </div>
+      </form></div>
+    </section>
   );
 }
