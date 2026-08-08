@@ -885,24 +885,23 @@ a.arv-row:hover{background:var(--bg2)}
   letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 
-/* ══ WORLDBUILDING — controls (search / view toggle / category pills) ══ */
-/* A self-contained card (not a full-width divider strip): margin insets it
-   to the same 64px column as .wa-wrap/.wb-grid so it shares their
-   alignment, padding keeps the search text and view-toggle icons off its
-   own edges. */
+/* ══ WORLDBUILDING — controls (search / category pills) ══ */
+/* Flush, compact strip (not a boxed card) — margin insets it to the same
+   column as .wb-disc-grid below so the two share alignment; per the Task 4.3
+   visual correction, this must read as a thin control bar, not a prominent
+   panel, so the media wall stays dominant. */
 .wb-ctrl{
-  margin:0 var(--space-xl) var(--space-md);padding:var(--space-sm);
-  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
-  display:flex;flex-direction:column;gap:var(--space-sm);
+  margin:0 var(--space-lg) 10px;
+  display:flex;flex-direction:column;gap:8px;
 }
-.wb-ctrl-row{display:flex;align-items:center;gap:var(--space-sm);flex-wrap:wrap}
+.wb-ctrl-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .wb-search{
-  flex:1;min-width:220px;background:var(--bg2);border:1px solid var(--border);color:var(--text);
-  font-family:var(--B);font-size:0.9rem;padding:10px 16px;outline:none;transition:border-color .18s;
+  flex:1;min-width:200px;background:transparent;border:1px solid var(--border);color:var(--text);
+  font-family:var(--B);font-size:0.82rem;padding:7px 12px;outline:none;transition:border-color .18s;
 }
 .wb-search:focus{border-color:rgba(var(--red-rgb),.5)}
-.wb-pill-row{display:flex;gap:8px;flex-wrap:wrap}
-.wb-pill{font-family:var(--M);font-size:0.6rem;letter-spacing:.18em;text-transform:uppercase;padding:7px 18px;border:1px solid var(--border);color:var(--muted);border-radius:999px;transition:all .18s}
+.wb-pill-row{display:flex;gap:6px;flex-wrap:wrap}
+.wb-pill{font-family:var(--M);font-size:0.58rem;letter-spacing:.16em;text-transform:uppercase;padding:5px 14px;border:1px solid var(--border);color:var(--muted);border-radius:999px;transition:all .18s}
 .wb-pill:hover{color:var(--text);border-color:rgba(var(--red-rgb),.4)}
 .wb-pill.on{background:var(--red);color:var(--on-red);border-color:var(--red)}
 
@@ -930,21 +929,21 @@ a.arv-row:hover{background:var(--bg2)}
 .wb-card-more{font-family:var(--M);font-size:0.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--red);display:flex;align-items:center;gap:6px;transition:color .18s}
 .wb-card:hover .wb-card-more{color:var(--red2)}
 
-/* ══ WORLDBUILDING — media-first discovery grid (Task 4.3, ArtStation
-   Explore-inspired) ══════════════════ */
-/* Dense CSS-grid "masonry": true per-image intrinsic dimensions aren't stored,
-   so tile height varies via a small deterministic (id-based) size pattern in
-   WorldbuildingGrid.tsx rather than a random/measured masonry — still reads
-   as an uneven, image-dominant field instead of uniform squares. */
+/* ══ WORLDBUILDING — media-first discovery grid (Task 4.3, corrected
+   against the owner's direct ArtStation Explore "All Channels" reference)
+   ══════════════════ */
+/* auto-fit (not auto-fill) collapses unused tracks to 0 so the existing
+   tiles stretch to fill the full row instead of leaving empty columns —
+   this is what was causing the large dead space on the right before the
+   correction. Uniform aspect-ratio cells (not deterministic tall/short/wide
+   spans) keep the wall tightly packed and visually calm, matching the
+   reference's consistent row rhythm; object-fit:cover on the image handles
+   the crop since real per-image aspect ratio isn't stored. */
 .wb-disc-grid{
-  padding:0 var(--space-xl) var(--space-2xl);
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
-  grid-auto-rows:8px;grid-auto-flow:dense;gap:4px;
+  padding:0 var(--space-lg) var(--space-lg);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px;
 }
-.wb-disc-card{position:relative;overflow:hidden;background:var(--bg3);cursor:pointer;grid-row-end:span 28}
-.wb-disc-card.tall{grid-row-end:span 36}
-.wb-disc-card.short{grid-row-end:span 20}
-.wb-disc-card.wide{grid-column-end:span 2;grid-row-end:span 30}
+.wb-disc-card{position:relative;overflow:hidden;background:var(--bg3);cursor:pointer;aspect-ratio:4/5}
 .wb-disc-card img{object-fit:cover;transition:transform .35s}
 .wb-disc-card:hover img,.wb-disc-card:focus-visible img{transform:scale(1.06)}
 .wb-disc-overlay{
@@ -960,8 +959,9 @@ a.arv-row:hover{background:var(--bg2)}
 @media (max-width:640px){
   .wb-disc-grid{
     padding-left:var(--space-md);padding-right:var(--space-md);
-    grid-template-columns:repeat(auto-fill,minmax(min(150px,44vw),1fr));
+    grid-template-columns:repeat(auto-fit,minmax(min(150px,44vw),1fr));
   }
+  .wb-ctrl{margin-left:var(--space-md);margin-right:var(--space-md)}
 }
 
 /* ══ GAMES ══════════════════════════════ */
