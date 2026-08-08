@@ -124,17 +124,19 @@ test("Home map preview pin limits and uniqueness are enforced", async () => {
   );
 });
 
-test("Home map preview respects visibility, canonical map, order, limit, and invalid pins", async () => {
-  const { HOME_MAP_PINS_LIMIT, resolveHomeMapPreview } = await homeData;
+test("Home map preview preserves the real atlas hierarchy and valid marker data", async () => {
+  const { resolveHomeMapPreview } = await homeData;
   const map = { id: 7, title: "KRUPNI", parentMapId: null, imageUrl: "/map.webp", description: "", sortOrder: 0, createdAt: new Date() };
   const pin = (id: number, mapId = 7, x = 50) => ({ id, mapId, name: `Pin ${id}`, x, y: 50, pinType: "lore", targetMapId: null, entryId: null, iconType: "default", info: "", img: null, sortOrder: id, priority: 0, minZoom: 1, maxZoom: 5 });
-  const rows = [pin(3), pin(1), pin(2, 99), pin(4, 7, 120), pin(3), pin(5), pin(6), pin(7), pin(8)];
+  const maps = [map, { ...map, id: 8, title: "BASE", parentMapId: 7 }];
+  const rows = [pin(3), pin(1), pin(2, 99), pin(4, 7, 120), pin(5, 8)];
 
-  assert.equal(resolveHomeMapPreview({ isVisible: false, mapId: 7 }, map, rows), null);
-  assert.equal(resolveHomeMapPreview({ isVisible: true, mapId: 8 }, map, rows), null);
-  assert.deepEqual(resolveHomeMapPreview({ isVisible: true, mapId: 7 }, map, rows)?.pins.map((item) => item.id), [3, 1, 5, 6, 7]);
-  assert.equal(resolveHomeMapPreview({ isVisible: true, mapId: 7 }, map, rows)?.pins.length, HOME_MAP_PINS_LIMIT);
-  assert.deepEqual(resolveHomeMapPreview({ isVisible: true, mapId: 7 }, map, [])?.pins, []);
+  assert.equal(resolveHomeMapPreview({ isVisible: false, mapId: 7 }, map, maps, rows), null);
+  assert.equal(resolveHomeMapPreview({ isVisible: true, mapId: 8 }, map, maps, rows), null);
+  const resolved = resolveHomeMapPreview({ isVisible: true, mapId: 7 }, map, maps, rows);
+  assert.deepEqual(resolved?.maps.map((item) => item.id), [7, 8]);
+  assert.deepEqual(resolved?.locations.map((item) => item.id), [3, 1, 5]);
+  assert.deepEqual(resolveHomeMapPreview({ isVisible: true, mapId: 7 }, map, maps, [])?.locations, []);
 });
 
 test("unsupported production stats remain unavailable", async () => {

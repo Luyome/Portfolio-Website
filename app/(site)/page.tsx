@@ -52,15 +52,14 @@ export default async function HomePage() {
   );
   const contactSocialLinks = resolveContactSocialLinks(settings);
 
-  // Only sections that actually render make it in here -- Map is deliberately
-  // excluded regardless of `homeData.mapPreview` per the Sprint 4 KRUPNI map
-  // deferral (no dead nav item for a section slated for a future sprint).
+  // Only sections that actually render make it into the scrollspy rail.
   const navSections: HomeSectionNavItem[] = [
     { id: "home-hero", label: "Hero" },
     { id: "selected-work", label: "Selected Work" },
     { id: "capabilities", label: "Capabilities" },
     { id: "skills", label: "Skills" },
     ...(visibleProductionStats.length > 0 ? [{ id: "stats", label: "Production Stats" }] : []),
+    ...(homeData.mapPreview ? [{ id: "home-map", label: "Atlas" }] : []),
     ...(homeData.worldbuildingHighlights.length > 0 ? [{ id: "worldbuilding-highlights", label: "Worldbuilding" }] : []),
     ...(homeData.latestDispatches.length > 0 ? [{ id: "dispatches", label: "Dispatches" }] : []),
     ...(contactSocialLinks.length > 0 ? [{ id: "contact", label: "Contact" }] : []),
@@ -195,7 +194,7 @@ export default async function HomePage() {
 
       {homeData.mapPreview && (
         <Reveal>
-          <HomeMapPreview map={homeData.mapPreview.map} pins={homeData.mapPreview.pins} />
+          <HomeMapPreview {...homeData.mapPreview} />
         </Reveal>
       )}
 

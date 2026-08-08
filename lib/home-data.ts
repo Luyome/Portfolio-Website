@@ -41,29 +41,28 @@ export const HOME_MAP_PINS_LIMIT = 5;
 type HomeMapConfig = { isVisible: boolean; mapId: number | null };
 type HomeMap = typeof worldMaps.$inferSelect;
 type HomeMapPin = typeof mapLocations.$inferSelect;
-export type ResolvedHomeContinentPin = HomeMapPin & { href: string; targetTitle: string };
 
 export function resolveHomeMapPreview(
   config: HomeMapConfig | null,
   map: HomeMap | null,
-  pins: readonly HomeMapPin[],
-  childMaps: readonly HomeMap[] = []
+  maps: readonly HomeMap[],
+  locations: readonly HomeMapPin[]
 ) {
   if (!config?.isVisible || !config.mapId || !map || map.id !== config.mapId) return null;
+  if (!maps.some((candidate) => candidate.id === map.id)) return null;
 
-  const seen = new Set<number>();
-  const childMapsById = new Map(childMaps.map((child) => [child.id, child]));
-  const validPins = pins.flatMap((pin): ResolvedHomeContinentPin[] => {
-    if (seen.has(pin.id) || pin.mapId !== map.id || !pin.name.trim()) return [];
-    if (!Number.isFinite(pin.x) || !Number.isFinite(pin.y) || pin.x < 0 || pin.x > 100 || pin.y < 0 || pin.y > 100) return [];
-    if (pin.pinType !== "submap" || pin.targetMapId === null) return [];
-    const targetMap = childMapsById.get(pin.targetMapId);
-    if (!targetMap || targetMap.parentMapId !== map.id) return [];
-    seen.add(pin.id);
-    return [{ ...pin, href: `/worldbuilding?map=${targetMap.id}`, targetTitle: targetMap.title }];
-  }).slice(0, HOME_MAP_PINS_LIMIT);
-
-  return { map, pins: validPins };
+  // Home is a real atlas preview, not a separately curated map model. Keep
+  // the entire hierarchy and every valid location available to MapZoomPanel.
+  return {
+    map,
+    maps: [...maps],
+    locations: locations.filter((location) =>
+      maps.some((candidate) => candidate.id === location.mapId) &&
+      location.name.trim().length > 0 &&
+      Number.isFinite(location.x) && Number.isFinite(location.y) &&
+      location.x >= 0 && location.x <= 100 && location.y >= 0 && location.y <= 100
+    ),
+  };
 }
 
 export const HOME_STAT_KEYS = [
@@ -430,14 +429,11 @@ async function getHomeMapData() {
     .leftJoin(worldMaps, eq(homeMapPreview.mapId, worldMaps.id))
     .where(eq(homeMapPreview.id, 1));
   if (!preview?.config.mapId || !preview.map) return null;
-  const pins = await db
-    .select({ selection: homeMapPreviewPins, location: mapLocations })
-    .from(homeMapPreviewPins)
-    .innerJoin(mapLocations, eq(homeMapPreviewPins.locationId, mapLocations.id))
-    .where(eq(homeMapPreviewPins.previewId, 1))
-    .orderBy(asc(homeMapPreviewPins.sortOrder), asc(homeMapPreviewPins.id));
-  const childMaps = await db.select().from(worldMaps).where(eq(worldMaps.parentMapId, preview.map.id));
-  return resolveHomeMapPreview(preview.config, preview.map, pins.map((row) => row.location), childMaps);
+  const [maps, locations] = await Promise.all([
+    db.select().from(worldMaps).orderBy(asc(worldMaps.sortOrder), asc(worldMaps.id)),
+    db.select().from(mapLocations).orderBy(asc(mapLocations.sortOrder), asc(mapLocations.id)),
+  ]);
+  return resolveHomeMapPreview(preview.config, preview.map, maps, locations);
 }
 
 /** Consolidated, request-deduplicated read boundary for future Home tasks. */

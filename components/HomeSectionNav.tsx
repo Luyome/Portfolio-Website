@@ -9,8 +9,7 @@ export type HomeSectionNavItem = { id: string; label: string };
  * Fixed, vertically-centered scrollspy rail for Home only. Content is
  * server-derived from `app/(site)/page.tsx` (only sections that actually
  * rendered are passed in -- see that file's `navSections` build), so this
- * component never hardcodes a link to an omitted section (Map stays out
- * per the Sprint 4 deferral regardless of what's passed in). Deliberately
+ * component never hardcodes a link to an omitted section. Deliberately
  * minimal: small ticks, no panel/glass background, matching the existing
  * restrained red/neutral Home visual language.
  */
