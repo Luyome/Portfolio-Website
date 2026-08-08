@@ -193,7 +193,7 @@ export default async function HomePage() {
       )}
 
       {homeData.mapPreview && (
-        <Reveal>
+        <Reveal className="home-map-reveal">
           <HomeMapPreview {...homeData.mapPreview} />
         </Reveal>
       )}
