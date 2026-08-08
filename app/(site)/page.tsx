@@ -12,6 +12,7 @@ import HomeWorldbuildingHighlights from "@/components/HomeWorldbuildingHighlight
 import HomeLatestDispatches from "@/components/HomeLatestDispatches";
 import HomeContactSocial from "@/components/HomeContactSocial";
 import BackToTop from "@/components/BackToTop";
+import HomeSectionNav, { type HomeSectionNavItem } from "@/components/HomeSectionNav";
 import Reveal from "@/components/Reveal";
 import ActionLink from "@/components/ActionLink";
 import { fieldStyle } from "@/lib/style-fields";
@@ -51,6 +52,20 @@ export default async function HomePage() {
   );
   const contactSocialLinks = resolveContactSocialLinks(settings);
 
+  // Only sections that actually render make it in here -- Map is deliberately
+  // excluded regardless of `homeData.mapPreview` per the Sprint 4 KRUPNI map
+  // deferral (no dead nav item for a section slated for a future sprint).
+  const navSections: HomeSectionNavItem[] = [
+    { id: "home-hero", label: "Hero" },
+    { id: "selected-work", label: "Selected Work" },
+    { id: "capabilities", label: "Capabilities" },
+    { id: "skills", label: "Skills" },
+    ...(visibleProductionStats.length > 0 ? [{ id: "stats", label: "Production Stats" }] : []),
+    ...(homeData.worldbuildingHighlights.length > 0 ? [{ id: "worldbuilding-highlights", label: "Worldbuilding" }] : []),
+    ...(homeData.latestDispatches.length > 0 ? [{ id: "dispatches", label: "Dispatches" }] : []),
+    ...(contactSocialLinks.length > 0 ? [{ id: "contact", label: "Contact" }] : []),
+  ];
+
   const heroSlides =
     heroSlideRows.length > 0
       ? heroSlideRows
@@ -69,7 +84,7 @@ export default async function HomePage() {
         // <link> tags to <head> regardless of where they render in the tree.
         <link rel="preload" as="image" href={heroSlides[0].url} fetchPriority="high" />
       )}
-      <div className="home-hero-band">
+      <div className="home-hero-band" id="home-hero">
         <HeroCarousel
           slides={heroSlides}
           opacity={settings.homeBgOpacity}
@@ -213,6 +228,7 @@ export default async function HomePage() {
         </Reveal>
       )}
     </div>
+    <HomeSectionNav sections={navSections} />
     <BackToTop />
     </>
   );

@@ -20,7 +20,7 @@ export default function HomeLatestDispatches({ items }: { items: ResolvedHomeCon
   if (items.length === 0) return null;
 
   return (
-    <section className="home-dispatches" aria-labelledby="home-dispatches-title">
+    <section id="dispatches" className="home-dispatches" aria-labelledby="home-dispatches-title">
       <div className="hld-heading">
         <p className="hld-kicker">Recent work &amp; field notes</p>
         <h2 id="home-dispatches-title">Latest Dispatches</h2>

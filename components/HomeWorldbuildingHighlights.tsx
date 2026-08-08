@@ -7,7 +7,7 @@ export default function HomeWorldbuildingHighlights({ items }: { items: Resolved
   if (items.length === 0) return null;
 
   return (
-    <section className="home-world-highlights" aria-labelledby="home-world-title">
+    <section id="worldbuilding-highlights" className="home-world-highlights" aria-labelledby="home-world-title">
       <div className="hwh-heading">
         <div>
           <p className="hwh-kicker">From the KRUPNI archive</p>

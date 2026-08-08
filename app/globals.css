@@ -773,6 +773,41 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .back-to-top:focus-visible{outline:2px solid #fff;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){.back-to-top{transition:opacity .15s ease}}
 
+#home-hero,#selected-work,#capabilities,#skills,#stats,#worldbuilding-highlights,#dispatches,#contact{scroll-margin-top:90px}
+
+/* Home-only fixed vertical scrollspy rail — right side, roughly viewport-centered,
+   deliberately minimal (small ticks, no panel/background) so it reads as quiet
+   portfolio navigation rather than a menu. Sits above `.back-to-top` (bottom-right)
+   with no overlap: this rail is vertically centered and stops well short of the
+   viewport's bottom-right corner. Hidden below 1180px, where there isn't clean room
+   without squeezing Home content — see the task's responsive requirement. */
+.home-section-nav{
+  position:fixed;top:50%;right:clamp(14px,2vw,26px);z-index:60;
+  transform:translateY(-50%);display:none;
+}
+.home-section-nav ul{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+.hsn-item{
+  display:flex;align-items:center;gap:10px;background:none;border:none;padding:4px 2px;
+  color:var(--text2);cursor:pointer;
+}
+.hsn-dot{
+  width:8px;height:8px;border-radius:50%;flex:none;
+  background:var(--border);border:1px solid var(--border);
+  transition:background .2s ease,border-color .2s ease,transform .2s ease;
+}
+.hsn-label{
+  font-family:var(--M);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+  white-space:nowrap;opacity:0;max-width:0;overflow:hidden;
+  transition:opacity .18s ease,max-width .22s ease;
+}
+.hsn-item:hover .hsn-label,.hsn-item:focus-visible .hsn-label{opacity:1;max-width:160px}
+.hsn-item:hover .hsn-dot,.hsn-item:focus-visible .hsn-dot{border-color:var(--red2)}
+.hsn-item:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.hsn-item[data-active="true"] .hsn-dot{background:var(--red);border-color:var(--red);transform:scale(1.25)}
+.hsn-item[data-active="true"] .hsn-label{color:#fff}
+@media(min-width:1180px){.home-section-nav{display:block}}
+@media(prefers-reduced-motion:reduce){.hsn-dot,.hsn-label{transition:none}}
+
 /* ══ ARCHIVE ══════════════════════════════ */
 .arv-wrap{padding:52px var(--space-xl) var(--space-2xl)}
 .arv-filters{display:flex;flex-direction:column;gap:12px;padding-bottom:var(--space-md);border-bottom:1px solid var(--border)}
