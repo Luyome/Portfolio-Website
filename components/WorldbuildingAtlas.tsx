@@ -1,155 +1,38 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import MapZoomPanel from "./MapZoomPanel";
-import { MAP_ZOOM_MIN, visibleMarkersAtZoom } from "@/lib/map-zoom";
+import WorldMapArtwork from "./WorldMapArtwork";
+import { MAP_ZOOM_MIN, resolvePinTarget, visibleMarkersAtZoom } from "@/lib/map-zoom";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 
-// A large, static (non-interactive) preview of the root map. All exploration
-// -- submap navigation, pin clicks, wheel-zoom/drag-pan -- happens in the
-// fullscreen MapZoomPanel opened by clicking anywhere on this preview.
-export default function WorldbuildingAtlas({
-  maps,
-  locations,
-  onOpenLore,
-  initialMapId,
-}: {
-  maps: WorldMap[];
-  locations: MapLocation[];
-  onOpenLore: (entryId: number) => void;
-  initialMapId?: number | null;
-}) {
-  const rootMap = useMemo(() => maps.find((m) => m.parentMapId === null) ?? maps[0] ?? null, [maps]);
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const [naturalSize, setNaturalSize] = useState<{ w: number; h: number } | null>(null);
-  const [frame, setFrame] = useState<{ w: number; h: number; pad: number } | null>(null);
+// A large, static (non-interactive-pan) preview of the root map. Marker
+// clicks resolve through the same shared lib/map-zoom.ts rule the fullscreen
+// MapZoomPanel and the Home preview use, so a pin never behaves differently
+// depending on which page it was clicked from (e.g. a submap pin always
+// opens that exact submap here too, not just the root map).
+export default function WorldbuildingAtlas({ maps, locations, onOpenLore, initialMapId }: { maps: WorldMap[]; locations: MapLocation[]; onOpenLore: (entryId: number) => void; initialMapId?: number | null }) {
+  const rootMap = useMemo(() => maps.find((map) => map.parentMapId === null) ?? maps[0] ?? null, [maps]);
   const initialMap = initialMapId && maps.some((map) => map.id === initialMapId) ? initialMapId : null;
-  const [zoomOpen, setZoomOpen] = useState(initialMap !== null);
+  const [explorer, setExplorer] = useState<{ mapId: number; pinId: number | null } | null>(initialMap !== null ? { mapId: initialMap, pinId: null } : null);
+  const mapIds = useMemo(() => new Set(maps.map((map) => map.id)), [maps]);
+  const pins = useMemo(() => rootMap ? visibleMarkersAtZoom(locations.filter((location) => location.mapId === rootMap.id), MAP_ZOOM_MIN) : [], [locations, rootMap]);
 
-  // Static preview reads as the fully-zoomed-out view of the map, so it
-  // shows exactly what the explorer would show at the bottom of the
-  // semantic zoom scale — see lib/map-zoom.ts.
-  const pins = useMemo(
-    () => (rootMap === null ? [] : visibleMarkersAtZoom(locations.filter((l) => l.mapId === rootMap.id), MAP_ZOOM_MIN)),
-    [locations, rootMap]
-  );
-
-  const handleImgRef = useCallback((el: HTMLImageElement | null) => {
-    if (el && el.complete && el.naturalWidth && el.naturalHeight) {
-      setNaturalSize((prev) => (prev && prev.w === el.naturalWidth && prev.h === el.naturalHeight ? prev : { w: el.naturalWidth, h: el.naturalHeight }));
-    }
-  }, []);
-
-  // The frame's own box (not just the image inside it) has to be sized in
-  // JS, not pure CSS: an equal pixel gap on all four sides only works out to
-  // an exact (no-letterbox) fit if the frame's *outer* aspect ratio already
-  // accounts for the padding being subtracted from it -- and that relationship
-  // depends on the actual available width, so a static CSS aspect-ratio can't
-  // express it. Solve `(availW - 2*pad) / (availH - 2*pad) = imageRatio` for
-  // the frame's height.
-  //
-  // Width is always the full available width -- never shrunk to fit under a
-  // height cap -- so the preview stays flush from the sidebar to the right
-  // edge of the screen for any map aspect ratio; height is whatever that
-  // implies, so the image never distorts.
-  useEffect(() => {
-    const wrap = wrapRef.current;
-    if (!naturalSize || !wrap) return;
-    function recompute() {
-      const cs = getComputedStyle(wrap!);
-      const availW = wrap!.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-      if (!availW) return;
-      // -5px so the image itself reads slightly larger against its own
-      // background mat than the raw equal-gap value alone would give.
-      // The embedded atlas is a visual map surface, not a matted thumbnail.
-      // Keep a small breathing edge without giving the artwork a large empty
-      // border on wide displays.
-      const pad = Math.max(4, Math.min(12, availW * 0.009));
-      const ratio = naturalSize!.w / naturalSize!.h;
-      // A subtle reduction keeps the surrounding Worldbuilding map field
-      // proportionate while the artwork itself sits close to its top/bottom
-      // frame edges.
-      const w = availW * 0.95;
-      const h = (availW - 2 * pad) / ratio + 2 * pad;
-      // Bail out with the same object reference when nothing actually moved
-      // (rounding to whole px) -- ResizeObserver firing on a computed style
-      // change that happens to round to the same size would otherwise still
-      // produce a "new" state object and re-render forever.
-      setFrame((prev) => {
-        if (prev && Math.round(prev.w) === Math.round(w) && Math.round(prev.h) === Math.round(h) && Math.round(prev.pad) === Math.round(pad)) {
-          return prev;
-        }
-        return { w, h, pad };
-      });
-    }
-    recompute();
-    const ro = new ResizeObserver(recompute);
-    ro.observe(wrap);
-    window.addEventListener("resize", recompute);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", recompute);
-    };
-  }, [naturalSize]);
-
-  if (!rootMap) {
-    return <div className="wa-empty">No map has been configured yet.</div>;
+  function openPin(location: MapLocation) {
+    const action = resolvePinTarget(location, mapIds);
+    if (action.kind === "submap") setExplorer({ mapId: action.mapId, pinId: null });
+    else if (action.kind === "entry") onOpenLore(action.entryId);
+    else if (action.kind === "info") setExplorer({ mapId: action.location.mapId, pinId: action.location.id });
+    else if (rootMap) setExplorer({ mapId: rootMap.id, pinId: null });
   }
 
-  return (
-    <div className="wa-wrap" ref={wrapRef}>
-      <div className="wa-topbar">
-        <nav className="wa-breadcrumb">
-          <span className="wa-crumb-item">
-            <span className="wa-crumb-current">{rootMap.title}</span>
-          </span>
-        </nav>
-      </div>
-
-      <div
-        className="wa-viewport wa-viewport-static"
-        role="button"
-        tabIndex={0}
-        onClick={() => setZoomOpen(true)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            setZoomOpen(true);
-          }
-        }}
-        style={{ width: frame ? frame.w : undefined, height: frame ? frame.h : undefined }}
-      >
-        <div className="wa-frame-inner" style={{ inset: frame ? frame.pad : undefined }}>
-          <div className="wa-canvas">
-            {rootMap.imageUrl ? (
-              <img src={rootMap.imageUrl} alt={rootMap.title} className="wa-img" draggable={false} ref={handleImgRef} />
-            ) : (
-              <div className="wa-img-empty">No map image uploaded yet.</div>
-            )}
-            {pins.map((loc) => (
-              <div
-                key={loc.id}
-                className={`map-pin map-pin-${loc.pinType} map-pin-icon-${loc.iconType}`}
-                style={{ left: `${loc.x}%`, top: `${loc.y}%` }}
-              >
-                <span className="map-pin-dot" />
-                <span className="map-pin-label">{loc.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <span className="wa-static-hint">Click to explore</span>
-      </div>
-
-      {zoomOpen && (
-        <MapZoomPanel
-          maps={maps}
-          locations={locations}
-          initialMapId={initialMap ?? rootMap.id}
-          onOpenLore={onOpenLore}
-          onClose={() => setZoomOpen(false)}
-        />
-      )}
+  if (!rootMap) return <div className="wa-empty">No map has been configured yet.</div>;
+  return <div className="wa-wrap">
+    <div className="wa-topbar"><nav className="wa-breadcrumb"><span className="wa-crumb-current">{rootMap.title}</span></nav></div>
+    <div className="wa-viewport wa-viewport-static" role="button" tabIndex={0} onClick={() => setExplorer({ mapId: rootMap.id, pinId: null })} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setExplorer({ mapId: rootMap.id, pinId: null }); } }}>
+      <WorldMapArtwork map={rootMap} locations={pins} className="wma-preview" renderMarker={(location) => <button type="button" key={location.id} className={`map-pin map-pin-${location.pinType} map-pin-icon-${location.iconType}`} style={{ left: `${location.x}%`, top: `${location.y}%` }} onClick={(event) => { event.stopPropagation(); openPin(location); }} aria-label={location.pinType === "submap" ? `Open ${location.name} submap` : `View ${location.name}`}><span className="map-pin-dot" /><span className="map-pin-label" aria-hidden="true">{location.name}</span></button>} />
+      <span className="wa-static-hint">Click to explore</span>
     </div>
-  );
+    {explorer && <MapZoomPanel maps={maps} locations={locations} initialMapId={explorer.mapId} initialPinId={explorer.pinId} onOpenLore={onOpenLore} onClose={() => setExplorer(null)} />}
+  </div>;
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDragZoom } from "@/hooks/useDragZoom";
 import { useModalFocus } from "@/hooks/useModalFocus";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { MAP_ZOOM_MAX, MAP_ZOOM_MIN, getChildMaps, groupByIconType, visibleMarkersAtZoom } from "@/lib/map-zoom";
+import WorldMapArtwork from "./WorldMapArtwork";
+import { MAP_ZOOM_MAX, MAP_ZOOM_MIN, getChildMaps, groupByIconType, resolvePinTarget, visibleMarkersAtZoom } from "@/lib/map-zoom";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 
 // This panel's own pixel zoom range (wheel/pinch/+/-), independent of the
@@ -36,12 +37,18 @@ export default function MapZoomPanel({
   maps,
   locations,
   initialMapId,
+  initialPinId,
   onOpenLore,
   onClose,
 }: {
   maps: WorldMap[];
   locations: MapLocation[];
   initialMapId: number;
+  // Set by another surface (Home, the Worldbuilding static preview) that
+  // resolved a click on an info-only pin to this same panel, so the pin's
+  // detail opens immediately instead of a plain, unfocused map view — the
+  // canonical detail experience for that pin stays identical everywhere.
+  initialPinId?: number | null;
   onOpenLore: (entryId: number) => void;
   onClose: () => void;
 }) {
@@ -54,9 +61,9 @@ export default function MapZoomPanel({
     { viewportRef, contentRef },
     { minZoom: EXPLORER_MIN_ZOOM, maxZoom: EXPLORER_MAX_ZOOM }
   );
-  const [pinDetail, setPinDetail] = useState<MapLocation | null>(null);
-  const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
-  const [fitFrame, setFitFrame] = useState<{ width: number; height: number; left: number; top: number } | null>(null);
+  const [pinDetail, setPinDetail] = useState<MapLocation | null>(
+    () => (initialPinId != null ? locations.find((l) => l.id === initialPinId) ?? null : null)
+  );
   const reducedMotion = usePrefersReducedMotion();
   // Render nothing during SSR and the first hydration pass. The portal is
   // then mounted only in the browser, avoiding a server/client tree mismatch.
@@ -72,6 +79,7 @@ export default function MapZoomPanel({
   useModalFocus(!!pinDetail, pinPanelRef);
 
   const mapsById = useMemo(() => new Map(maps.map((m) => [m.id, m])), [maps]);
+  const mapIds = useMemo(() => new Set(maps.map((m) => m.id)), [maps]);
   const currentMap = mapsById.get(currentMapId) ?? null;
 
   const pins = useMemo(() => locations.filter((l) => l.mapId === currentMapId), [locations, currentMapId]);
@@ -86,28 +94,6 @@ export default function MapZoomPanel({
   const iconGroups = useMemo(() => groupByIconType(pins), [pins]);
 
   const childMaps = useMemo(() => getChildMaps(maps, currentMapId), [maps, currentMapId]);
-
-  // 100% is the actual artwork contained within the actual fullscreen box.
-  // Markers use this measured frame too, so no artwork edge can be cropped.
-  const updateFitFrame = useCallback(() => {
-    const viewport = viewportRef.current;
-    if (!viewport || !imageSize) return;
-    const scaleX = viewport.clientWidth / imageSize.width;
-    const scaleY = viewport.clientHeight / imageSize.height;
-    const fitScale = Math.min(scaleX, scaleY);
-    const width = imageSize.width * fitScale;
-    const height = imageSize.height * fitScale;
-    setFitFrame({ width, height, left: (viewport.clientWidth - width) / 2, top: (viewport.clientHeight - height) / 2 });
-  }, [imageSize]);
-
-  useEffect(() => {
-    updateFitFrame();
-    const viewport = viewportRef.current;
-    if (!viewport || typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(updateFitFrame);
-    observer.observe(viewport);
-    return () => observer.disconnect();
-  }, [updateFitFrame]);
 
   const breadcrumb = useMemo(() => {
     const chain: WorldMap[] = [];
@@ -126,13 +112,10 @@ export default function MapZoomPanel({
 
   function handlePinClick(loc: MapLocation) {
     if (wasDragging()) return;
-    if (loc.pinType === "submap" && loc.targetMapId !== null) {
-      goToMap(loc.targetMapId);
-    } else if (loc.entryId !== null) {
-      onOpenLore(loc.entryId);
-    } else if (loc.info.trim() || loc.img) {
-      setPinDetail(loc);
-    }
+    const action = resolvePinTarget(loc, mapIds);
+    if (action.kind === "submap") goToMap(action.mapId);
+    else if (action.kind === "entry") onOpenLore(action.entryId);
+    else if (action.kind === "info") setPinDetail(action.location);
   }
 
   useEffect(() => {
@@ -147,10 +130,15 @@ export default function MapZoomPanel({
   }, [onClose, pinDetail]);
 
   useEffect(() => {
+    const scrollY = window.scrollY;
+    const prevRootOverflow = document.documentElement.style.overflow;
     const prevOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     return () => {
+      document.documentElement.style.overflow = prevRootOverflow;
       document.body.style.overflow = prevOverflow;
+      window.scrollTo(0, scrollY);
     };
   }, []);
 
@@ -233,42 +221,15 @@ export default function MapZoomPanel({
             exit={reducedMotion ? undefined : { opacity: 0, scale: 1.05 }}
             transition={reducedMotion ? { duration: 0 } : { duration: 0.28, ease: "easeOut" }}
           >
-            <div
-              className="mzp-canvas"
+            <WorldMapArtwork
               ref={contentRef}
-              style={{
-                width: fitFrame?.width,
-                height: fitFrame?.height,
-                left: fitFrame?.left,
-                top: fitFrame?.top,
-                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              }}
-            >
-              {currentMap.imageUrl ? (
-                <img
-                  src={currentMap.imageUrl}
-                  alt={currentMap.title}
-                  className="mzp-img"
-                  draggable={false}
-                  onLoad={(event) => setImageSize({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })}
-                />
-              ) : (
-                <div className="wa-img-empty">No map image uploaded yet.</div>
-              )}
-              {visiblePins.map((loc) => (
-                <button
-                  type="button"
-                  key={loc.id}
-                  className={`map-pin map-pin-${loc.pinType} map-pin-icon-${loc.iconType}`}
-                  style={{ left: `${loc.x}%`, top: `${loc.y}%` }}
-                  onClick={() => handlePinClick(loc)}
-                  aria-label={loc.pinType === "submap" ? `Open ${loc.name} submap` : `View ${loc.name}`}
-                >
-                  <span className="map-pin-dot" />
-                  <span className="map-pin-label" aria-hidden="true">{loc.name}</span>
-                </button>
-              ))}
-            </div>
+              map={currentMap}
+              locations={visiblePins}
+              className="wma-fullscreen"
+              transform={`translate(${pan.x}px, ${pan.y}px) scale(${zoom})`}
+              interactive
+              onMarkerClick={handlePinClick}
+            />
           </motion.div>
         </AnimatePresence>
       </div>

@@ -92,3 +92,30 @@ export function groupByIconType<T extends Pick<MapLocation, "iconType">>(locatio
   }
   return groups;
 }
+
+// Final map-system repair pass — the single canonical marker-action rule.
+// Every map surface (Home preview, Worldbuilding static preview, fullscreen
+// MapZoomPanel) resolves a click through this one function instead of each
+// re-deriving its own routing, so the same pin can never behave differently
+// depending on which page it's clicked from. Resolution is based only on the
+// marker's real stored fields (targetMapId/entryId/info/img) — never guessed
+// from its name or label (e.g. a pin named "BASE" gets no special case).
+export type PinTarget =
+  | { kind: "submap"; mapId: number }
+  | { kind: "entry"; entryId: number }
+  | { kind: "info"; location: MapLocation }
+  | { kind: "none" };
+
+/** The single canonical interpretation of a marker click. `knownMapIds` guards against a submap target that no longer exists (deleted map) — an invalid/dangling target resolves to "none" rather than navigating into a broken view. */
+export function resolvePinTarget(location: MapLocation, knownMapIds: ReadonlySet<number>): PinTarget {
+  if (location.pinType === "submap" && location.targetMapId !== null && knownMapIds.has(location.targetMapId)) {
+    return { kind: "submap", mapId: location.targetMapId };
+  }
+  if (location.entryId !== null) {
+    return { kind: "entry", entryId: location.entryId };
+  }
+  if (location.info.trim() || location.img) {
+    return { kind: "info", location };
+  }
+  return { kind: "none" };
+}

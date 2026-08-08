@@ -99,7 +99,17 @@ export default function MapEditor({
   return (
     <div>
       <div className="map-admin-toolbar">
-        <select value={currentMapId ?? ""} onChange={(e) => setCurrentMapId(Number(e.target.value))}>
+        <select
+          value={currentMapId ?? ""}
+          onChange={(e) => {
+            // Switching maps must never leave the previous map's selection
+            // or in-progress pin placement attached to the newly-shown map.
+            setCurrentMapId(Number(e.target.value));
+            setEditing(null);
+            setPlacing(false);
+            setNewName("");
+          }}
+        >
           {maps.map((m) => (
             <option key={m.id} value={m.id}>{m.title}</option>
           ))}

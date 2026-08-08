@@ -56,8 +56,13 @@ export function useMapPanZoom(viewportRef: React.RefObject<HTMLDivElement | null
 
     // Reset first so switching maps never leaves the previous map's ratio
     // (and the stale, differently-shaped canvas it produces) applied while
-    // the new <img> is still loading.
+    // the new <img> is still loading. Zoom/scroll reset the same way -- a
+    // zoomed-in, panned view of Map A must not carry over and silently
+    // misplace where a click on Map B lands.
     setAspectRatio(null);
+    setZoomRaw(MIN_ZOOM);
+    vp.scrollLeft = 0;
+    vp.scrollTop = 0;
 
     function computeAspectRatio() {
       const img = vp!.querySelector<HTMLImageElement>("img.map-image");

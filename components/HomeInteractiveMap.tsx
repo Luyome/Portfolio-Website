@@ -1,107 +1,136 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import MapZoomPanel from "./MapZoomPanel";
-import { MAP_ZOOM_MIN, visibleMarkersAtZoom } from "@/lib/map-zoom";
+import WorldMapArtwork from "./WorldMapArtwork";
+import { useDragZoom } from "@/hooks/useDragZoom";
+import { MAP_ZOOM_MIN, resolvePinTarget, visibleMarkersAtZoom } from "@/lib/map-zoom";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 
-export default function HomeInteractiveMap({ map, maps, locations }: {
-  map: WorldMap;
-  maps: WorldMap[];
-  locations: MapLocation[];
-}) {
+// Home's own compact surface over the same map data and the same shared
+// marker routing (lib/map-zoom.ts's resolvePinTarget) as Worldbuilding and
+// the fullscreen Atlas -- it does not invent a separate routing rule or a
+// separate map data model. Passive by default: hovering does nothing, and
+// the mouse wheel/trackpad scrolls the page like normal, not the map. An
+// explicit click on a non-marker part of the map activates in-place
+// pan/zoom; Escape (or the pointer leaving the map) hands page scrolling
+// back. The +/-/Reset controls are explicit user intent and stay usable
+// even while passive.
+export default function HomeInteractiveMap({ map, maps, locations }: { map: WorldMap; maps: WorldMap[]; locations: MapLocation[] }) {
   const router = useRouter();
+  const worldMap = useMemo(() => maps.find((candidate) => candidate.parentMapId === null) ?? map, [map, maps]);
   const viewportRef = useRef<HTMLDivElement>(null);
-  const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
-  const [fitFrame, setFitFrame] = useState<{ width: number; height: number; left: number; top: number } | null>(null);
-  const [explorerMapId, setExplorerMapId] = useState<number | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [isInteractive, setIsInteractive] = useState(false);
+  const { zoom, pan, zoomBy, reset, onPointerDown, onPointerMove, onPointerUp, wasDragging, minZoom } = useDragZoom(
+    { viewportRef, contentRef },
+    { minZoom: 1, maxZoom: 2.5, step: 0.2, interactionEnabled: isInteractive }
+  );
+  const [explorer, setExplorer] = useState<{ mapId: number; pinId: number | null } | null>(null);
   const mapIds = useMemo(() => new Set(maps.map((candidate) => candidate.id)), [maps]);
   const previewPins = useMemo(
-    () => visibleMarkersAtZoom(locations.filter((location) => location.mapId === map.id), MAP_ZOOM_MIN),
-    [locations, map.id]
+    () => visibleMarkersAtZoom(locations.filter((location) => location.mapId === worldMap.id), MAP_ZOOM_MIN),
+    [locations, worldMap.id]
   );
 
-  // Keep markers in the exact same source-image frame as the contained artwork.
-  const updateFitFrame = useCallback(() => {
-    const viewport = viewportRef.current;
-    if (!viewport || !imageSize) return;
-    const scaleX = viewport.clientWidth / imageSize.width;
-    const scaleY = viewport.clientHeight / imageSize.height;
-    const fitScale = Math.min(scaleX, scaleY);
-    const width = imageSize.width * fitScale;
-    const height = imageSize.height * fitScale;
-    setFitFrame({ width, height, left: (viewport.clientWidth - width) / 2, top: (viewport.clientHeight - height) / 2 });
-  }, [imageSize]);
-
   useEffect(() => {
-    updateFitFrame();
-    const viewport = viewportRef.current;
-    if (!viewport || typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(updateFitFrame);
-    observer.observe(viewport);
-    return () => observer.disconnect();
-  }, [updateFitFrame]);
-
-  function openExplorer(mapId = map.id) {
-    setExplorerMapId(mapId);
-  }
-
-  function handlePinClick(location: MapLocation) {
-    if (location.pinType === "submap" && location.targetMapId !== null && mapIds.has(location.targetMapId)) {
-      openExplorer(location.targetMapId);
-    } else if (location.entryId !== null) {
-      router.push(`/worldbuilding?item=${location.entryId}`);
-    } else if (location.info.trim() || location.img) {
-      openExplorer();
+    if (!isInteractive) return;
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsInteractive(false);
+        viewportRef.current?.focus();
+      }
     }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isInteractive]);
+
+  // The one canonical marker-action rule (submap / lore entry / info-only
+  // detail / no valid target) -- the same resolution MapZoomPanel and the
+  // Worldbuilding static preview use, so a pin (e.g. BASE) never routes
+  // differently depending on which page it's clicked from. An info-only
+  // pin opens the same fullscreen panel every other surface would show it
+  // in, focused directly on that pin, rather than a blank map view.
+  function openPin(location: MapLocation) {
+    if (wasDragging()) return;
+    const action = resolvePinTarget(location, mapIds);
+    if (action.kind === "submap") setExplorer({ mapId: action.mapId, pinId: null });
+    else if (action.kind === "entry") router.push(`/worldbuilding?item=${action.entryId}`);
+    else if (action.kind === "info") setExplorer({ mapId: action.location.mapId, pinId: action.location.id });
+    else setExplorer({ mapId: worldMap.id, pinId: null });
   }
 
   return (
     <div className="hmp-interactive">
+      <div className="hmp-controls" aria-label="Atlas preview controls">
+        <button type="button" onClick={() => zoomBy(-0.25)} aria-label="Zoom out">−</button>
+        <span aria-live="polite">{Math.round(zoom * 100)}%</span>
+        <button type="button" onClick={() => zoomBy(0.25)} aria-label="Zoom in">+</button>
+        <button type="button" onClick={reset}>Reset</button>
+      </div>
       <div
-        className="hmp-viewport"
+        className={`hmp-viewport${isInteractive ? " hmp-viewport--interactive" : ""}`}
         ref={viewportRef}
-        role="button"
-        aria-label={`Explore ${map.title} fullscreen`}
+        role="region"
+        aria-label={isInteractive ? `Interactive atlas preview of ${worldMap.title}. Press Escape to return to page scrolling.` : "Activate interactive atlas"}
         tabIndex={0}
-        onClick={(event) => {
-          if (!(event.target instanceof Element && event.target.closest(".map-pin"))) openExplorer();
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onPointerLeave={() => setIsInteractive(false)}
+        onClick={() => {
+          if (!isInteractive && !wasDragging()) setIsInteractive(true);
         }}
         onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
+          if (!isInteractive && (event.key === "Enter" || event.key === " ")) {
             event.preventDefault();
-            openExplorer();
+            setIsInteractive(true);
           }
         }}
+        style={{ cursor: isInteractive && zoom > minZoom ? "grab" : "default" }}
       >
-        <span className="hmp-activation-hint" aria-hidden="true">
-          <strong>Click to explore</strong>
-          <small>Open fullscreen atlas</small>
-        </span>
-        <div className="hmp-canvas">
-          {map.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={map.imageUrl}
-              alt={`Map of ${map.title}`}
-              draggable={false}
-              style={fitFrame ?? undefined}
-              onLoad={(event) => setImageSize({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })}
-            />
-          ) : <div className="hmp-map-placeholder" />}
-          {previewPins.map((location) => {
-            const position = fitFrame
-              ? { left: fitFrame.left + (fitFrame.width * location.x) / 100, top: fitFrame.top + (fitFrame.height * location.y) / 100 }
-              : { left: `${location.x}%`, top: `${location.y}%` };
-            const actionable = (location.pinType === "submap" && location.targetMapId !== null && mapIds.has(location.targetMapId)) || location.entryId !== null || Boolean(location.info.trim() || location.img);
-            if (!actionable) return <span key={location.id} className={`map-pin map-pin-${location.pinType} map-pin-icon-${location.iconType}`} style={position} aria-hidden="true"><span className="map-pin-dot" /></span>;
-            const label = location.pinType === "submap" ? `Open ${location.name} submap` : location.entryId !== null ? `Open ${location.name}` : `View ${location.name}`;
-            return <button type="button" key={location.id} className={`map-pin map-pin-${location.pinType} map-pin-icon-${location.iconType}`} style={position} onClick={(event) => { event.stopPropagation(); handlePinClick(location); }} aria-label={label}><span className="map-pin-dot" /><span className="map-pin-label" aria-hidden="true">{location.name}</span></button>;
-          })}
-        </div>
+        {!isInteractive && (
+          <span className="hmp-activation-hint" aria-hidden="true">
+            <strong>Click to explore</strong>
+            <small>Scroll to zoom · Drag to pan</small>
+          </span>
+        )}
+        <WorldMapArtwork
+          ref={contentRef}
+          map={worldMap}
+          locations={previewPins}
+          className="wma-preview"
+          transform={`translate(${pan.x}px, ${pan.y}px) scale(${zoom})`}
+          renderMarker={(location) => (
+            <button
+              type="button"
+              key={location.id}
+              className={`map-pin map-pin-${location.pinType} map-pin-icon-${location.iconType}`}
+              style={{ left: `${location.x}%`, top: `${location.y}%` }}
+              onClick={(event) => {
+                event.stopPropagation();
+                openPin(location);
+              }}
+              aria-label={location.pinType === "submap" ? `Open ${location.name} submap` : `View ${location.name}`}
+            >
+              <span className="map-pin-dot" />
+              <span className="map-pin-label" aria-hidden="true">{location.name}</span>
+            </button>
+          )}
+        />
       </div>
-      {explorerMapId !== null && <MapZoomPanel maps={maps} locations={locations} initialMapId={explorerMapId} onOpenLore={(entryId) => router.push(`/worldbuilding?item=${entryId}`)} onClose={() => setExplorerMapId(null)} />}
+      {explorer && (
+        <MapZoomPanel
+          maps={maps}
+          locations={locations}
+          initialMapId={explorer.mapId}
+          initialPinId={explorer.pinId}
+          onOpenLore={(entryId) => router.push(`/worldbuilding?item=${entryId}`)}
+          onClose={() => setExplorer(null)}
+        />
+      )}
     </div>
   );
 }
