@@ -1,12 +1,7 @@
-import AdminSidebar from "@/components/admin/AdminSidebar";
+import AdminShell from "@/components/admin/AdminShell";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="adm-shell">
-      <AdminSidebar />
-      <main className="adm-main">
-        <div className="adm-wrap">{children}</div>
-      </main>
-    </div>
+    <AdminShell>{children}</AdminShell>
   );
 }

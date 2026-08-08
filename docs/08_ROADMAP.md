@@ -170,6 +170,8 @@ Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a
 
 No multi-universe system is required or built here; KRUPNI remains the only active universe. Independent long-form Stories/story archive/Devlog publishing remain Sprint 8. Global Admin UI/UX redesign remains deferred to Sprint 9.
 
+**Owner-directed Admin UI Migration — Phase 1:** **Complete.** TailAdmin was used only as a shell reference: the existing Admin now has a dark, responsive, collapsible sidebar, restrained header, real-route navigation, View Website, and the existing logout action. Existing CRUD pages, authentication, data, and public-site styling remain unchanged. Individual forms and tables are intentionally deferred to a later migration phase; this is not Sprint 5 feature work.
+
 **Sprint 5 — Game Design + Games Admin** — Game listing and detail; mechanics, systems, GDD, and development progress; taxonomy/software; Games Admin-specific fields.
 
 **Sprint 6 — Projects + Projects Admin** — Project data model; listing and detail shell; media/process structure; Projects Admin. A shared Content Detail Shell may only be started here if a genuine cross-content need appears — not built speculatively.
