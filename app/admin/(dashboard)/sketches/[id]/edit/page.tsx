@@ -9,6 +9,7 @@ import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
 import { updateSketch, createSketchImage, updateSketchImage, deleteSketchImage, createSketchLink, updateSketchLink, deleteSketchLink, createSketchVideo, updateSketchVideo, deleteSketchVideo } from "@/lib/actions/sketches";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import { getActiveLinkLabelOptions } from "@/lib/link-label-options";
 import { requiredId } from "@/lib/validation";
 
 export default async function EditSketchPage({
@@ -23,12 +24,13 @@ export default async function EditSketchPage({
   } catch {
     notFound();
   }
-  const [[item], images, links, videos, appearance] = await Promise.all([
+  const [[item], images, links, videos, appearance, labelOptions] = await Promise.all([
     db.select().from(sketches).where(eq(sketches.id, sketchId)),
     db.select().from(sketchImages).where(eq(sketchImages.sketchId, sketchId)).orderBy(asc(sketchImages.sortOrder)),
     db.select().from(sketchLinks).where(eq(sketchLinks.sketchId, sketchId)).orderBy(asc(sketchLinks.sortOrder)),
     db.select().from(sketchVideos).where(eq(sketchVideos.sketchId, sketchId)).orderBy(asc(sketchVideos.sortOrder)),
     getPageAppearance("sketches"),
+    getActiveLinkLabelOptions(),
   ]);
   if (!item) notFound();
 
@@ -43,7 +45,7 @@ export default async function EditSketchPage({
       <SketchForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
       <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateSketchImage} deleteAction={deleteSketchImage} />
       <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateSketchVideo} deleteAction={deleteSketchVideo} />
-      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateSketchLink} deleteAction={deleteSketchLink} />
+      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateSketchLink} deleteAction={deleteSketchLink} labelOptions={labelOptions} />
     </div>
   );
 }

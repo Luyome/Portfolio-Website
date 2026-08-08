@@ -90,23 +90,24 @@ export function useMapPanZoom(viewportRef: React.RefObject<HTMLDivElement | null
     return () => vp.removeEventListener("wheel", onWheel);
   }, [viewportRef]);
 
-  function onMouseDown(e: React.MouseEvent) {
-    if (e.button !== 0) return;
+  // Pointer Events (not mouse-only) so viewport pan/zoom works with touch —
+  // matching the pin drag/place handlers on the same canvas, which already
+  // used Pointer Events (Task 4.1 finding; Task 4.7 fixes this gap). Pointer
+  // capture keeps the drag tracking even if the finger/cursor leaves the
+  // viewport mid-gesture, same guarantee `onMouseUp`'s window-release check
+  // used to approximate for mouse only.
+  function onPointerDown(e: React.PointerEvent) {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
     const vp = viewportRef.current;
     if (!vp) return;
+    vp.setPointerCapture(e.pointerId);
     dragRef.current = { startX: e.clientX, startY: e.clientY, scrollLeft: vp.scrollLeft, scrollTop: vp.scrollTop, moved: false };
   }
 
-  function onMouseMove(e: React.MouseEvent) {
+  function onPointerMove(e: React.PointerEvent) {
     const drag = dragRef.current;
     const vp = viewportRef.current;
     if (!drag || !vp) return;
-    if ((e.buttons & 1) === 0) {
-      // Left button was released without a mouseup ever reaching us (e.g. released
-      // outside the window) — stop panning instead of continuing to drag forever.
-      dragRef.current = null;
-      return;
-    }
     const dx = e.clientX - drag.startX;
     const dy = e.clientY - drag.startY;
     if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) drag.moved = true;
@@ -116,7 +117,9 @@ export function useMapPanZoom(viewportRef: React.RefObject<HTMLDivElement | null
     }
   }
 
-  function onMouseUp() {
+  function onPointerUp(e: React.PointerEvent) {
+    const vp = viewportRef.current;
+    if (vp?.hasPointerCapture(e.pointerId)) vp.releasePointerCapture(e.pointerId);
     if (dragRef.current?.moved) {
       justPannedRef.current = true;
       setTimeout(() => {
@@ -130,5 +133,15 @@ export function useMapPanZoom(viewportRef: React.RefObject<HTMLDivElement | null
     return justPannedRef.current;
   }
 
-  return { zoom, setZoom, minZoom: MIN_ZOOM, maxZoom: MAX_ZOOM, aspectRatio, onMouseDown, onMouseMove, onMouseUp, wasPanning };
+  return {
+    zoom,
+    setZoom,
+    minZoom: MIN_ZOOM,
+    maxZoom: MAX_ZOOM,
+    aspectRatio,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    wasPanning,
+  };
 }

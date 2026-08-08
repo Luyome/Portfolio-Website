@@ -10,6 +10,7 @@ import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
 import { updatePortfolioItem, createPortfolioImage, updatePortfolioImage, deletePortfolioImage, createPortfolioLink, updatePortfolioLink, deletePortfolioLink, createPortfolioVideo, updatePortfolioVideo, deletePortfolioVideo } from "@/lib/actions/portfolio";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { getActiveMetadataOptionsByType, getPortfolioMetadataSelections } from "@/lib/portfolio-metadata";
+import { getActiveLinkLabelOptions } from "@/lib/link-label-options";
 import { requiredId } from "@/lib/validation";
 
 export default async function EditPortfolioItemPage({
@@ -24,7 +25,7 @@ export default async function EditPortfolioItemPage({
   } catch {
     notFound();
   }
-  const [item, images, links, videos, appearance, metadataOptions, metadataSelections] = await Promise.all([
+  const [item, images, links, videos, appearance, metadataOptions, metadataSelections, labelOptions] = await Promise.all([
     db.select().from(portfolioItems).where(eq(portfolioItems.id, portfolioId)).then((rows) => rows[0]),
     db.select().from(portfolioImages).where(eq(portfolioImages.portfolioId, portfolioId)).orderBy(asc(portfolioImages.sortOrder)),
     db.select().from(portfolioLinks).where(eq(portfolioLinks.portfolioId, portfolioId)).orderBy(asc(portfolioLinks.sortOrder)),
@@ -32,6 +33,7 @@ export default async function EditPortfolioItemPage({
     getPageAppearance("portfolio"),
     getActiveMetadataOptionsByType(),
     getPortfolioMetadataSelections(portfolioId),
+    getActiveLinkLabelOptions(),
   ]);
   if (!item) notFound();
 
@@ -52,7 +54,7 @@ export default async function EditPortfolioItemPage({
       />
       <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updatePortfolioImage} deleteAction={deletePortfolioImage} />
       <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updatePortfolioVideo} deleteAction={deletePortfolioVideo} />
-      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updatePortfolioLink} deleteAction={deletePortfolioLink} />
+      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updatePortfolioLink} deleteAction={deletePortfolioLink} labelOptions={labelOptions} />
     </div>
   );
 }

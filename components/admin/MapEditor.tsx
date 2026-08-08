@@ -26,7 +26,7 @@ export default function MapEditor({
   const viewportRef = useRef<HTMLDivElement>(null);
   const dragState = useRef<{ id: number; moved: boolean } | null>(null);
   const currentMap = maps.find((m) => m.id === currentMapId) ?? null;
-  const { zoom, setZoom, minZoom, maxZoom, aspectRatio, onMouseDown, onMouseMove, onMouseUp, wasPanning } = useMapPanZoom(
+  const { zoom, setZoom, minZoom, maxZoom, aspectRatio, onPointerDown, onPointerMove, onPointerUp, wasPanning } = useMapPanZoom(
     viewportRef,
     currentMap?.imageUrl
   );
@@ -132,10 +132,10 @@ export default function MapEditor({
       <div
         className="map-viewport"
         ref={viewportRef}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
-        onMouseLeave={onMouseUp}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
         style={aspectRatio ? { aspectRatio } : undefined}
       >
         <div
@@ -188,6 +188,8 @@ export default function MapEditor({
                 <th>Pin Type</th>
                 <th>Target</th>
                 <th>Icon</th>
+                <th>Priority</th>
+                <th>Zoom Range</th>
                 <th>Coordinates</th>
                 <th>Actions</th>
               </tr>
@@ -207,6 +209,8 @@ export default function MapEditor({
                         : "—"}
                   </td>
                   <td>{l.iconType}</td>
+                  <td>{l.priority}</td>
+                  <td>{l.minZoom}–{l.maxZoom}</td>
                   <td>{l.x.toFixed(1)}%, {l.y.toFixed(1)}%</td>
                   <td>
                     <div className="adm-actions">

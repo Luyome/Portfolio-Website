@@ -16,7 +16,7 @@ import FormActions from "./FormActions";
 import AdminSection from "./AdminSection";
 import type { worldbuildingEntries } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
-import { CATEGORIES } from "@/types/worldbuilding";
+import { CATEGORIES, WORLDBUILDING_ENTITY_TYPES, ENTITY_TYPE_LABELS, type WorldbuildingEntityType } from "@/types/worldbuilding";
 
 type WorldbuildingRow = typeof worldbuildingEntries.$inferSelect;
 
@@ -40,6 +40,9 @@ export default function WorldbuildingForm({
   pageVars?: CSSProperties;
 }) {
   const [actionState, formAction] = useActionState(action, undefined);
+  const [entityType, setEntityType] = useState<WorldbuildingEntityType | "">(
+    (item?.entityType as WorldbuildingEntityType | null) ?? ""
+  );
   const [state, setState] = useState<PreviewState>({
     title: item?.title ?? "",
     cat: item?.cat ?? "",
@@ -89,10 +92,35 @@ export default function WorldbuildingForm({
             >
               <input name="title" defaultValue={item?.title} required />
             </Field>
-            <Field id="cat" label="Category" required>
+            <Field id="cat" label="Category (legacy)" required hint="Preserved for existing records — Entity Type below is the canonical Sprint 4 taxonomy.">
               <select name="cat" defaultValue={item?.cat ?? CATEGORIES[0]} required>
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </Field>
+          </div>
+          <div className="adm-form-row">
+            <Field
+              id="entityType"
+              label="Entity Type"
+              required={false}
+              hint={
+                entityType === "lore"
+                  ? "Publishes through the Lore Reader (article/reading view)."
+                  : entityType
+                    ? "Publishes through the Artwork/Entity Detail view."
+                    : "Legacy/unclassified — stays valid and editable, publishes through the Artwork/Entity Detail view until a type is chosen."
+              }
+            >
+              <select
+                name="entityType"
+                value={entityType}
+                onChange={(e) => setEntityType(e.target.value as WorldbuildingEntityType | "")}
+              >
+                <option value="">— Legacy / Unclassified —</option>
+                {WORLDBUILDING_ENTITY_TYPES.map((t) => (
+                  <option key={t} value={t}>{ENTITY_TYPE_LABELS[t]}</option>
                 ))}
               </select>
             </Field>

@@ -9,6 +9,7 @@ import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
 import { updateModel3D, createModel3DImage, updateModel3DImage, deleteModel3DImage, createModel3DLink, updateModel3DLink, deleteModel3DLink, createModel3DVideo, updateModel3DVideo, deleteModel3DVideo } from "@/lib/actions/models3d";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import { getActiveLinkLabelOptions } from "@/lib/link-label-options";
 import { requiredId } from "@/lib/validation";
 
 export default async function EditModel3DPage({
@@ -23,12 +24,13 @@ export default async function EditModel3DPage({
   } catch {
     notFound();
   }
-  const [[item], images, links, videos, appearance] = await Promise.all([
+  const [[item], images, links, videos, appearance, labelOptions] = await Promise.all([
     db.select().from(models3d).where(eq(models3d.id, modelId)),
     db.select().from(model3dImages).where(eq(model3dImages.modelId, modelId)).orderBy(asc(model3dImages.sortOrder)),
     db.select().from(model3dLinks).where(eq(model3dLinks.modelId, modelId)).orderBy(asc(model3dLinks.sortOrder)),
     db.select().from(model3dVideos).where(eq(model3dVideos.modelId, modelId)).orderBy(asc(model3dVideos.sortOrder)),
     getPageAppearance("3d"),
+    getActiveLinkLabelOptions(),
   ]);
   if (!item) notFound();
 
@@ -43,7 +45,7 @@ export default async function EditModel3DPage({
       <Model3DForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
       <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateModel3DImage} deleteAction={deleteModel3DImage} />
       <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateModel3DVideo} deleteAction={deleteModel3DVideo} />
-      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateModel3DLink} deleteAction={deleteModel3DLink} />
+      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateModel3DLink} deleteAction={deleteModel3DLink} labelOptions={labelOptions} />
     </div>
   );
 }

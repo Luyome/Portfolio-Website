@@ -2,6 +2,7 @@ import OrderPicker from "./OrderPicker";
 import DeleteButton from "./DeleteButton";
 import AddLinkForm from "./AddLinkForm";
 import SaveButton from "./SaveButton";
+import type { LinkLabelOptionLite } from "@/lib/link-label-options";
 
 export type ExtraLink = { id: number; label: string; href: string; kind: string; sortOrder: number };
 
@@ -10,11 +11,13 @@ export default function ExtraLinksPanel({
   createAction,
   updateAction,
   deleteAction,
+  labelOptions,
 }: {
   links: ExtraLink[];
   createAction: (formData: FormData) => void | Promise<void>;
   updateAction: (id: number, formData: FormData) => void | Promise<void>;
   deleteAction: (formData: FormData) => void | Promise<void>;
+  labelOptions: LinkLabelOptionLite[];
 }) {
   return (
     <div>
@@ -38,11 +41,22 @@ export default function ExtraLinksPanel({
               {links.map((l) => {
                 const updateWithId = updateAction.bind(null, l.id);
                 const formId = `link-form-${l.id}`;
+                // A link saved before this label existed in the controlled
+                // list (or entered under an older free-text value) must
+                // remain selected/editable without being silently dropped —
+                // it's injected as its own option, once, alongside the
+                // controlled list.
+                const knownLabel = labelOptions.some((o) => o.label === l.label);
                 return (
                   <tr key={l.id}>
                     <td>
                       <form id={formId} action={updateWithId}>
-                        <input name="label" defaultValue={l.label} placeholder="Steam" required />
+                        <select name="label" defaultValue={l.label} required>
+                          {!knownLabel && <option value={l.label}>{l.label} (legacy)</option>}
+                          {labelOptions.map((o) => (
+                            <option key={o.id} value={o.label}>{o.label}</option>
+                          ))}
+                        </select>
                       </form>
                     </td>
                     <td>
@@ -73,7 +87,7 @@ export default function ExtraLinksPanel({
       )}
 
       <p className="adm-sub" style={{ marginTop: 32 }}>Add Link</p>
-      <AddLinkForm action={createAction} defaultSortOrder={links.length} />
+      <AddLinkForm action={createAction} defaultSortOrder={links.length} labelOptions={labelOptions} />
     </div>
   );
 }

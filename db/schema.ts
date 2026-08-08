@@ -497,3 +497,26 @@ export const portfolioMetadataOptions = pgTable(
     index("portfolio_metadata_options_option_idx").on(table.metadataOptionId),
   ]
 );
+
+// Task 4.7 — controlled Link Label options, shared by every *_links table
+// (Portfolio/Sketches/3D/Games/Worldbuilding). Replaces the previous
+// free-text Label input with a database-backed picker, mirroring the
+// metadata_options controlled-vocabulary pattern (Task 2.9) at the smallest
+// scope this needs: no `type` grouping (there is only one label list), no
+// icon/logo storage yet (`slug` is the stable key a future logo lookup can
+// key off — see docs/08_ROADMAP.md Task 4.7, section 8 — deliberately not
+// built now). The *_links.label columns themselves stay plain text — no FK
+// is added to them — so existing legacy label values (already-saved rows
+// with a label outside this list) remain valid and are never rewritten.
+export const linkLabelOptions = pgTable(
+  "link_label_options",
+  {
+    id: serial("id").primaryKey(),
+    label: text("label").notNull(),
+    slug: text("slug").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+    isActive: boolean("is_active").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex("link_label_options_slug_idx").on(table.slug)]
+);

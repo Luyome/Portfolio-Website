@@ -20,6 +20,7 @@ export const ADMIN_NAV: AdminNavSection[] = [
     items: [
       { href: "/admin/archive", label: "Archive" },
       { href: "/admin/metadata", label: "Metadata" },
+      { href: "/admin/link-labels", label: "Link Labels" },
     ],
   },
   {

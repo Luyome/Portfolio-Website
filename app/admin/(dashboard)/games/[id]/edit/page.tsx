@@ -9,6 +9,7 @@ import ExtraLinksPanel from "@/components/admin/ExtraLinksPanel";
 import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
 import { updateGame, createGameLink, updateGameLink, deleteGameLink, createGameImage, updateGameImage, deleteGameImage, createGameVideo, updateGameVideo, deleteGameVideo } from "@/lib/actions/games";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
+import { getActiveLinkLabelOptions } from "@/lib/link-label-options";
 import { requiredId } from "@/lib/validation";
 
 export default async function EditGamePage({
@@ -26,11 +27,12 @@ export default async function EditGamePage({
   const [item] = await db.select().from(games).where(eq(games.id, gameId));
   if (!item) notFound();
 
-  const [links, images, videos, appearance] = await Promise.all([
+  const [links, images, videos, appearance, labelOptions] = await Promise.all([
     db.select().from(gameLinks).where(eq(gameLinks.gameId, gameId)).orderBy(asc(gameLinks.sortOrder)),
     db.select().from(gameImages).where(eq(gameImages.gameId, gameId)).orderBy(asc(gameImages.sortOrder)),
     db.select().from(gameVideos).where(eq(gameVideos.gameId, gameId)).orderBy(asc(gameVideos.sortOrder)),
     getPageAppearance("games"),
+    getActiveLinkLabelOptions(),
   ]);
 
   const updateWithId = updateGame.bind(null, item.id);
@@ -44,7 +46,7 @@ export default async function EditGamePage({
       <GameForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
       <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateGameImage} deleteAction={deleteGameImage} />
       <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateGameVideo} deleteAction={deleteGameVideo} />
-      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateGameLink} deleteAction={deleteGameLink} />
+      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateGameLink} deleteAction={deleteGameLink} labelOptions={labelOptions} />
     </div>
   );
 }

@@ -2,14 +2,22 @@
 
 import { useId, useState } from "react";
 import { upload } from "@vercel/blob/client";
-import { updateMapLocationInfo, deleteMapLocation } from "@/lib/actions/map";
+import { updateMapLocationInfo, updateMapLocationZoom, deleteMapLocation } from "@/lib/actions/map";
 import { acceptAttrFor, checkUpload } from "@/lib/upload-policy";
+import { MAP_ZOOM_MIN, MAP_ZOOM_MAX, MAP_PRIORITY_MIN, MAP_PRIORITY_MAX } from "@/lib/map-zoom";
 import type { IconType, MapLocation, PinType, WorldMap } from "@/lib/map-types";
 
 const NO_IMAGE_SVG =
   'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="%23151010"/><text fill="%23555" x="50%25" y="50%25" font-size="18" text-anchor="middle" dy=".35em">No Image</text></svg>';
 
 const ICON_TYPES: IconType[] = ["default", "city", "character", "landmark", "hazard"];
+
+/** Clamps a raw number input to [min, max], falling back to `fallback` for empty/non-numeric input (e.g. the field cleared mid-edit) instead of committing NaN. */
+function clampedNumber(raw: string, min: number, max: number, fallback: number): number {
+  const n = Number(raw);
+  if (!Number.isFinite(n) || raw.trim() === "") return fallback;
+  return Math.min(max, Math.max(min, Math.round(n)));
+}
 
 export default function MapPinEditPanel({
   location,
@@ -33,10 +41,15 @@ export default function MapPinEditPanel({
   const [targetMapId, setTargetMapId] = useState<number | null>(location.targetMapId);
   const [entryId, setEntryId] = useState<number | null>(location.entryId);
   const [iconType, setIconType] = useState<IconType>(location.iconType as IconType);
+  const [priority, setPriority] = useState(location.priority);
+  const [minZoom, setMinZoom] = useState(location.minZoom);
+  const [maxZoom, setMaxZoom] = useState(location.maxZoom);
+  const [zoomError, setZoomError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const uploadErrorId = useId();
+  const zoomErrorId = useId();
 
   const otherMaps = maps.filter((m) => m.id !== location.mapId);
 
@@ -66,6 +79,11 @@ export default function MapPinEditPanel({
   }
 
   async function handleSave() {
+    if (minZoom > maxZoom) {
+      setZoomError("Min zoom must not be greater than max zoom.");
+      return;
+    }
+    setZoomError(null);
     setSaving(true);
     const fields = {
       name,
@@ -76,9 +94,13 @@ export default function MapPinEditPanel({
       entryId: pinType === "lore" ? entryId : null,
       iconType,
     };
-    await updateMapLocationInfo(location.id, fields);
+    const zoomFields = { priority, minZoom, maxZoom };
+    await Promise.all([
+      updateMapLocationInfo(location.id, fields),
+      updateMapLocationZoom(location.id, zoomFields),
+    ]);
     setSaving(false);
-    onSaved({ ...location, ...fields });
+    onSaved({ ...location, ...fields, ...zoomFields });
   }
 
   async function handleDelete() {
@@ -168,6 +190,52 @@ export default function MapPinEditPanel({
             {uploading && <div className="adm-hint">Uploading…</div>}
             {uploadError && <div id={uploadErrorId} className="adm-error" role="alert">{uploadError}</div>}
           </div>
+
+          <div className="adm-field">
+            <label>Priority</label>
+            <div className="adm-hint" style={{ marginBottom: 8 }}>
+              Breaks ties when several pins are visible at once (0–{MAP_PRIORITY_MAX}, higher shows/orders first).
+            </div>
+            <input
+              type="number"
+              min={MAP_PRIORITY_MIN}
+              max={MAP_PRIORITY_MAX}
+              value={priority}
+              onChange={(e) => setPriority(clampedNumber(e.target.value, MAP_PRIORITY_MIN, MAP_PRIORITY_MAX, priority))}
+            />
+          </div>
+          <div className="adm-form-row">
+            <div className="adm-field">
+              <label>Min Zoom</label>
+              <div className="adm-hint" style={{ marginBottom: 8 }}>
+                {MAP_ZOOM_MIN} = far/world view.
+              </div>
+              <input
+                type="number"
+                min={MAP_ZOOM_MIN}
+                max={MAP_ZOOM_MAX}
+                value={minZoom}
+                aria-describedby={zoomError ? zoomErrorId : undefined}
+                onChange={(e) => setMinZoom(clampedNumber(e.target.value, MAP_ZOOM_MIN, MAP_ZOOM_MAX, minZoom))}
+              />
+            </div>
+            <div className="adm-field">
+              <label>Max Zoom</label>
+              <div className="adm-hint" style={{ marginBottom: 8 }}>
+                {MAP_ZOOM_MAX} = near/detail view.
+              </div>
+              <input
+                type="number"
+                min={MAP_ZOOM_MIN}
+                max={MAP_ZOOM_MAX}
+                value={maxZoom}
+                aria-describedby={zoomError ? zoomErrorId : undefined}
+                onChange={(e) => setMaxZoom(clampedNumber(e.target.value, MAP_ZOOM_MIN, MAP_ZOOM_MAX, maxZoom))}
+              />
+            </div>
+          </div>
+          {zoomError && <div id={zoomErrorId} className="adm-error" role="alert">{zoomError}</div>}
+
           <div className="adm-actions" style={{ marginTop: 20 }}>
             <button type="button" className="adm-btn" onClick={handleSave} disabled={saving || uploading}>
               {saving ? "Saving…" : "Save"}

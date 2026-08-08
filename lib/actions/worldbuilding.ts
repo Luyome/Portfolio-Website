@@ -103,14 +103,15 @@ export async function createWorldbuildingRelationship(_prevState: ActionState, f
   revalidateAll();
 }
 
-export async function deleteWorldbuildingRelationship(formData: FormData): Promise<ActionState> {
+export async function deleteWorldbuildingRelationship(formData: FormData) {
   await requireAdminSession();
+  let id: number;
   try {
-    const id = requiredId(formData.get("id"), "Relationship");
-    await db.delete(worldbuildingRelationships).where(eq(worldbuildingRelationships.id, id));
-  } catch (err) {
-    return { error: safeErrorMessage(err) };
+    id = requiredId(formData.get("id"), "Relationship");
+  } catch {
+    return;
   }
+  await db.delete(worldbuildingRelationships).where(eq(worldbuildingRelationships.id, id));
   revalidateAll();
 }
 

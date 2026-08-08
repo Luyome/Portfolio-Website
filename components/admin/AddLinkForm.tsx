@@ -4,13 +4,16 @@ import { useState } from "react";
 import FileUploadField from "./FileUploadField";
 import OrderPicker from "./OrderPicker";
 import SaveButton from "./SaveButton";
+import type { LinkLabelOptionLite } from "@/lib/link-label-options";
 
 export default function AddLinkForm({
   action,
   defaultSortOrder,
+  labelOptions,
 }: {
   action: (formData: FormData) => void | Promise<void>;
   defaultSortOrder: number;
+  labelOptions: LinkLabelOptionLite[];
 }) {
   const [kind, setKind] = useState<"link" | "download">("link");
 
@@ -26,7 +29,15 @@ export default function AddLinkForm({
       </div>
       <div className="adm-field">
         <label htmlFor="link-label">Label</label>
-        <input id="link-label" name="label" placeholder="Steam / Trailer / Download" required />
+        <select id="link-label" name="label" defaultValue="" required>
+          <option value="" disabled>— choose a label —</option>
+          {labelOptions.map((o) => (
+            <option key={o.id} value={o.label}>{o.label}</option>
+          ))}
+        </select>
+        {labelOptions.length === 0 && (
+          <div className="adm-hint">No label options yet — add one in Admin → Link Labels first.</div>
+        )}
       </div>
       {kind === "link" ? (
         <div className="adm-field">

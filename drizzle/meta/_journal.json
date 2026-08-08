@@ -162,6 +162,13 @@
       "when": 1786189714744,
       "tag": "0022_shocking_madame_web",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1786197109498,
+      "tag": "0023_link_label_options",
+      "breakpoints": true
     }
   ]
 }
