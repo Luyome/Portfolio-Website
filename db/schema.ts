@@ -135,6 +135,9 @@ export const worldbuildingEntries = pgTable("worldbuilding_entries", {
   year: integer("year").notNull(),
   date: text("date").notNull(),
   cat: text("cat").notNull(),
+  // `cat` is legacy public taxonomy. Canonical Sprint 4 typing is additive so
+  // ambiguous existing records remain intact until an owner classifies them.
+  entityType: text("entity_type"),
   title: text("title").notNull(),
   excerpt: text("excerpt").notNull(),
   chips: text("chips").array().notNull().default([]),
@@ -144,7 +147,23 @@ export const worldbuildingEntries = pgTable("worldbuilding_entries", {
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   styles: stylesColumn(),
-});
+}, (table) => [
+  index("worldbuilding_entries_entity_type_idx").on(table.entityType),
+]);
+
+export const worldbuildingRelationships = pgTable("worldbuilding_relationships", {
+  id: serial("id").primaryKey(),
+  sourceEntryId: integer("source_entry_id").notNull().references(() => worldbuildingEntries.id, { onDelete: "cascade" }),
+  targetEntryId: integer("target_entry_id").notNull().references(() => worldbuildingEntries.id, { onDelete: "cascade" }),
+  relationshipType: text("relationship_type").notNull().default("related"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => [
+  check("worldbuilding_relationships_no_self_relation_check", sql`${table.sourceEntryId} <> ${table.targetEntryId}`),
+  uniqueIndex("worldbuilding_relationships_exact_unique_idx").on(table.sourceEntryId, table.targetEntryId, table.relationshipType),
+  index("worldbuilding_relationships_source_order_idx").on(table.sourceEntryId, table.sortOrder, table.id),
+  index("worldbuilding_relationships_target_order_idx").on(table.targetEntryId, table.sortOrder, table.id),
+]);
 
 export const worldbuildingImages = pgTable("worldbuilding_images", {
   id: serial("id").primaryKey(),

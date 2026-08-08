@@ -4,12 +4,12 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingVideos } from "@/db/schema";
+import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingRelationships, worldbuildingVideos } from "@/db/schema";
 import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseCsv, parseLinkFields, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
-import { requiredInt, requiredText, optionalUrl, oneOf, requiredUrl, safeErrorMessage } from "@/lib/validation";
-import { CATEGORIES } from "@/types/worldbuilding";
+import { requiredId, requiredInt, requiredText, optionalUrl, oneOf, requiredUrl, safeErrorMessage, ValidationError } from "@/lib/validation";
+import { CATEGORIES, WORLDBUILDING_ENTITY_TYPES } from "@/types/worldbuilding";
 
 type ActionState = { error?: string } | undefined;
 
@@ -31,6 +31,14 @@ function readFields(formData: FormData) {
   };
 }
 
+// Task 4.7 owns the assignment UI. Existing edits do not post this field, so
+// omitting it preserves a type that was previously assigned.
+function readOptionalEntityType(formData: FormData) {
+  if (!formData.has("entityType")) return undefined;
+  const value = String(formData.get("entityType") ?? "").trim();
+  return value ? oneOf(value, WORLDBUILDING_ENTITY_TYPES, "Entity type") : null;
+}
+
 function revalidateAll() {
   revalidatePath("/worldbuilding");
   revalidatePath("/archive");
@@ -40,12 +48,14 @@ function revalidateAll() {
 export async function createWorldbuildingEntry(_prevState: ActionState, formData: FormData): Promise<ActionState> {
   await requireAdminSession();
   let fields;
+  let entityType;
   try {
     fields = readFields(formData);
+    entityType = readOptionalEntityType(formData);
   } catch (err) {
     return { error: safeErrorMessage(err) };
   }
-  await db.insert(worldbuildingEntries).values(fields);
+  await db.insert(worldbuildingEntries).values({ ...fields, entityType: entityType ?? null });
   revalidateAll();
   redirect("/admin/worldbuilding");
 }
@@ -53,12 +63,14 @@ export async function createWorldbuildingEntry(_prevState: ActionState, formData
 export async function updateWorldbuildingEntry(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
   await requireAdminSession();
   let fields;
+  let entityType;
   try {
     fields = readFields(formData);
+    entityType = readOptionalEntityType(formData);
   } catch (err) {
     return { error: safeErrorMessage(err) };
   }
-  await db.update(worldbuildingEntries).set(fields).where(eq(worldbuildingEntries.id, id));
+  await db.update(worldbuildingEntries).set({ ...fields, ...(entityType === undefined ? {} : { entityType }) }).where(eq(worldbuildingEntries.id, id));
   revalidateAll();
   redirect("/admin/worldbuilding");
 }
@@ -67,6 +79,38 @@ export async function deleteWorldbuildingEntry(formData: FormData) {
   await requireAdminSession();
   const id = num(formData.get("id"));
   await db.delete(worldbuildingEntries).where(eq(worldbuildingEntries.id, id));
+  revalidateAll();
+}
+
+/** Minimal mutation boundary for the Task 4.7 relationship manager. */
+export async function createWorldbuildingRelationship(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
+  try {
+    const sourceEntryId = requiredId(formData.get("sourceEntryId"), "Source entity");
+    const targetEntryId = requiredId(formData.get("targetEntryId"), "Target entity");
+    if (sourceEntryId === targetEntryId) throw new ValidationError("An entity cannot relate to itself.");
+    const relationshipType = requiredText(formData.get("relationshipType"), "Relationship type");
+    if (relationshipType.length > 100) throw new ValidationError("Relationship type must be 100 characters or fewer.");
+    await db.insert(worldbuildingRelationships).values({
+      sourceEntryId,
+      targetEntryId,
+      relationshipType,
+      sortOrder: num(formData.get("sortOrder")),
+    }).onConflictDoNothing();
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
+  revalidateAll();
+}
+
+export async function deleteWorldbuildingRelationship(formData: FormData): Promise<ActionState> {
+  await requireAdminSession();
+  try {
+    const id = requiredId(formData.get("id"), "Relationship");
+    await db.delete(worldbuildingRelationships).where(eq(worldbuildingRelationships.id, id));
+  } catch (err) {
+    return { error: safeErrorMessage(err) };
+  }
   revalidateAll();
 }
 
