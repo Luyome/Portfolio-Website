@@ -1,22 +1,18 @@
 "use client";
 
-import { CATEGORIES } from "@/types/worldbuilding";
-import type { CategoryFilter, ViewMode } from "@/types/worldbuilding";
+import { ENTITY_TYPE_LABELS, WORLDBUILDING_ENTITY_TYPES } from "@/types/worldbuilding";
+import type { EntityTypeFilter } from "@/types/worldbuilding";
 
 export default function WorldbuildingControls({
   search,
   onSearchChange,
-  category,
-  onCategoryChange,
-  viewMode,
-  onViewModeChange,
+  entityFilter,
+  onEntityFilterChange,
 }: {
   search: string;
   onSearchChange: (v: string) => void;
-  category: CategoryFilter;
-  onCategoryChange: (v: CategoryFilter) => void;
-  viewMode: ViewMode;
-  onViewModeChange: (v: ViewMode) => void;
+  entityFilter: EntityTypeFilter;
+  onEntityFilterChange: (v: EntityTypeFilter) => void;
 }) {
   return (
     <div className="wb-ctrl">
@@ -29,51 +25,25 @@ export default function WorldbuildingControls({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
         />
-        <div className="wb-view-toggle">
-          <button
-            type="button"
-            className={`wb-view-btn ${viewMode === "default" ? "on" : ""}`}
-            onClick={(e) => {
-              e.preventDefault();
-              onViewModeChange("default");
-            }}
-            aria-label="Default view"
-            aria-pressed={viewMode === "default"}
-          >
-            ☰
-          </button>
-          <button
-            type="button"
-            className={`wb-view-btn ${viewMode === "grid" ? "on" : ""}`}
-            onClick={(e) => {
-              e.preventDefault();
-              onViewModeChange("grid");
-            }}
-            aria-label="Grid view"
-            aria-pressed={viewMode === "grid"}
-          >
-            ▦
-          </button>
-        </div>
       </div>
       <div className="wb-pill-row">
         <button
           type="button"
-          className={`wb-pill ${category === "all" ? "on" : ""}`}
-          aria-pressed={category === "all"}
-          onClick={() => onCategoryChange("all")}
+          className={`wb-pill ${entityFilter === "all" ? "on" : ""}`}
+          aria-pressed={entityFilter === "all"}
+          onClick={() => onEntityFilterChange("all")}
         >
           All
         </button>
-        {CATEGORIES.map((c) => (
+        {WORLDBUILDING_ENTITY_TYPES.map((t) => (
           <button
-            key={c}
+            key={t}
             type="button"
-            className={`wb-pill ${category === c ? "on" : ""}`}
-            aria-pressed={category === c}
-            onClick={() => onCategoryChange(c)}
+            className={`wb-pill ${entityFilter === t ? "on" : ""}`}
+            aria-pressed={entityFilter === t}
+            onClick={() => onEntityFilterChange(t)}
           >
-            {c}
+            {ENTITY_TYPE_LABELS[t]}
           </button>
         ))}
       </div>

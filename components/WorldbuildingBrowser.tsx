@@ -10,7 +10,7 @@ import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 import { fuzzyMatch } from "@/lib/search";
-import type { CategoryFilter, LoreEntry, ViewMode } from "@/types/worldbuilding";
+import type { EntityTypeFilter, LoreEntry, WorldbuildingEntityType } from "@/types/worldbuilding";
 import { findContentItemIndex } from "@/lib/content-detail-href";
 
 export type WorldbuildingEntry = {
@@ -18,6 +18,7 @@ export type WorldbuildingEntry = {
   year: number;
   date: string;
   cat: string;
+  entityType: WorldbuildingEntityType | string | null;
   title: string;
   excerpt: string;
   chips: string[];
@@ -43,9 +44,8 @@ export default function WorldbuildingBrowser({
   initialItemId?: number | null;
   initialMapId?: number | null;
 }) {
-  const [category, setCategory] = useState<CategoryFilter>("all");
+  const [entityFilter, setEntityFilter] = useState<EntityTypeFilter>("all");
   const [search, setSearch] = useState("");
-  const [viewMode, setViewMode] = useState<ViewMode>("default");
   const initialIndex = findContentItemIndex(items, initialItemId ?? null);
   const [openEntryId, setOpenEntryId] = useState<number | null>(() => initialIndex === null ? null : items[initialIndex].id);
 
@@ -53,16 +53,17 @@ export default function WorldbuildingBrowser({
     () =>
       items.filter(
         (w) =>
-          (category === "all" || w.cat === category) &&
+          (entityFilter === "all" || w.entityType === entityFilter) &&
           (search.trim() === "" || fuzzyMatch(w.title, search) || fuzzyMatch(w.excerpt, search))
       ),
-    [items, category, search]
+    [items, entityFilter, search]
   );
 
   const loreEntries: LoreEntry[] = filtered.map((w) => ({
     id: w.id,
     title: w.title,
     cat: w.cat,
+    entityType: w.entityType,
     year: w.year,
     date: w.date,
     excerpt: w.excerpt,
@@ -102,12 +103,10 @@ export default function WorldbuildingBrowser({
       <WorldbuildingControls
         search={search}
         onSearchChange={setSearch}
-        category={category}
-        onCategoryChange={setCategory}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
+        entityFilter={entityFilter}
+        onEntityFilterChange={setEntityFilter}
       />
-      <WorldbuildingGrid items={loreEntries} viewMode={viewMode} onSelect={setOpenEntryId} hasEntries={items.length > 0} />
+      <WorldbuildingGrid items={loreEntries} onSelect={setOpenEntryId} hasEntries={items.length > 0} />
       <GalleryModal
         items={galleryItems}
         index={modalIndex === -1 ? null : modalIndex}
