@@ -83,32 +83,36 @@ export default async function AdminDashboardPage() {
         </div>
       </section>
 
-      <DashboardChart events={events} />
-
-      <section aria-labelledby="dash-recent-h">
-        <h2 id="dash-recent-h" className="adm-chart-title">Recent Content</h2>
-        {recent.length === 0 ? (
-          <EmptyState title="No content yet" description="Items you add will show up here as soon as they're saved." />
-        ) : (
-          <ul className="adm-dash-list">
-            {recent.map((item) => (
-              <li key={`${item.type}-${item.href}`}>
-                <Link href={item.href} className="adm-dash-row">
-                  <span className="adm-dash-row-type">{item.type}</span>
-                  <span className="adm-dash-row-title">{item.title || "(untitled)"}</span>
-                  <time className="adm-dash-row-meta" dateTime={item.createdAt}>
-                    {dateFormatter.format(new Date(item.createdAt))}
-                  </time>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <div className="adm-dashboard-lower">
+        <DashboardChart events={events} />
+        <section className="adm-dashboard-feed" aria-labelledby="dash-recent-h">
+          <div className="adm-feed-head">
+            <h2 id="dash-recent-h" className="adm-chart-title">Recent Content</h2>
+            <span>{recent.length} latest</span>
+          </div>
+          {recent.length === 0 ? (
+            <EmptyState title="No content yet" description="Items you add will show up here as soon as they're saved." />
+          ) : (
+            <ul className="adm-dash-list">
+              {recent.map((item) => (
+                <li key={`${item.type}-${item.href}`}>
+                  <Link href={item.href} className="adm-dash-row">
+                    <span className="adm-dash-row-type">{item.type}</span>
+                    <span className="adm-dash-row-title">{item.title || "(untitled)"}</span>
+                    <time className="adm-dash-row-meta" dateTime={item.createdAt}>
+                      {dateFormatter.format(new Date(item.createdAt))}
+                    </time>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
 
       {attentionItems.length > 0 && (
-        <section aria-labelledby="dash-attention-h">
-          <h2 id="dash-attention-h" className="adm-chart-title">Attention Needed</h2>
+        <section className="adm-attention-panel" aria-labelledby="dash-attention-h">
+          <div className="adm-feed-head"><h2 id="dash-attention-h" className="adm-chart-title">Attention Needed</h2></div>
           <ul className="adm-dash-list">
             {attentionItems.map((item) => (
               <li key={item.href}>

@@ -1,10 +1,24 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/lib/actions/auth";
 import { ADMIN_NAV } from "@/lib/admin-nav";
+
+function NavGlyph({ label }: { label: string }) {
+  const key = label.toLowerCase();
+  const paths: Record<string, ReactNode> = {
+    dashboard: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></>,
+    settings: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.02 2.02-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V20.2h-2.86v-.08A1.7 1.7 0 0 0 10.9 18.6a1.7 1.7 0 0 0-1.88.34l-.06.06-2.02-2.02.06-.06A1.7 1.7 0 0 0 7.34 15 1.7 1.7 0 0 0 5.8 13.97h-.08v-2.86h.08A1.7 1.7 0 0 0 7.34 10.1 1.7 1.7 0 0 0 7 8.22l-.06-.06 2.02-2.02.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 11.94 5v-.08h2.86V5a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.02 2.02-.06.06a1.7 1.7 0 0 0-.34 1.88 1.7 1.7 0 0 0 1.56 1.03h.08v2.86h-.08A1.7 1.7 0 0 0 19.4 15Z" /></>,
+    archive: <><path d="M4 7h16v13H4z" /><path d="M3 4h18v3H3zM9 11h6" /></>,
+    appearance: <><circle cx="12" cy="12" r="8" /><path d="M12 4v16M4 12h16" /></>,
+    home: <><path d="m3 11 9-8 9 8v10H3z" /><path d="M9 21v-6h6v6" /></>,
+  };
+  const fallback = <><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M8 12h8M8 16h5" /></>;
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[key] ?? fallback}</svg>;
+}
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -39,7 +53,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           {section && <h2 className="ta-nav-label">{section}</h2>}
           {items.map(({ href, label }) => (
             <Link key={href} href={href} onClick={() => setMobileOpen(false)} className={`ta-nav-link ${isActive(href) ? "is-active" : ""}`} aria-current={isActive(href) ? "page" : undefined}>
-              <span className="ta-nav-icon" aria-hidden="true" />
+              <span className="ta-nav-icon"><NavGlyph label={label} /></span>
               <span>{label}</span>
             </Link>
           ))}
