@@ -545,6 +545,7 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .hmp-heading{grid-template-columns:minmax(0,1fr) minmax(280px,.48fr)}
 .hmp-heading h2{max-width:none;font-size:clamp(2.15rem,4.2vw,4.5rem);line-height:.9}
 .hmp-interactive{position:relative;width:min(1720px,calc(100% - 92px));margin-left:0;border:1px solid rgba(255,255,255,.16);background:#0c0b0b}
+.hmp-interactive::after{content:"";position:absolute;z-index:6;right:0;bottom:0;left:0;height:clamp(84px,11vw,180px);pointer-events:none;background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--bg2) 58%,transparent) 42%,var(--bg2) 100%)}
 .hmp-controls{position:absolute;z-index:8;top:16px;right:16px;display:flex;align-items:center;background:rgba(10,9,9,.9);border:1px solid rgba(255,255,255,.2)}
 .hmp-controls button{min-width:44px;height:44px;padding-inline:12px;font-family:var(--M);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;border-left:1px solid var(--border);transition:color .18s,background .18s}
 .hmp-controls button:first-child{border-left:0}.hmp-controls button:hover{color:#fff;background:var(--red-dim)}
@@ -1867,7 +1868,7 @@ a.arv-row:hover{background:var(--bg2)}
    framer-motion element, which only carries the enter/exit opacity+scale
    animation) so layout and animation concerns don't mix on the same node. */
 .wa-transition{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-.wa-frame-inner{position:absolute;inset:12px}
+.wa-frame-inner{position:absolute;inset:6px}
 .wa-canvas{position:absolute;inset:0}
 .wa-img{width:100%;height:100%;object-fit:contain;display:block;user-select:none}
 .wa-img-empty{

@@ -64,9 +64,12 @@ export default function WorldbuildingAtlas({
       // The embedded atlas is a visual map surface, not a matted thumbnail.
       // Keep a small breathing edge without giving the artwork a large empty
       // border on wide displays.
-      const pad = Math.max(8, Math.min(24, availW * 0.018));
+      const pad = Math.max(4, Math.min(12, availW * 0.009));
       const ratio = naturalSize!.w / naturalSize!.h;
-      const w = availW;
+      // A subtle reduction keeps the surrounding Worldbuilding map field
+      // proportionate while the artwork itself sits close to its top/bottom
+      // frame edges.
+      const w = availW * 0.95;
       const h = (availW - 2 * pad) / ratio + 2 * pad;
       // Bail out with the same object reference when nothing actually moved
       // (rounding to whole px) -- ResizeObserver firing on a computed style
