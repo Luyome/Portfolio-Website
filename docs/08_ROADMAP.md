@@ -155,7 +155,20 @@ Sprint 3 scope boundaries (deferred to their assigned sprint, not built here): F
 
 Sprint 2 final baseline commit for this planning pass: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 
-**Sprint 4 — Worldbuilding + Map Admin** — Visual listing/grid; taxonomy filters; a shared Content Detail Shell; Character, Location, Corporation, Technology, and Lore variations; Interactive Map Explorer; Worldbuilding relations; Map Editor usability and touch/pointer improvements. No multi-universe system is required or built here.
+**Sprint 4 — Worldbuilding + Map** — Locked task structure (Task 4.1, below):
+
+- 4.1 — Worldbuilding + Map Audit & Scope Lock
+- 4.2 — Worldbuilding Data + Taxonomy + Relations
+- 4.3 — Public Worldbuilding Visual Discovery Grid + Filters (media-first / ArtStation-style discovery grid adapted to the site's dark premium identity)
+- 4.4 — Shared Worldbuilding Content Detail Shell (large artwork/media, gallery, lore/background/content, metadata, relationships, related entities — not a standalone Stories publishing system)
+- 4.5 — Map Data + Semantic Zoom Foundation
+- 4.6 — Interactive Map Explorer
+- 4.7 — Worldbuilding + Map Admin Refinement
+- 4.8 — Home KRUPNI Map Integration
+- 4.9 — Stabilization + Integration QA
+- 4.10 — Production Close + Sprint 4 Closure
+
+No multi-universe system is required or built here; KRUPNI remains the only active universe. Independent long-form Stories/story archive/Devlog publishing remain Sprint 8. Global Admin UI/UX redesign remains deferred to Sprint 9.
 
 **Sprint 5 — Game Design + Games Admin** — Game listing and detail; mechanics, systems, GDD, and development progress; taxonomy/software; Games Admin-specific fields.
 
@@ -209,7 +222,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 
 ## 8. Current Status
 
-- Sprint 3 — Home Page + Home Admin: Complete (Tasks 3.1–3.14 complete; 3.12.1B superseded). Next: Sprint 4 — Worldbuilding + Map Admin (not started). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
+- Sprint 3 — Home Page + Home Admin: Complete (Tasks 3.1–3.14 complete; 3.12.1B superseded). **Sprint 4 — Worldbuilding + Map: Active.** Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
 - Sprint 2 final baseline commit: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 - Task 1.1 — Existing Core Systems Audit: Complete.
 - Task 1.2 — Final Product Scope and Documentation Alignment: Complete.
@@ -255,6 +268,13 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 3.12 — Responsive + Motion + Accessibility + Performance: **Complete.** — 3.12.1 Public Home Refinement: **Complete** for current Sprint progression; remaining non-blocking final aesthetic polish deferred; Home KRUPNI map integration remains deferred to Sprint 4. 3.12.1B Home Visual Composition Correction: **Superseded / visually insufficient.** 3.12.1C Home Visual Redesign & Acceptance: **Complete.** 3.12.1D Home Centered Composition & Reference Alignment Correction: **Complete.** 3.12.1E Contact Composition Redesign: **Complete.** 3.12.1F Contact Screenshot-Matching Pass (Final): **Complete.** 3.12.1G Contact Sliding-Image Orientation Fix: **Complete.** 3.12.1H Contact Banner Proportion Correction: **Complete.** 3.12.2 Shared Admin Visual Refinement: **Complete.** 3.12.3 Responsive + Motion + Accessibility + Performance Stabilization: **Complete.**
 - Task 3.13 — Integration + Browser QA: **Complete.**
 - Task 3.14 — Production Deploy + Sprint Close: **Complete.**
+- Task 4.1 — Worldbuilding + Map Audit & Scope Lock: **Complete.** Audit-only; no runtime code changed. Verified findings:
+  - **PRESERVE:** Public `/worldbuilding` (`WorldbuildingBrowser`/`WorldbuildingGrid`/`WorldbuildingControls`) with search, category pills, and a default/grid view toggle; the shared `GalleryModal` detail experience with images/videos/links/rich `content`; the existing `worldbuilding_entries` CRUD, image/video/link sub-resource actions, and admin form/preview (`WorldbuildingForm`); `world_maps` + `map_locations` schema with real parent/submap hierarchy (`parentMapId`/`targetMapId`), pin→lore linking (`entryId`), and `x`/`y` percent coordinates; the public static-preview-to-fullscreen-explorer pattern (`WorldbuildingAtlas` → `MapZoomPanel`) with wheel-zoom, pointer-based drag-pan (touch-capable), breadcrumb submap navigation, and pin-click routing to either a submap, a lore entry, or an inline info/image panel; the admin `MapEditor` with pointer-event pin placement/drag (touch-capable) and a full pin-detail edit panel (`MapPinEditPanel`); `requireAdminSession()` on every worldbuilding/map mutation.
+  - **EXTEND:** The existing `wb-square-grid` grid-view mode (image-first square tiles) is the closest foundation for the Task 4.3 ArtStation-style discovery grid but is a secondary toggle, not the primary browsing mode, and cards elsewhere are text-led, not media-first; `GalleryModal` is a reusable foundation for the Task 4.4 Content Detail Shell but has no relationship/related-entity section; `world_maps.parentMapId` hierarchy is a real foundation for Task 4.5's zoom/layer work; `mapLocations.pinType`/`iconType` (free-text columns) are a foundation for a Task 4.5 layer/category model.
+  - **MISSING:** `CategoryType` (`Characters, Cities, Systems, Factions, Items, History` — `types/worldbuilding.ts`) does not match Sprint 4's required taxonomy (Character, Location, Corporation, Technology, Lore) — Task 4.2 must reconcile this. No type-specific admin fields exist for any category (one generic form for all). No Worldbuilding entity-relationship model exists (no entry↔entry table/field). `mapLocations` has no `priority`, `minZoom`, `maxZoom`, or `layer`/category column — every pin renders unconditionally regardless of zoom level; there is no semantic-zoom or layer/legend system today. The public map explorer has no pinch-to-zoom (only wheel/+/− buttons); the admin `MapEditor`'s canvas pan/zoom (`useMapPanZoom`) is mouse-event-only (`onMouseDown`/`onMouseMove`/`onMouseUp`), not pointer-event-based, so it lacks touch pan/zoom support even though pin placement/drag on the same canvas already uses pointer events.
+  - **DEFER:** Independent Stories/story archive/Devlog publishing (Sprint 8); global Admin UI/UX redesign (Sprint 9); multi-universe architecture (excluded entirely, see Section 6).
+  - **BLOCKER:** None found — nothing prevents starting Task 4.2.
+  - **Schema implications (verified, not yet applied):** Task 4.2 will need an additive `type`/taxonomy column (or a controlled-metadata-style category refactor) on `worldbuilding_entries` to replace/reconcile the current `cat` free-text field with the Character/Location/Corporation/Technology/Lore taxonomy, plus a genuine entity-relationship join table (none exists today). Task 4.5 will need additive columns on `map_locations` for semantic zoom (`priority`, `minZoom`/`maxZoom`) and, only if a real layer/legend need is confirmed while building it, a `layer`/category column — `pinType`/`iconType` already exist as free-text and are reusable rather than replaced. No migration was created in this task, per instruction.
 - Home KRUPNI map integration / new map system: deferred to Sprint 4 — Worldbuilding + Map Admin; Home's existing conditional map-preview render and canonical map data/models are untouched.
 - Remaining non-blocking Home/site aesthetic enhancements: deferred to later polish / post-core implementation.
 - Hero background rotation, advanced visual effects, and 3D/WebGL: not Sprint 3 blockers.
