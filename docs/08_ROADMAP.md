@@ -80,7 +80,7 @@ Comments, likes, bookmarks, notifications, and public accounts are not part of t
 
 **Sprint 2 scope boundaries** — not part of this sprint: Home Page composition, public KRUPNI or Map Explorer, a new Projects system, a Stories or Devlog system, Portfolio public art direction, a multi-language system, public users, comments/likes/bookmarks/community, newsletter, multi-admin or role systems. These remain in their assigned future sprints or out of scope.
 
-**Sprint 3 — Home Page + Home Admin** — *In Progress; Tasks 3.1–3.7 Complete.* Public Home, in section order: (1) Identity Hero, (2) Selected Work Coverflow, (3) Capabilities/Focus Areas, (4) Skills + Production Stats, (5) KRUPNI Map Preview, (6) Worldbuilding Highlights, (7) Latest Dispatches, (8) Contact + Social. Home Admin: hero management; selection and ordering of Featured Works; Capabilities; Home Skills; automatic Production Stats visibility; map preview; Worldbuilding Highlights; Latest Dispatches; contact/social. Production Stats stay at general categories — 3D Works, 2D Works, Worldbuilding Entries, Game Projects, Stories & Devlogs, Published Entries — without adding overly specific subcategories to Home. Only the minimal creator data actually needed for Home (identity, Home Skills) is created here — the full Creator Profile foundation is Sprint 9 scope.
+**Sprint 3 — Home Page + Home Admin** — *Complete; Tasks 3.1–3.14 complete.* Public Home, in section order: (1) Identity Hero, (2) Selected Work Coverflow, (3) Capabilities/Focus Areas, (4) Skills + Production Stats, (5) KRUPNI Map Preview, (6) Worldbuilding Highlights, (7) Latest Dispatches, (8) Contact + Social. Home Admin: hero management; selection and ordering of Featured Works; Capabilities; Home Skills; automatic Production Stats visibility; map preview; Worldbuilding Highlights; Latest Dispatches; contact/social. Production Stats stay at general categories — 3D Works, 2D Works, Worldbuilding Entries, Game Projects, Stories & Devlogs, Published Entries — without adding overly specific subcategories to Home. Only the minimal creator data actually needed for Home (identity, Home Skills) is created here — the full Creator Profile foundation is Sprint 9 scope.
 
 Content limits for this sprint: Featured Works max 6; Home Skills max 6; Capabilities approx. 3–4; Map Preview markers approx. 3–5; Worldbuilding Highlights max 3; Latest Dispatches approx. 3–4.
 
@@ -209,7 +209,7 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 
 ## 8. Current Status
 
-- Current sprint: Sprint 3 — Home Page + Home Admin (In Progress; Tasks 3.1–3.13 complete, 3.12.1B superseded; 3.14 next). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
+- Sprint 3 — Home Page + Home Admin: Complete (Tasks 3.1–3.14 complete; 3.12.1B superseded). Next: Sprint 4 — Worldbuilding + Map Admin (not started). Previous sprint: Sprint 2 — Private Admin Panel and CMS Refinement (Complete). Sprint 1 — Core Systems (Complete).
 - Sprint 2 final baseline commit: `bed4b9c7229518cac2357d6a1f7b7e69da6fdf49`.
 - Task 1.1 — Existing Core Systems Audit: Complete.
 - Task 1.2 — Final Product Scope and Documentation Alignment: Complete.
@@ -254,8 +254,10 @@ Interface feedback (toasts, alerts, save/publish confirmations, error messages, 
 - Task 3.11 — Contact + Social: **Complete.**
 - Task 3.12 — Responsive + Motion + Accessibility + Performance: **Complete.** — 3.12.1 Public Home Refinement: **Complete** for current Sprint progression; remaining non-blocking final aesthetic polish deferred; Home KRUPNI map integration remains deferred to Sprint 4. 3.12.1B Home Visual Composition Correction: **Superseded / visually insufficient.** 3.12.1C Home Visual Redesign & Acceptance: **Complete.** 3.12.1D Home Centered Composition & Reference Alignment Correction: **Complete.** 3.12.1E Contact Composition Redesign: **Complete.** 3.12.1F Contact Screenshot-Matching Pass (Final): **Complete.** 3.12.1G Contact Sliding-Image Orientation Fix: **Complete.** 3.12.1H Contact Banner Proportion Correction: **Complete.** 3.12.2 Shared Admin Visual Refinement: **Complete.** 3.12.3 Responsive + Motion + Accessibility + Performance Stabilization: **Complete.**
 - Task 3.13 — Integration + Browser QA: **Complete.**
-- Task 3.14 — Production Deploy + Sprint Close: **Next.**
-- Home KRUPNI map integration: deferred to Sprint 4 — Worldbuilding + Map Admin (Task 3.12.1E); Home's existing conditional map-preview render and canonical map data/models are untouched.
+- Task 3.14 — Production Deploy + Sprint Close: **Complete.**
+- Home KRUPNI map integration / new map system: deferred to Sprint 4 — Worldbuilding + Map Admin; Home's existing conditional map-preview render and canonical map data/models are untouched.
+- Remaining non-blocking Home/site aesthetic enhancements: deferred to later polish / post-core implementation.
+- Hero background rotation, advanced visual effects, and 3D/WebGL: not Sprint 3 blockers.
 - The Admin Panel, CRUD systems, and public map foundation already exist and are being extended, not built from zero.
 - No second Worldbuilding universe is planned scope.
 
