@@ -19,6 +19,18 @@ export function useDragZoom(
   const [pan, setPanState] = useState({ x: 0, y: 0 });
   const dragRef = useRef<{ startX: number; startY: number; panX: number; panY: number; moved: boolean } | null>(null);
   const justDraggedRef = useRef(false);
+  // Two-finger pinch-to-zoom (touch only — mouse/pen never produce a second
+  // simultaneous pointer). Tracked separately from dragRef: a pinch takes
+  // over as soon as a second pointer lands, cancelling any single-finger
+  // drag in progress, and hands back to plain single-finger panning once a
+  // pointer lifts back down to one.
+  const activePointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const pinchRef = useRef<{
+    startDist: number;
+    startZoom: number;
+    startMid: { x: number; y: number };
+    startPan: { x: number; y: number };
+  } | null>(null);
 
   function clampZoom(z: number) {
     return Math.min(maxZoom, Math.max(minZoom, +z.toFixed(2)));
@@ -98,13 +110,42 @@ export function useDragZoom(
 
   function onMouseDown(e: React.MouseEvent) { beginDrag(e.clientX, e.clientY); }
   function onMouseMove(e: React.MouseEvent) { moveDrag(e.clientX, e.clientY, (e.buttons & 1) !== 0); }
+
+  function pointerDist(a: { x: number; y: number }, b: { x: number; y: number }) {
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  }
+  function pointerMid(a: { x: number; y: number }, b: { x: number; y: number }) {
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  }
+
   function onPointerDown(e: React.PointerEvent) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
+    activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (activePointersRef.current.size === 2) {
+      dragRef.current = null;
+      const [a, b] = [...activePointersRef.current.values()];
+      pinchRef.current = { startDist: pointerDist(a, b), startZoom: zoom, startMid: pointerMid(a, b), startPan: { ...pan } };
+      return;
+    }
     beginDrag(e.clientX, e.clientY);
     if (zoom > minZoom) e.currentTarget.setPointerCapture(e.pointerId);
   }
-  function onPointerMove(e: React.PointerEvent) { moveDrag(e.clientX, e.clientY, e.buttons !== 0 || e.pointerType === "touch"); }
+  function onPointerMove(e: React.PointerEvent) {
+    if (activePointersRef.current.has(e.pointerId)) activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (activePointersRef.current.size === 2 && pinchRef.current) {
+      const { startDist, startZoom, startMid, startPan } = pinchRef.current;
+      const [a, b] = [...activePointersRef.current.values()];
+      const newZoom = clampZoom(startZoom * (pointerDist(a, b) / startDist));
+      setZoomState(newZoom);
+      const mid = pointerMid(a, b);
+      setPan(startPan.x + (mid.x - startMid.x), startPan.y + (mid.y - startMid.y), newZoom);
+      return;
+    }
+    moveDrag(e.clientX, e.clientY, e.buttons !== 0 || e.pointerType === "touch");
+  }
   function onPointerUp(e: React.PointerEvent) {
+    activePointersRef.current.delete(e.pointerId);
+    if (activePointersRef.current.size < 2) pinchRef.current = null;
     if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
     onMouseUp();
   }

@@ -1160,6 +1160,7 @@ a.arv-row:hover{background:var(--bg2)}
   background:rgba(10,8,8,.8);transition:all .18s;
 }
 .iz-controls button:hover{border-color:var(--red);color:var(--on-red)}
+.iz-controls button:focus-visible{outline:2px solid #fff;outline-offset:3px}
 .iz-close{margin-left:8px}
 .iz-zoom-label{font-family:var(--M);font-size:0.65rem;color:var(--muted);min-width:44px;text-align:center;display:inline-flex;align-items:center;justify-content:center}
 .iz-viewport{width:100%;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center}
@@ -1711,6 +1712,8 @@ a.arv-row:hover{background:var(--bg2)}
   white-space:nowrap;border:1px solid var(--border);transition:all .18s;
 }
 .map-pin:hover .map-pin-label{color:var(--on-red);border-color:rgba(var(--red-rgb),.5)}
+.map-pin:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.map-pin:focus-visible .map-pin-label{color:var(--on-red);border-color:rgba(var(--red-rgb),.5)}
 .map-pin-editable{cursor:grab;touch-action:none}
 .map-pin-editable:active{cursor:grabbing}
 .map-pin-submap .map-pin-dot{border-radius:3px;transform:rotate(45deg);background:var(--red2)}
@@ -1730,6 +1733,7 @@ a.arv-row:hover{background:var(--bg2)}
 .wa-crumb-sep{margin:0 8px;color:var(--muted)}
 .wa-crumb-link{color:var(--muted);transition:color .18s}
 .wa-crumb-link:hover{color:var(--red)}
+.wa-crumb-link:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .wa-crumb-current{color:var(--text)}
 .wa-controls{display:flex;align-items:center;gap:10px}
 .wa-controls button{
@@ -1770,6 +1774,8 @@ a.arv-row:hover{background:var(--bg2)}
 .wa-viewport-static{cursor:pointer;transition:border-color .18s}
 .wa-viewport-static:hover{border-color:rgba(var(--red-rgb),.5)}
 .wa-viewport-static:hover .wa-static-hint{opacity:1}
+.wa-viewport-static:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.wa-viewport-static:focus-visible .wa-static-hint{opacity:1}
 .wa-static-hint{
   position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
   font-family:var(--M);font-size:0.62rem;letter-spacing:.14em;text-transform:uppercase;
@@ -1778,12 +1784,39 @@ a.arv-row:hover{background:var(--bg2)}
 }
 
 /* ══ MAP ZOOM PANEL — fullscreen exploration opened from the static preview ══ */
+.mzp-topleft{
+  position:absolute;top:20px;left:24px;right:24px;z-index:1;
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;pointer-events:none;
+}
+.mzp-topleft>*{pointer-events:auto}
 .mzp-breadcrumb{
-  position:absolute;top:20px;left:24px;z-index:1;
   display:flex;align-items:center;flex-wrap:wrap;font-family:var(--M);font-size:0.72rem;
 }
+/* Compact submap navigation — direct child-map access alongside the
+   pin-click path, only rendered when the current map actually has
+   children (world_maps.parentMapId, Task 4.5's real hierarchy). */
+.mzp-submaps{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-family:var(--M);font-size:0.68rem}
+.mzp-submaps-label{color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-size:0.6rem}
+.mzp-submap-link{
+  padding:4px 10px;border:1px solid var(--border);color:var(--text2);
+  background:rgba(10,8,8,.7);transition:all .18s;
+}
+.mzp-submap-link:hover{border-color:rgba(var(--red-rgb),.5);color:var(--text)}
+.mzp-submap-link:focus-visible{outline:2px solid #fff;outline-offset:2px}
+/* Compact legend — only rendered when the current map mixes more than one
+   iconType (Task 4.5's decision: iconType is the category, no dedicated
+   layer column). Deliberately not an elaborate GIS layer panel. */
+.mzp-legend{
+  display:flex;align-items:center;flex-wrap:wrap;gap:10px;
+  font-family:var(--M);font-size:0.62rem;color:var(--text2);
+  list-style:none;padding:6px 10px;background:rgba(10,8,8,.7);border:1px solid var(--border);
+}
+.mzp-legend-item{display:flex;align-items:center;gap:6px}
 .mzp-viewport{
   position:relative;width:92vw;height:88vh;overflow:hidden;
+  /* Prevent the browser's own native pinch-zoom/pan gestures from fighting
+     the panel's own pointer-based pinch/drag handling (useDragZoom). */
+  touch-action:none;
 }
 .mzp-canvas{position:absolute;inset:0}
 .mzp-img{width:100%;height:100%;object-fit:contain;display:block;user-select:none}
@@ -1792,7 +1825,7 @@ a.arv-row:hover{background:var(--bg2)}
    stacking guesswork under the breadcrumb, and let it wrap so Close never
    gets pushed off-screen. */
 @media(max-width:600px){
-  .mz-overlay .mzp-breadcrumb{left:12px;right:12px;top:10px;max-width:calc(100% - 24px)}
+  .mz-overlay .mzp-topleft{left:12px;right:12px;top:10px;max-width:calc(100% - 24px)}
   .mz-overlay .iz-controls{
     top:auto;bottom:14px;left:12px;right:12px;transform:none;
     flex-wrap:wrap;justify-content:center;row-gap:8px;

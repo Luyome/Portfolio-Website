@@ -4,7 +4,25 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDragZoom } from "@/hooks/useDragZoom";
 import { useModalFocus } from "@/hooks/useModalFocus";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { MAP_ZOOM_MAX, MAP_ZOOM_MIN, getChildMaps, groupByIconType, visibleMarkersAtZoom } from "@/lib/map-zoom";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
+
+// This panel's own pixel zoom range (wheel/pinch/+/-), independent of the
+// abstract 1-5 semantic scale markers are authored against — see
+// lib/map-zoom.ts. Normalized to that scale below before any
+// visibility/priority decision, per Task 4.5's documented contract.
+const EXPLORER_MIN_ZOOM = 1;
+const EXPLORER_MAX_ZOOM = 4;
+
+function toSemanticZoom(viewerZoom: number): number {
+  const t = (viewerZoom - EXPLORER_MIN_ZOOM) / (EXPLORER_MAX_ZOOM - EXPLORER_MIN_ZOOM);
+  return MAP_ZOOM_MIN + t * (MAP_ZOOM_MAX - MAP_ZOOM_MIN);
+}
+
+function iconTypeLabel(iconType: string): string {
+  return iconType.length ? iconType[0].toUpperCase() + iconType.slice(1) : iconType;
+}
 
 const NO_IMAGE_SVG =
   'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="%23151010"/><text fill="%23555" x="50%25" y="50%25" font-size="18" text-anchor="middle" dy=".35em">No Image</text></svg>';
@@ -33,9 +51,10 @@ export default function MapZoomPanel({
   const pinPanelRef = useRef<HTMLDivElement>(null);
   const { zoom, pan, zoomBy, reset, onPointerDown, onPointerMove, onPointerUp, wasDragging, minZoom } = useDragZoom(
     { viewportRef, contentRef },
-    { minZoom: 1, maxZoom: 4 }
+    { minZoom: EXPLORER_MIN_ZOOM, maxZoom: EXPLORER_MAX_ZOOM }
   );
   const [pinDetail, setPinDetail] = useState<MapLocation | null>(null);
+  const reducedMotion = usePrefersReducedMotion();
 
   // Focus goes to the pin-detail panel while it's open (it visually and
   // functionally sits on top), and back to the map panel once it closes.
@@ -46,6 +65,17 @@ export default function MapZoomPanel({
   const currentMap = mapsById.get(currentMapId) ?? null;
 
   const pins = useMemo(() => locations.filter((l) => l.mapId === currentMapId), [locations, currentMapId]);
+
+  const semanticZoom = useMemo(() => toSemanticZoom(zoom), [zoom]);
+  const visiblePins = useMemo(() => visibleMarkersAtZoom(pins, semanticZoom), [pins, semanticZoom]);
+
+  // Compact legend: only worth showing when the current map actually mixes
+  // more than one marker category — a single-group legend would just repeat
+  // what's already obvious on the map. Grouped by iconType (Task 4.5's
+  // decision: no dedicated layer column, iconType is the category).
+  const iconGroups = useMemo(() => groupByIconType(pins), [pins]);
+
+  const childMaps = useMemo(() => getChildMaps(maps, currentMapId), [maps, currentMapId]);
 
   const breadcrumb = useMemo(() => {
     const chain: WorldMap[] = [];
@@ -105,20 +135,44 @@ export default function MapZoomPanel({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <nav className="mzp-breadcrumb">
-        {breadcrumb.map((m, i) => (
-          <span className="wa-crumb-item" key={m.id}>
-            {i > 0 && <span className="wa-crumb-sep">›</span>}
-            {i === breadcrumb.length - 1 ? (
-              <span className="wa-crumb-current">{m.title}</span>
-            ) : (
-              <button type="button" className="wa-crumb-link" onClick={() => goToMap(m.id)}>
-                {m.title}
+      <div className="mzp-topleft">
+        <nav className="mzp-breadcrumb" aria-label="Map location">
+          {breadcrumb.map((m, i) => (
+            <span className="wa-crumb-item" key={m.id}>
+              {i > 0 && <span className="wa-crumb-sep">›</span>}
+              {i === breadcrumb.length - 1 ? (
+                <span className="wa-crumb-current">{m.title}</span>
+              ) : (
+                <button type="button" className="wa-crumb-link" onClick={() => goToMap(m.id)}>
+                  {m.title}
+                </button>
+              )}
+            </span>
+          ))}
+        </nav>
+
+        {childMaps.length > 0 && (
+          <nav className="mzp-submaps" aria-label="Submaps">
+            <span className="mzp-submaps-label">Submaps</span>
+            {childMaps.map((m) => (
+              <button type="button" key={m.id} className="mzp-submap-link" onClick={() => goToMap(m.id)}>
+                {m.title} ›
               </button>
-            )}
-          </span>
-        ))}
-      </nav>
+            ))}
+          </nav>
+        )}
+
+        {iconGroups.size > 1 && (
+          <ul className="mzp-legend" aria-label="Marker categories">
+            {[...iconGroups.keys()].map((iconType) => (
+              <li key={iconType} className={`mzp-legend-item map-pin-icon-${iconType}`}>
+                <span className="map-pin-dot" aria-hidden="true" />
+                {iconTypeLabel(iconType)}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <div className="iz-controls">
         <button type="button" aria-label="Zoom out" onClick={() => zoomBy(-0.25)}>−</button>
@@ -141,10 +195,10 @@ export default function MapZoomPanel({
           <motion.div
             key={currentMap.id}
             className="wa-transition"
-            initial={{ opacity: 0, scale: 0.92 }}
+            initial={reducedMotion ? false : { opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.05 }}
-            transition={{ duration: 0.28, ease: "easeOut" }}
+            exit={reducedMotion ? undefined : { opacity: 0, scale: 1.05 }}
+            transition={reducedMotion ? { duration: 0 } : { duration: 0.28, ease: "easeOut" }}
           >
             <div
               className="mzp-canvas"
@@ -156,16 +210,17 @@ export default function MapZoomPanel({
               ) : (
                 <div className="wa-img-empty">No map image uploaded yet.</div>
               )}
-              {pins.map((loc) => (
+              {visiblePins.map((loc) => (
                 <button
                   type="button"
                   key={loc.id}
                   className={`map-pin map-pin-${loc.pinType} map-pin-icon-${loc.iconType}`}
                   style={{ left: `${loc.x}%`, top: `${loc.y}%` }}
                   onClick={() => handlePinClick(loc)}
+                  aria-label={loc.pinType === "submap" ? `Open ${loc.name} submap` : `View ${loc.name}`}
                 >
                   <span className="map-pin-dot" />
-                  <span className="map-pin-label">{loc.name}</span>
+                  <span className="map-pin-label" aria-hidden="true">{loc.name}</span>
                 </button>
               ))}
             </div>

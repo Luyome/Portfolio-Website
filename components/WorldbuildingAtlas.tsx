@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import MapZoomPanel from "./MapZoomPanel";
+import { MAP_ZOOM_MIN, visibleMarkersAtZoom } from "@/lib/map-zoom";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 
 // A large, static (non-interactive) preview of the root map. All exploration
@@ -25,8 +26,11 @@ export default function WorldbuildingAtlas({
   const initialMap = initialMapId && maps.some((map) => map.id === initialMapId) ? initialMapId : null;
   const [zoomOpen, setZoomOpen] = useState(initialMap !== null);
 
+  // Static preview reads as the fully-zoomed-out view of the map, so it
+  // shows exactly what the explorer would show at the bottom of the
+  // semantic zoom scale — see lib/map-zoom.ts.
   const pins = useMemo(
-    () => (rootMap === null ? [] : locations.filter((l) => l.mapId === rootMap.id)),
+    () => (rootMap === null ? [] : visibleMarkersAtZoom(locations.filter((l) => l.mapId === rootMap.id), MAP_ZOOM_MIN)),
     [locations, rootMap]
   );
 
