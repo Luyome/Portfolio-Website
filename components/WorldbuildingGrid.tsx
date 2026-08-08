@@ -32,6 +32,10 @@ export default function WorldbuildingGrid({
         {items.map((w) => {
           const typeLabel = w.entityType && w.entityType in ENTITY_TYPE_LABELS ? ENTITY_TYPE_LABELS[w.entityType as WorldbuildingEntityType] : null;
           const badge = typeLabel ?? w.cat;
+          const meta = [w.date, badge].filter(Boolean).join(" — ");
+          // Extra discoverability for canonical Lore entries specifically —
+          // a one-line teaser only when a real excerpt exists (never invented).
+          const teaser = w.entityType === "lore" && w.excerpt?.trim() ? w.excerpt.trim() : null;
           return (
             <motion.div
               layout
@@ -51,16 +55,19 @@ export default function WorldbuildingGrid({
                 }
               }}
             >
-              <Image
-                src={w.img}
-                alt={w.title}
-                fill
-                sizes="(max-width: 480px) 46vw, (max-width: 900px) 22vw, 180px"
-                unoptimized={!isOptimizableImageUrl(w.img)}
-              />
-              <div className="wb-disc-overlay">
-                {badge && <span className="wb-disc-badge">{badge}</span>}
-                <span className="wb-disc-title">{w.title}</span>
+              <div className="wb-disc-media">
+                <Image
+                  src={w.img}
+                  alt={w.title}
+                  fill
+                  sizes="(max-width: 480px) 46vw, (max-width: 900px) 22vw, 180px"
+                  unoptimized={!isOptimizableImageUrl(w.img)}
+                />
+              </div>
+              <div className="wb-disc-caption">
+                {meta && <div className="wb-disc-cap-meta">{meta}</div>}
+                <div className="wb-disc-cap-title">{w.title}</div>
+                {teaser && <div className="wb-disc-cap-teaser">{teaser}</div>}
               </div>
             </motion.div>
           );
