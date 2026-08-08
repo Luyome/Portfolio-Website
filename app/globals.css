@@ -1088,6 +1088,50 @@ a.arv-row:hover{background:var(--bg2)}
 .gm-link-chip{font-family:var(--M);font-size:0.62rem;letter-spacing:.1em;text-transform:uppercase;padding:9px 16px;background:var(--red);color:var(--on-red);transition:background .18s}
 .gm-link-chip:hover{background:var(--red2)}
 
+/* ══ GALLERY MODAL — Worldbuilding viewer/reading variant (Task 4.4B) ══
+   Same shell/markup as the default .gm-panel above (Portfolio/Games/
+   Sketches/3D keep that, unchanged) — these modifiers only apply when
+   GalleryModal is given variant="worldbuilding". */
+.gm-overlay--wb{background:rgba(4,3,3,.92)}
+.gm-panel--wb{
+  width:min(96vw,1900px);max-width:none;height:94vh;
+  grid-template-columns:minmax(0,1fr) 400px;
+}
+/* Media/artwork viewer sub-mode: previous/next sit as circular controls at
+   the outer edges of the media area, not a small bottom-center bar. */
+.gm-panel--wb:not(.gm-panel--wb-reading) .gm-nav{
+  position:absolute;inset:0;bottom:0;left:0;transform:none;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;pointer-events:none;
+}
+.gm-panel--wb:not(.gm-panel--wb-reading) .gm-nav-btn{pointer-events:auto;border-radius:999px;padding:12px 16px}
+
+/* Reading/lore sub-mode: single full-bleed dark column, no persistent side
+   rail — .gm-info isn't rendered at all (see GalleryModal.tsx); the same
+   title/meta/tags/related content renders inline via .gm-reading-header
+   and .gm-reading-footer instead, inside the centered prose column. */
+.gm-panel--wb-reading{grid-template-columns:1fr}
+.gm-panel--wb-reading .gm-img-side{display:flex;flex-direction:column;min-height:0;max-height:none}
+.gm-panel--wb-reading .gm-img-scroll{flex:1;min-height:0}
+.gm-panel--wb-reading .gm-nav{
+  position:static;transform:none;justify-content:center;
+  padding:14px;border-top:1px solid var(--border);background:var(--bg2);
+}
+.gm-panel--wb-reading .gm-reading{
+  --T:var(--S);--B:var(--S);
+  max-width:720px;margin:0 auto;padding:64px 24px 90px;
+}
+.gm-reading-header{margin-bottom:36px;padding-bottom:28px;border-bottom:1px solid var(--border)}
+.gm-reading-header .gm-bar{border-bottom:none;margin-bottom:20px;padding-bottom:0}
+.gm-reading-header .gm-title{font-size:clamp(2rem,4vw,2.75rem)}
+.gm-reading-footer{max-width:720px;margin:40px auto 0;padding-top:28px;border-top:1px solid var(--border)}
+.gm-panel--wb-reading .gm-reading-img,.gm-panel--wb-reading .gm-reading-cover{
+  max-width:960px;width:calc(100% + 240px);margin-left:-120px;margin-right:-120px;
+}
+@media (max-width:1100px){
+  .gm-panel--wb-reading .gm-reading-img,.gm-panel--wb-reading .gm-reading-cover{width:100%;margin-left:0;margin-right:0}
+}
+
 /* ══ CV (single always-open GalleryModal-style image panel) ══════════════ */
 .cv-panel{grid-template-columns:1fr}
 .cv-empty{

@@ -148,6 +148,7 @@ export default function WorldbuildingBrowser({
         onClose={() => setOpenEntryId(null)}
         onNavigate={(next) => setOpenEntryId(items[next]?.id ?? null)}
         onRelatedSelect={setOpenEntryId}
+        variant="worldbuilding"
       />
     </>
   );
