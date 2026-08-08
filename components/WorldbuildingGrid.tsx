@@ -33,9 +33,6 @@ export default function WorldbuildingGrid({
           const typeLabel = w.entityType && w.entityType in ENTITY_TYPE_LABELS ? ENTITY_TYPE_LABELS[w.entityType as WorldbuildingEntityType] : null;
           const badge = typeLabel ?? w.cat;
           const meta = [w.date, badge].filter(Boolean).join(" — ");
-          // Extra discoverability for canonical Lore entries specifically —
-          // a one-line teaser only when a real excerpt exists (never invented).
-          const teaser = w.entityType === "lore" && w.excerpt?.trim() ? w.excerpt.trim() : null;
           return (
             <motion.div
               layout
@@ -67,7 +64,6 @@ export default function WorldbuildingGrid({
               <div className="wb-disc-caption">
                 {meta && <div className="wb-disc-cap-meta">{meta}</div>}
                 <div className="wb-disc-cap-title">{w.title}</div>
-                {teaser && <div className="wb-disc-cap-teaser">{teaser}</div>}
               </div>
             </motion.div>
           );

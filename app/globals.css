@@ -941,11 +941,9 @@ a.arv-row:hover{background:var(--bg2)}
    overlay to a persistent footer strip below each image (real, always-
    rendered text — not something conjured only on hover/focus), so items
    stay identifiable while scanning the grid, including on touch devices
-   with no hover at all. The media area keeps a fixed aspect-ratio for a
-   calm, tightly-packed wall; the footer's own height is content-driven
-   (2 lines normally, 3 for a Lore entry with a real excerpt), so total
-   card height varies slightly by a few px depending on content — not the
-   old deterministic tall/short/wide masonry spans. */
+   with no hover at all. Every media area is a 1:1 square; the footer is
+   deliberately outside that square and contains just the metadata and
+   title, keeping the gallery wall even without returning to masonry. */
 .wb-disc-grid{
   padding:0 var(--space-lg) var(--space-lg);
   display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px;
@@ -953,7 +951,7 @@ a.arv-row:hover{background:var(--bg2)}
 }
 .wb-disc-card{position:relative;overflow:hidden;background:var(--bg3);cursor:pointer;display:flex;flex-direction:column}
 .wb-disc-card:focus-visible{outline:2px solid var(--red);outline-offset:-2px}
-.wb-disc-media{position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;flex:none}
+.wb-disc-media{position:relative;width:100%;aspect-ratio:1;overflow:hidden;flex:none}
 .wb-disc-media img{object-fit:cover;transition:transform .35s}
 .wb-disc-card:hover .wb-disc-media img,.wb-disc-card:focus-visible .wb-disc-media img{transform:scale(1.06)}
 .wb-disc-caption{
@@ -966,10 +964,6 @@ a.arv-row:hover{background:var(--bg2)}
 }
 .wb-disc-cap-title{
   font-family:var(--B);font-size:0.74rem;font-weight:600;color:var(--text);line-height:1.3;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.wb-disc-cap-teaser{
-  font-family:var(--B);font-size:0.66rem;color:var(--text2);line-height:1.3;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 
