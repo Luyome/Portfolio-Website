@@ -32,8 +32,8 @@ export default async function AdminMapsListPage() {
             <thead>
               <tr>
                 <ResizableTh>Title</ResizableTh>
-                <ResizableTh>Parent Map</ResizableTh>
-                <th>Actions</th>
+                <ResizableTh width={180}>Parent Map</ResizableTh>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

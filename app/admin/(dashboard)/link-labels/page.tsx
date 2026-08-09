@@ -51,10 +51,10 @@ export default async function AdminLinkLabelsPage({
             <thead>
               <tr>
                 <th>Label</th>
-                <th>Slug</th>
-                <th>Status</th>
-                <th>Order</th>
-                <th>Actions</th>
+                <th className="adm-col-md">Slug</th>
+                <th className="adm-col-sm">Status</th>
+                <th className="adm-col-xs">Order</th>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

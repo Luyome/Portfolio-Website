@@ -19,13 +19,7 @@ export default async function AdminWorldbuildingListPage() {
       <AdminPageHeader
         title="Worldbuilding"
         description={`${items.length} item(s)`}
-        action={
-          <div className="adm-actions">
-            <Link href="/admin/worldbuilding/new" className="adm-btn">+ New Entry</Link>
-            <Link href="/admin/worldbuilding/maps">Map Manager →</Link>
-            <Link href="/admin/worldbuilding/map">Map Pins →</Link>
-          </div>
-        }
+        action={<Link href="/admin/worldbuilding/new" className="adm-btn">+ New Entry</Link>}
       />
       {items.length === 0 ? (
         <AdminEmptyState label="No worldbuilding entries yet." />
@@ -35,9 +29,9 @@ export default async function AdminWorldbuildingListPage() {
             <thead>
               <tr>
                 <ResizableTh>Title</ResizableTh>
-                <ResizableTh>Category</ResizableTh>
-                <ResizableTh>Year</ResizableTh>
-                <th>Actions</th>
+                <ResizableTh width={150}>Category</ResizableTh>
+                <ResizableTh width={90}>Year</ResizableTh>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

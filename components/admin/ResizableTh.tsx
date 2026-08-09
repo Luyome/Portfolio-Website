@@ -2,7 +2,16 @@
 
 import { useRef } from "react";
 
-export default function ResizableTh({ children }: { children: React.ReactNode }) {
+export default function ResizableTh({
+  children,
+  width,
+  className,
+}: {
+  children: React.ReactNode;
+  /** Initial column width in px. Column stays user-resizable via the drag handle. */
+  width?: number;
+  className?: string;
+}) {
   const thRef = useRef<HTMLTableCellElement>(null);
   const dragRef = useRef<{ startX: number; startWidth: number } | null>(null);
 
@@ -25,7 +34,7 @@ export default function ResizableTh({ children }: { children: React.ReactNode })
   }
 
   return (
-    <th ref={thRef} className="adm-th-resizable">
+    <th ref={thRef} className={`adm-th-resizable ${className ?? ""}`} style={width ? { width } : undefined}>
       {children}
       <span
         className="adm-col-resize-handle"

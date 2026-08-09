@@ -28,8 +28,8 @@ export default async function AdminArchivePage() {
             <thead>
               <tr>
                 <th>Label</th>
-                <th>Order</th>
-                <th>Actions</th>
+                <th className="adm-col-xs">Order</th>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

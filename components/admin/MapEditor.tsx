@@ -199,13 +199,13 @@ export default function MapEditor({
             <thead>
               <tr>
                 <th>Title</th>
-                <th>Pin Type</th>
-                <th>Target</th>
-                <th>Icon</th>
-                <th>Priority</th>
-                <th>Zoom Range</th>
-                <th>Coordinates</th>
-                <th>Actions</th>
+                <th className="adm-col-sm">Pin Type</th>
+                <th className="adm-col-md">Target</th>
+                <th className="adm-col-sm">Icon</th>
+                <th className="adm-col-xs">Priority</th>
+                <th className="adm-col-sm">Zoom Range</th>
+                <th className="adm-col-md">Coordinates</th>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

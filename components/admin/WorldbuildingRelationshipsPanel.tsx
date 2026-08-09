@@ -44,10 +44,10 @@ export default function WorldbuildingRelationshipsPanel({
             <thead>
               <tr>
                 <th>Entry</th>
-                <th>Type</th>
-                <th>Relation</th>
-                <th>Order</th>
-                <th>Actions</th>
+                <th className="adm-col-sm">Type</th>
+                <th className="adm-col-md">Relation</th>
+                <th className="adm-col-xs">Order</th>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

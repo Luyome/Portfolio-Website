@@ -1,4 +1,5 @@
-export type AdminNavItem = { href: string; label: string };
+export type AdminNavChild = { href: string; label: string };
+export type AdminNavItem = { href: string; label: string; children?: AdminNavChild[] };
 export type AdminNavSection = { section: string | null; items: AdminNavItem[] };
 
 export const ADMIN_NAV: AdminNavSection[] = [
@@ -11,6 +12,14 @@ export const ADMIN_NAV: AdminNavSection[] = [
       { href: "/admin/sketches", label: "Sketches" },
       { href: "/admin/3d", label: "3D" },
       { href: "/admin/worldbuilding", label: "Worldbuilding" },
+      {
+        href: "/admin/worldbuilding/maps",
+        label: "Map",
+        children: [
+          { href: "/admin/worldbuilding/maps", label: "Map Manager" },
+          { href: "/admin/worldbuilding/map", label: "Pin Manager" },
+        ],
+      },
       { href: "/admin/games", label: "Games" },
       { href: "/admin/services", label: "Services" },
     ],

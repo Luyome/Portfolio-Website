@@ -15,6 +15,7 @@ function NavGlyph({ label }: { label: string }) {
     archive: <><path d="M4 7h16v13H4z" /><path d="M3 4h18v3H3zM9 11h6" /></>,
     appearance: <><circle cx="12" cy="12" r="8" /><path d="M12 4v16M4 12h16" /></>,
     home: <><path d="m3 11 9-8 9 8v10H3z" /><path d="M9 21v-6h6v6" /></>,
+    map: <><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" /><path d="M9 4v14M15 6v14" /></>,
   };
   const fallback = <><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M8 12h8M8 16h5" /></>;
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[key] ?? fallback}</svg>;
@@ -24,9 +25,24 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openOverrides, setOpenOverrides] = useState<Record<string, boolean>>({});
   const toggleRef = useRef<HTMLButtonElement>(null);
-  const isActive = (href: string) => href === "/admin" ? pathname === href : pathname.startsWith(href);
-  const activeLabel = ADMIN_NAV.flatMap(({ items }) => items).find(({ href }) => isActive(href))?.label ?? "Admin";
+
+  // Resolve the single most specific nav entry (top-level item or nested
+  // child) matching the current route, instead of each entry independently
+  // prefix-matching — sibling routes that are string-prefixes of one
+  // another (e.g. "/admin/worldbuilding/map" vs "/admin/worldbuilding/maps",
+  // or a parent like "/admin/worldbuilding" vs its own nested Map routes)
+  // would otherwise highlight more than one nav entry at once.
+  const allEntries = ADMIN_NAV.flatMap(({ items }) => items.flatMap((item) => [...(item.children ?? []), item]));
+  const currentHref = allEntries
+    .map(({ href }) => href)
+    .filter((href) => (href === "/admin" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`)))
+    .sort((a, b) => b.length - a.length)[0];
+  const isActive = (href: string) => href === currentHref;
+  const activeLabel = allEntries.find(({ href }) => isActive(href))?.label ?? "Admin";
+  const isGroupOpen = (href: string, children: { href: string }[]) =>
+    openOverrides[href] ?? children.some((child) => isActive(child.href));
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -51,12 +67,48 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       {ADMIN_NAV.map(({ section, items }, index) => (
         <section className="ta-nav-group" key={section ?? index}>
           {section && <h2 className="ta-nav-label">{section}</h2>}
-          {items.map(({ href, label }) => (
-            <Link key={href} href={href} onClick={() => setMobileOpen(false)} className={`ta-nav-link ${isActive(href) ? "is-active" : ""}`} aria-current={isActive(href) ? "page" : undefined}>
-              <span className="ta-nav-icon"><NavGlyph label={label} /></span>
-              <span>{label}</span>
-            </Link>
-          ))}
+          {items.map(({ href, label, children }) => {
+            if (children && children.length > 0) {
+              const groupActive = children.some((child) => isActive(child.href));
+              const open = isGroupOpen(href, children);
+              return (
+                <div key={href} className="ta-nav-parent">
+                  <button
+                    type="button"
+                    className={`ta-nav-link ta-nav-toggle ${groupActive ? "is-active" : ""}`}
+                    aria-expanded={open}
+                    aria-controls={`ta-nav-sub-${href}`}
+                    onClick={() => setOpenOverrides((prev) => ({ ...prev, [href]: !open }))}
+                  >
+                    <span className="ta-nav-icon"><NavGlyph label={label} /></span>
+                    <span>{label}</span>
+                    <span className={`ta-nav-chevron ${open ? "is-open" : ""}`} aria-hidden="true">›</span>
+                  </button>
+                  {open && (
+                    <div className="ta-nav-sub" id={`ta-nav-sub-${href}`}>
+                      {children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={`ta-nav-sublink ${isActive(child.href) ? "is-active" : ""}`}
+                          aria-current={isActive(child.href) ? "page" : undefined}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+            return (
+              <Link key={href} href={href} onClick={() => setMobileOpen(false)} className={`ta-nav-link ${isActive(href) ? "is-active" : ""}`} aria-current={isActive(href) ? "page" : undefined}>
+                <span className="ta-nav-icon"><NavGlyph label={label} /></span>
+                <span>{label}</span>
+              </Link>
+            );
+          })}
         </section>
       ))}
     </nav>

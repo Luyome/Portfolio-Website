@@ -26,8 +26,8 @@ export default async function AdminGamesListPage() {
             <thead>
               <tr>
                 <ResizableTh>Title</ResizableTh>
-                <ResizableTh>Status</ResizableTh>
-                <th>Actions</th>
+                <ResizableTh width={130}>Status</ResizableTh>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

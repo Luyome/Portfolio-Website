@@ -40,10 +40,10 @@ export default async function AdminAboutPage() {
         <table className="adm-table">
           <thead>
             <tr>
-              <th>Year</th>
+              <th className="adm-col-sm">Year</th>
               <th>Text</th>
-              <th>Order</th>
-              <th>Actions</th>
+              <th className="adm-col-xs">Order</th>
+              <th className="adm-col-actions">Actions</th>
             </tr>
           </thead>
           <tbody>

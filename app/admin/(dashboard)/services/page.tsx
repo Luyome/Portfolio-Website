@@ -25,9 +25,9 @@ export default async function AdminServicesListPage() {
           <table className="adm-table">
             <thead>
               <tr>
-                <ResizableTh>Icon</ResizableTh>
+                <ResizableTh width={70}>Icon</ResizableTh>
                 <ResizableTh>Title</ResizableTh>
-                <th>Actions</th>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

@@ -25,9 +25,9 @@ export default function ExtraImagesPanel({
           <table className="adm-table">
             <thead>
               <tr>
-                <th>Preview</th>
-                <th>Order</th>
-                <th>Actions</th>
+                <th className="adm-col-sm">Preview</th>
+                <th className="adm-col-xs">Order</th>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

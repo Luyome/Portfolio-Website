@@ -26,8 +26,8 @@ export default async function AdminModel3DListPage() {
             <thead>
               <tr>
                 <ResizableTh>Label</ResizableTh>
-                <ResizableTh>Year</ResizableTh>
-                <th>Actions</th>
+                <ResizableTh width={100}>Year</ResizableTh>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

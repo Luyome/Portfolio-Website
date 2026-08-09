@@ -29,9 +29,9 @@ export default async function AdminPortfolioListPage() {
             <thead>
               <tr>
                 <ResizableTh>Title</ResizableTh>
-                <ResizableTh>Category</ResizableTh>
-                <ResizableTh>Year</ResizableTh>
-                <th>Actions</th>
+                <ResizableTh width={150}>Category</ResizableTh>
+                <ResizableTh width={90}>Year</ResizableTh>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

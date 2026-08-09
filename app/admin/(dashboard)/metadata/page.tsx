@@ -64,13 +64,13 @@ export default async function AdminMetadataPage({
           <table className="adm-table">
             <thead>
               <tr>
-                {activeType === "software" && <th>Icon</th>}
+                {activeType === "software" && <th className="adm-col-xs">Icon</th>}
                 <th>Name</th>
-                <th>Slug</th>
-                <th>Status</th>
-                <th>Order</th>
-                <th>Usage</th>
-                <th>Actions</th>
+                <th className="adm-col-md">Slug</th>
+                <th className="adm-col-sm">Status</th>
+                <th className="adm-col-xs">Order</th>
+                <th className="adm-col-xs">Usage</th>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>

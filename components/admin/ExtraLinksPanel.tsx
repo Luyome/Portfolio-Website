@@ -30,11 +30,11 @@ export default function ExtraLinksPanel({
           <table className="adm-table">
             <thead>
               <tr>
-                <th>Label</th>
+                <th className="adm-col-md">Label</th>
                 <th>URL</th>
-                <th>Type</th>
-                <th>Order</th>
-                <th>Actions</th>
+                <th className="adm-col-sm">Type</th>
+                <th className="adm-col-xs">Order</th>
+                <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>
