@@ -2,32 +2,18 @@ import { asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { metadataOptions, worldbuildingMetadataOptions } from "@/db/schema";
 import { ValidationError } from "@/lib/validation";
+import { WB_METADATA_TYPES, WB_METADATA_TYPE_LABELS, WB_METADATA_FIELD_NAMES, isWbMetadataType, type WbMetadataType } from "@/lib/worldbuilding-metadata-shared";
 
 // Worldbuilding's own controlled-metadata layer (Phase 2) — mirrors
 // `lib/portfolio-metadata.ts`'s shape and conventions, but scoped to
 // Worldbuilding's three groups instead of Portfolio's four. Kept as a
 // separate module (not folded into `lib/metadata.ts`/`lib/portfolio-metadata.ts`)
 // so Portfolio's existing, working metadata system is never touched by this.
-
-export const WB_METADATA_TYPES = ["wb_entity_type", "wb_category", "wb_chip"] as const;
-export type WbMetadataType = (typeof WB_METADATA_TYPES)[number];
-
-export const WB_METADATA_TYPE_LABELS: Record<WbMetadataType, string> = {
-  wb_entity_type: "Entity Type",
-  wb_category: "Category (legacy)",
-  wb_chip: "Chips",
-};
-
-// The FormData field name each group's selector submits under.
-export const WB_METADATA_FIELD_NAMES: Record<WbMetadataType, string> = {
-  wb_entity_type: "entityTypeOptionId",
-  wb_category: "catOptionId",
-  wb_chip: "chipOptionIds",
-};
-
-export function isWbMetadataType(value: string): value is WbMetadataType {
-  return (WB_METADATA_TYPES as readonly string[]).includes(value);
-}
+//
+// Client-safe constants/labels/types live in `lib/worldbuilding-metadata-shared.ts`
+// (no `db` import there) — re-exported here so existing server-side imports of
+// this module keep working unchanged.
+export { WB_METADATA_TYPES, WB_METADATA_TYPE_LABELS, WB_METADATA_FIELD_NAMES, isWbMetadataType, type WbMetadataType };
 
 export type WbMetadataOptionRow = typeof metadataOptions.$inferSelect;
 

@@ -6,7 +6,7 @@ import FormError from "./FormError";
 import FormActions from "./FormActions";
 import NumberPicker from "./NumberPicker";
 import type { metadataOptions } from "@/db/schema";
-import { WB_METADATA_TYPE_LABELS, type WbMetadataType } from "@/lib/worldbuilding-metadata";
+import { WB_METADATA_TYPE_LABELS, type WbMetadataType } from "@/lib/worldbuilding-metadata-shared";
 
 type MetadataRow = typeof metadataOptions.$inferSelect;
 type ActionState = { error?: string } | undefined;
