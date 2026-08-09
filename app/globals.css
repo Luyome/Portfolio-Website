@@ -1094,8 +1094,12 @@ a.arv-row:hover{background:var(--bg2)}
    element sizing shrink the box itself to the image's intrinsic aspect
    ratio once `max-width` clamps it (common for wide/cinematic crops),
    which silently defeats `object-fit` and the box ends up shorter than
-   the intended fill height — letting the 2nd media item peek through. */
-.wbd-media-img--hero,.wbd-media-video--hero{height:calc(100% - 48px);width:100%;object-fit:contain;margin:0 auto;flex-shrink:0}
+   the intended fill height — letting the 2nd media item peek through.
+   Plain `height:100%` (not `calc(100% - 48px)`): a flex item's percentage
+   height resolves against the flex container's *content* box, which
+   already excludes `.wbd-media-scroll--multi`'s 24px top/bottom padding —
+   subtracting it again here double-counted it and undersized the hero box. */
+.wbd-media-img--hero,.wbd-media-video--hero{height:100%;width:100%;object-fit:contain;margin:0 auto;flex-shrink:0}
 .wbd-media-figure{margin:0;display:contents}
 .wbd-media-caption{font-family:var(--B);font-size:0.78rem;color:var(--muted);line-height:1.5;padding:2px 2px 0}
 /* richReading mode (Portfolio/Sketches/3D/Games) — content text interleaved
