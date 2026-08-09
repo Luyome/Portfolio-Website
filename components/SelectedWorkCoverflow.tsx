@@ -87,6 +87,7 @@ export default function SelectedWorkCoverflow({ items }: { items: ResolvedHomeCo
                   alt=""
                   fill
                   sizes="(max-width: 640px) 84vw, (max-width: 1024px) 68vw, 58vw"
+                  quality={90}
                   unoptimized={!isOptimizableImageUrl(item.image)}
                 />
               ) : (

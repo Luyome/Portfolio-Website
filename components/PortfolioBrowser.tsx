@@ -127,6 +127,7 @@ export default function PortfolioBrowser({
                 alt={p.title}
                 fill
                 sizes="(max-width: 820px) 100vw, 320px"
+                quality={90}
                 unoptimized={!isOptimizableImageUrl(p.img)}
               />
               <div className="port-yr-badge">{p.year}</div>

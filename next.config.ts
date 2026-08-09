@@ -21,6 +21,12 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+    // Next's own default (`[75]`) was the sole source of every thumbnail
+    // looking visibly softer than the lightbox's raw, uncompressed <img> —
+    // no grid/card component ever passed a `quality` prop, so all of them
+    // silently rendered at 75. Adding 90 (not replacing 75) lets those
+    // components opt into it without changing anything that doesn't.
+    qualities: [75, 90],
   },
 };
 

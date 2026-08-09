@@ -56,6 +56,7 @@ export default function ShowcaseCarousel({ items }: { items: ShowcaseItem[] }) {
             alt={item.title}
             fill
             sizes="(max-width: 820px) 200px, 260px"
+            quality={90}
             unoptimized={!isOptimizableImageUrl(item.url)}
           />
           {item.title && (

@@ -60,6 +60,7 @@ export default function WorldbuildingGrid({
                   alt={w.title}
                   fill
                   sizes="(max-width: 480px) 46vw, (max-width: 900px) 22vw, 15vw"
+                  quality={90}
                   unoptimized={!isOptimizableImageUrl(w.img)}
                 />
               </div>

@@ -77,6 +77,7 @@ export default function GamesBrowser({ items, initialItemId }: { items: Game[]; 
                 alt={g.title}
                 fill
                 sizes="(max-width: 820px) 100vw, 50vw"
+                quality={90}
                 unoptimized={!isOptimizableImageUrl(g.img)}
               />
             </div>

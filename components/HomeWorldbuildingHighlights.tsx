@@ -26,7 +26,12 @@ export default function HomeWorldbuildingHighlights({ items }: { items: Resolved
                     src={item.image}
                     alt=""
                     fill
-                    sizes={index === 0 ? "(max-width: 820px) 100vw, 62vw" : "(max-width: 820px) 100vw, 34vw"}
+                    sizes={
+                      index === 0
+                        ? "(max-width: 820px) 100vw, (max-width: 1512px) 67vw, 1020px"
+                        : "(max-width: 820px) 100vw, (max-width: 1512px) 33vw, 495px"
+                    }
+                    quality={90}
                     unoptimized={!isOptimizableImageUrl(item.image)}
                   />
                 ) : (

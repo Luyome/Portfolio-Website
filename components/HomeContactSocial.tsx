@@ -52,7 +52,7 @@ export default function HomeContactSocial({ links, images = [], artworks = [], b
   return (
     <section id="contact" className="home-contact-social" aria-labelledby="home-contact-title" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false); }}>
       {images.length > 0 && <div className="hcs-wash" aria-hidden="true">
-        {images.map((image, index) => <Image key={image} src={image} alt="" fill sizes="100vw" loading="lazy" unoptimized={!isOptimizableImageUrl(image)} style={{ opacity: index === activeImage ? washOpacity * 0.6 : 0 }} />)}
+        {images.map((image, index) => <Image key={image} src={image} alt="" fill sizes="100vw" quality={90} loading="lazy" unoptimized={!isOptimizableImageUrl(image)} style={{ opacity: index === activeImage ? washOpacity * 0.6 : 0 }} />)}
       </div>}
       <div className="hcs-inner">
         <div className="hcs-panel">
@@ -74,7 +74,7 @@ export default function HomeContactSocial({ links, images = [], artworks = [], b
               <div className="hcs-feature-visual" aria-hidden="true">
                 <div className="hcs-frame hcs-frame-main">
                   {images.map((image, index) => (
-                    <Image key={image} src={image} alt="" fill sizes="(max-width: 820px) 82vw, 460px" priority={false} unoptimized={!isOptimizableImageUrl(image)} style={{ transform: `translateX(${slideOffset(index) * 100}%)` }} />
+                    <Image key={image} src={image} alt="" fill sizes="(max-width: 820px) 82vw, 460px" quality={90} priority={false} unoptimized={!isOptimizableImageUrl(image)} style={{ transform: `translateX(${slideOffset(index) * 100}%)` }} />
                   ))}
                 </div>
               </div>
@@ -93,7 +93,7 @@ export default function HomeContactSocial({ links, images = [], artworks = [], b
               <div className="hcs-artwork-grid">
                 {artworks.map((artwork) => (
                   <Link key={artwork.href} href={artwork.href} className="hcs-artwork-thumb">
-                    <Image src={artwork.image} alt="" fill sizes="180px" unoptimized={!isOptimizableImageUrl(artwork.image)} />
+                    <Image src={artwork.image} alt="" fill sizes="180px" quality={90} unoptimized={!isOptimizableImageUrl(artwork.image)} />
                     <span className="hcs-artwork-caption">{artwork.title}</span>
                   </Link>
                 ))}
@@ -127,12 +127,12 @@ export default function HomeContactSocial({ links, images = [], artworks = [], b
               <div className="hcs-avatar-cluster" aria-hidden="true">
                 {secondary[0] && (
                   <div className="hcs-avatar hcs-avatar-a">
-                    <Image src={secondary[0]} alt="" fill sizes="120px" unoptimized={!isOptimizableImageUrl(secondary[0])} />
+                    <Image src={secondary[0]} alt="" fill sizes="120px" quality={90} unoptimized={!isOptimizableImageUrl(secondary[0])} />
                   </div>
                 )}
                 {secondary[1] && (
                   <div className="hcs-avatar hcs-avatar-b">
-                    <Image src={secondary[1]} alt="" fill sizes="96px" unoptimized={!isOptimizableImageUrl(secondary[1])} />
+                    <Image src={secondary[1]} alt="" fill sizes="96px" quality={90} unoptimized={!isOptimizableImageUrl(secondary[1])} />
                   </div>
                 )}
               </div>

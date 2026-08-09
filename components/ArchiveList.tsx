@@ -106,6 +106,7 @@ export default function ArchiveList({ items, categories }: { items: ArchiveItem[
                   alt={item.title}
                   width={56}
                   height={40}
+                  quality={90}
                   unoptimized={!isOptimizableImageUrl(item.img)}
                 />
               ) : (
