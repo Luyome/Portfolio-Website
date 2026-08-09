@@ -1089,8 +1089,13 @@ a.arv-row:hover{background:var(--bg2)}
 .wbd-media-img:hover{opacity:.85}
 .wbd-media-video{width:100%;aspect-ratio:16/9;border:none;display:block}
 /* Declared after the base rules above so it wins the (equal-specificity)
-   cascade and actually overrides their width/height. */
-.wbd-media-img--hero,.wbd-media-video--hero{height:calc(100% - 48px);width:auto;max-width:100%;object-fit:contain;margin:0 auto}
+   cascade and actually overrides their width/height. `width:100%` (not
+   `auto`) is required here: an `auto` width lets the browser's replaced-
+   element sizing shrink the box itself to the image's intrinsic aspect
+   ratio once `max-width` clamps it (common for wide/cinematic crops),
+   which silently defeats `object-fit` and the box ends up shorter than
+   the intended fill height — letting the 2nd media item peek through. */
+.wbd-media-img--hero,.wbd-media-video--hero{height:calc(100% - 48px);width:100%;object-fit:contain;margin:0 auto;flex-shrink:0}
 .wbd-media-figure{margin:0;display:contents}
 .wbd-media-caption{font-family:var(--B);font-size:0.78rem;color:var(--muted);line-height:1.5;padding:2px 2px 0}
 /* richReading mode (Portfolio/Sketches/3D/Games) — content text interleaved
