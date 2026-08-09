@@ -51,7 +51,19 @@ export default function MapEditor({
     return { x: Math.min(100, Math.max(0, x)), y: Math.min(100, Math.max(0, y)) };
   }
 
-  async function handleCanvasClick(e: React.MouseEvent) {
+  // Placing a new pin must react to the raw pointerup, not a synthetic
+  // click: `useMapPanZoom`'s onPointerDown calls `viewport.setPointerCapture`
+  // on every press (not just ones that turn into an actual pan), and once a
+  // pointer is captured, the browser retargets the resulting click (and its
+  // compatibility mouse events) to the CAPTURING element (`.map-viewport`)
+  // instead of the element under the cursor (`.map-canvas`, a descendant) —
+  // click only bubbles upward, so a handler on that descendant can never see
+  // it. Existing pins are unaffected since their drag/click handling already
+  // uses pointerdown/pointerup directly. Reusing the viewport's own
+  // pointerup (called after the pan hook's onPointerUp resolves whether this
+  // was a drag) sidesteps the retargeting entirely.
+  async function handleViewportPointerUp(e: React.PointerEvent) {
+    onPointerUp(e);
     if (wasPanning()) return;
     if (!placing || !newName.trim() || currentMapId === null) return;
     const { x, y } = coordsFromEvent(e);
@@ -144,7 +156,7 @@ export default function MapEditor({
         ref={viewportRef}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
+        onPointerUp={handleViewportPointerUp}
         onPointerCancel={onPointerUp}
         style={aspectRatio ? { aspectRatio } : undefined}
       >
@@ -152,7 +164,6 @@ export default function MapEditor({
           className="map-canvas"
           ref={canvasRef}
           style={{ transform: `scale(${zoom})`, cursor: placing ? "crosshair" : undefined }}
-          onClick={handleCanvasClick}
         >
           {currentMap.imageUrl ? (
             <img
