@@ -21,6 +21,7 @@ export default function MapEditor({
   const [locations, setLocations] = useState(initialLocations);
   const [newName, setNewName] = useState("");
   const [placing, setPlacing] = useState(false);
+  const [placeError, setPlaceError] = useState<string | null>(null);
   const [editing, setEditing] = useState<MapLocation | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -67,15 +68,38 @@ export default function MapEditor({
     if (wasPanning()) return;
     if (!placing || !newName.trim() || currentMapId === null) return;
     const { x, y } = coordsFromEvent(e);
-    const row = await createMapLocation(currentMapId, newName.trim(), x, y);
-    if (row) setLocations((prev) => [...prev, row as MapLocation]);
-    setNewName("");
-    setPlacing(false);
+    const name = newName.trim();
+    try {
+      const row = await createMapLocation(currentMapId, name, x, y);
+      if (!row) {
+        // createMapLocation returns undefined on rejected input (invalid
+        // map/name/coordinates) rather than throwing — surface that instead
+        // of silently doing nothing, and stay in placement mode so the name
+        // isn't lost and the owner can try again.
+        setPlaceError(`Couldn't place "${name}" — check the name and try again.`);
+        return;
+      }
+      setLocations((prev) => [...prev, row as MapLocation]);
+      setNewName("");
+      setPlacing(false);
+      setPlaceError(null);
+    } catch {
+      setPlaceError(`Couldn't place "${name}" — the save failed. Try again.`);
+    }
   }
 
   function handlePinPointerDown(id: number, e: React.PointerEvent) {
     e.stopPropagation();
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    // See useMapPanZoom's onPointerDown: setPointerCapture can throw, and
+    // must not prevent dragState from being set (that's what lets a plain
+    // click on the pin — no capture needed for a same-target press+release —
+    // fall through to handlePinPointerUp and open the edit panel).
+    try {
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {
+      // Fall through — pin drag/click still works, it just won't survive
+      // the pointer leaving the pin's small hit area mid-gesture.
+    }
     dragState.current = { id, moved: false };
   }
 
@@ -120,6 +144,7 @@ export default function MapEditor({
             setEditing(null);
             setPlacing(false);
             setNewName("");
+            setPlaceError(null);
           }}
         >
           {maps.map((m) => (
@@ -137,10 +162,15 @@ export default function MapEditor({
         {placing ? (
           <>
             <span className="adm-hint">Click the map to place &quot;{newName}&quot;…</span>
-            <button type="button" className="adm-exit-btn" onClick={() => setPlacing(false)}>Cancel</button>
+            <button type="button" className="adm-exit-btn" onClick={() => { setPlacing(false); setPlaceError(null); }}>Cancel</button>
           </>
         ) : (
-          <button type="button" className="adm-btn" disabled={!newName.trim()} onClick={() => setPlacing(true)}>
+          <button
+            type="button"
+            className="adm-btn"
+            disabled={!newName.trim()}
+            onClick={() => { setPlacing(true); setPlaceError(null); }}
+          >
             + Add Pin
           </button>
         )}
@@ -150,6 +180,7 @@ export default function MapEditor({
           <button type="button" onClick={() => setZoom((z) => Math.min(maxZoom, +(z + 0.25).toFixed(2)))}>+</button>
         </div>
       </div>
+      {placeError && <p className="adm-error" role="alert">{placeError}</p>}
 
       <div
         className="map-viewport"

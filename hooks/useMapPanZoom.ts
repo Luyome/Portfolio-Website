@@ -4,7 +4,15 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const MAX_ZOOM = 3;
 const MIN_ZOOM = 1;
-const DRAG_THRESHOLD = 3;
+// A real mouse/trackpad click, unlike a scripted zero-motion one, almost
+// always carries a few pixels of incidental movement between press and
+// release. 3px was tight enough that an ordinary click could occasionally
+// get misclassified as a pan, which — for MapEditor's "click to place a new
+// pin" flow (gated on this same drag/click distinction) — silently dropped
+// the click with no error and no visible feedback. Widened to a still-small
+// but more forgiving distance that doesn't make deliberate small pans feel
+// unresponsive.
+const DRAG_THRESHOLD = 6;
 
 export function useMapPanZoom(viewportRef: React.RefObject<HTMLDivElement | null>, imageUrl?: string | null) {
   const [zoom, setZoomRaw] = useState(MIN_ZOOM);
@@ -105,7 +113,16 @@ export function useMapPanZoom(viewportRef: React.RefObject<HTMLDivElement | null
     if (e.pointerType === "mouse" && e.button !== 0) return;
     const vp = viewportRef.current;
     if (!vp) return;
-    vp.setPointerCapture(e.pointerId);
+    // setPointerCapture can throw (e.g. the pointer was already released by
+    // the time this handler runs) — an uncaught throw here would abort the
+    // rest of this handler, silently leaving dragRef unset and breaking the
+    // press that triggered it.
+    try {
+      vp.setPointerCapture(e.pointerId);
+    } catch {
+      // Fall through — panning/click-through-viewport still works without
+      // capture, it just won't survive the pointer leaving the viewport.
+    }
     dragRef.current = { startX: e.clientX, startY: e.clientY, scrollLeft: vp.scrollLeft, scrollTop: vp.scrollTop, moved: false };
   }
 
