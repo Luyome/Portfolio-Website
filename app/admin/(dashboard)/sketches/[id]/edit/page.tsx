@@ -43,9 +43,11 @@ export default async function EditSketchPage({
     <div>
       <AdminPageHeader title="Edit Sketch" />
       <SketchForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
-      <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateSketchImage} deleteAction={deleteSketchImage} />
-      <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateSketchVideo} deleteAction={deleteSketchVideo} />
-      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateSketchLink} deleteAction={deleteSketchLink} labelOptions={labelOptions} />
+      <div className="adm-editor-extras">
+        <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateSketchImage} deleteAction={deleteSketchImage} />
+        <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateSketchVideo} deleteAction={deleteSketchVideo} />
+        <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateSketchLink} deleteAction={deleteSketchLink} labelOptions={labelOptions} />
+      </div>
     </div>
   );
 }

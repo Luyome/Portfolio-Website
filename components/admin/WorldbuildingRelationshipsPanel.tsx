@@ -5,6 +5,7 @@ import OrderPicker from "./OrderPicker";
 import DeleteButton from "./DeleteButton";
 import FormError from "./FormError";
 import SaveButton from "./SaveButton";
+import AdminSection from "./AdminSection";
 import { resolveEntityTypeLabel } from "@/types/worldbuilding";
 
 type RelatedSummary = {
@@ -33,14 +34,12 @@ export default function WorldbuildingRelationshipsPanel({
   const [actionState, formAction] = useActionState(createAction, undefined);
 
   return (
-    <section className="adm-relationship-panel" aria-labelledby="worldbuilding-relationships">
-      <header className="adm-relationship-head"><div><span>Worldbuilding network</span><h2 id="worldbuilding-relationships">Relationships</h2></div></header>
-      <p className="adm-relationship-copy">
-        Related Worldbuilding entries shown in the public detail view. A relationship can be created from either entry — both directions appear here.
-      </p>
-
+    <AdminSection
+      title="Relationships"
+      description="Related Worldbuilding entries shown in the public detail view. A relationship can be created from either entry — both directions appear here."
+    >
       {relationships.length > 0 ? (
-        <div className="adm-table-wrap" style={{ marginTop: 16 }}>
+        <div className="adm-table-wrap">
           <table className="adm-table">
             <thead>
               <tr>
@@ -70,10 +69,11 @@ export default function WorldbuildingRelationshipsPanel({
           </table>
         </div>
       ) : (
-        <div className="adm-relationship-empty">No relationships yet. Add an entry below to create the first connection.</div>
+        <p className="adm-hint">No relationships yet. Add an entry below to create the first connection.</p>
       )}
 
-      <div className="adm-relationship-add"><h3>Add relationship</h3><form action={formAction} className="adm-form">
+      <h3 className="adm-subhead">Add Relationship</h3>
+      <form action={formAction} className="adm-form">
         <FormError message={actionState?.error} />
         <input type="hidden" name="sourceEntryId" value={entryId} />
         <div className="adm-field">
@@ -97,7 +97,7 @@ export default function WorldbuildingRelationshipsPanel({
           <OrderPicker name="sortOrder" defaultValue={relationships.length} />
         </div>
         <SaveButton>Add Relationship</SaveButton>
-      </form></div>
-    </section>
+      </form>
+    </AdminSection>
   );
 }

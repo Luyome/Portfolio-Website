@@ -47,16 +47,18 @@ export default async function EditWorldbuildingEntryPage({
     <div>
       <AdminPageHeader title="Edit Worldbuilding Entry" />
       <WorldbuildingForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
-      <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateWorldbuildingImage} deleteAction={deleteWorldbuildingImage} />
-      <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateWorldbuildingVideo} deleteAction={deleteWorldbuildingVideo} />
-      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateWorldbuildingLink} deleteAction={deleteWorldbuildingLink} labelOptions={labelOptions} />
-      <WorldbuildingRelationshipsPanel
-        entryId={entryId}
-        relationships={relationships}
-        otherEntries={otherEntries}
-        createAction={createWorldbuildingRelationship}
-        deleteAction={deleteWorldbuildingRelationship}
-      />
+      <div className="adm-editor-extras">
+        <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateWorldbuildingImage} deleteAction={deleteWorldbuildingImage} />
+        <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateWorldbuildingVideo} deleteAction={deleteWorldbuildingVideo} />
+        <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateWorldbuildingLink} deleteAction={deleteWorldbuildingLink} labelOptions={labelOptions} />
+        <WorldbuildingRelationshipsPanel
+          entryId={entryId}
+          relationships={relationships}
+          otherEntries={otherEntries}
+          createAction={createWorldbuildingRelationship}
+          deleteAction={deleteWorldbuildingRelationship}
+        />
+      </div>
     </div>
   );
 }

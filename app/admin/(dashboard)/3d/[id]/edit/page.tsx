@@ -43,9 +43,11 @@ export default async function EditModel3DPage({
     <div>
       <AdminPageHeader title="Edit 3D Model" />
       <Model3DForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
-      <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateModel3DImage} deleteAction={deleteModel3DImage} />
-      <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateModel3DVideo} deleteAction={deleteModel3DVideo} />
-      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateModel3DLink} deleteAction={deleteModel3DLink} labelOptions={labelOptions} />
+      <div className="adm-editor-extras">
+        <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateModel3DImage} deleteAction={deleteModel3DImage} />
+        <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateModel3DVideo} deleteAction={deleteModel3DVideo} />
+        <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateModel3DLink} deleteAction={deleteModel3DLink} labelOptions={labelOptions} />
+      </div>
     </div>
   );
 }

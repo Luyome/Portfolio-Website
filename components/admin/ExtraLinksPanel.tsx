@@ -2,6 +2,7 @@ import OrderPicker from "./OrderPicker";
 import DeleteButton from "./DeleteButton";
 import AddLinkForm from "./AddLinkForm";
 import SaveButton from "./SaveButton";
+import AdminSection from "./AdminSection";
 import type { LinkLabelOptionLite } from "@/lib/link-label-options";
 
 export type ExtraLink = { id: number; label: string; href: string; kind: string; sortOrder: number };
@@ -20,13 +21,12 @@ export default function ExtraLinksPanel({
   labelOptions: LinkLabelOptionLite[];
 }) {
   return (
-    <div>
-      <p className="adm-sub" style={{ marginTop: 48 }}>Links</p>
-      <p className="adm-sub" style={{ marginTop: 0 }}>
-        Shown in the item&apos;s detail panel. Either an external link (Steam, itch.io, ArtStation…) or a direct download — visitors download files without leaving the site.
-      </p>
+    <AdminSection
+      title="Links"
+      description="Shown in the item's detail panel. Either an external link (Steam, itch.io, ArtStation…) or a direct download — visitors download files without leaving the site."
+    >
       {links.length > 0 && (
-        <div className="adm-table-wrap" style={{ marginTop: 16 }}>
+        <div className="adm-table-wrap">
           <table className="adm-table">
             <thead>
               <tr>
@@ -86,8 +86,8 @@ export default function ExtraLinksPanel({
         </div>
       )}
 
-      <p className="adm-sub" style={{ marginTop: 32 }}>Add Link</p>
+      <h3 className="adm-subhead">Add Link</h3>
       <AddLinkForm action={createAction} defaultSortOrder={links.length} labelOptions={labelOptions} />
-    </div>
+    </AdminSection>
   );
 }

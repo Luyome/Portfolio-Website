@@ -44,9 +44,11 @@ export default async function EditGamePage({
     <div>
       <AdminPageHeader title="Edit Game" />
       <GameForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
-      <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateGameImage} deleteAction={deleteGameImage} />
-      <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateGameVideo} deleteAction={deleteGameVideo} />
-      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateGameLink} deleteAction={deleteGameLink} labelOptions={labelOptions} />
+      <div className="adm-editor-extras">
+        <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateGameImage} deleteAction={deleteGameImage} />
+        <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateGameVideo} deleteAction={deleteGameVideo} />
+        <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updateGameLink} deleteAction={deleteGameLink} labelOptions={labelOptions} />
+      </div>
     </div>
   );
 }

@@ -52,9 +52,11 @@ export default async function EditPortfolioItemPage({
         metadataOptions={metadataOptions}
         metadataSelections={metadataSelections}
       />
-      <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updatePortfolioImage} deleteAction={deletePortfolioImage} />
-      <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updatePortfolioVideo} deleteAction={deletePortfolioVideo} />
-      <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updatePortfolioLink} deleteAction={deletePortfolioLink} labelOptions={labelOptions} />
+      <div className="adm-editor-extras">
+        <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updatePortfolioImage} deleteAction={deletePortfolioImage} />
+        <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updatePortfolioVideo} deleteAction={deletePortfolioVideo} />
+        <ExtraLinksPanel links={links} createAction={createLinkWithId} updateAction={updatePortfolioLink} deleteAction={deletePortfolioLink} labelOptions={labelOptions} />
+      </div>
     </div>
   );
 }

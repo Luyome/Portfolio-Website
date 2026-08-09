@@ -2,6 +2,7 @@ import ImageUploadField from "./ImageUploadField";
 import OrderPicker from "./OrderPicker";
 import DeleteButton from "./DeleteButton";
 import SaveButton from "./SaveButton";
+import AdminSection from "./AdminSection";
 
 export default function ExtraImagesPanel({
   images,
@@ -15,14 +16,12 @@ export default function ExtraImagesPanel({
   deleteAction: (formData: FormData) => void | Promise<void>;
 }) {
   return (
-    <div>
-      <p className="adm-sub" style={{ marginTop: 48 }}>Gallery Images</p>
-      <p className="adm-sub" style={{ marginTop: 0 }}>
-        Extra images shown stacked (with fullscreen zoom) below the main image, in addition to it. Order controls
-        where each one lands relative to Content and Videos (lower number = earlier).
-      </p>
+    <AdminSection
+      title="Gallery Images"
+      description="Extra images shown stacked (with fullscreen zoom) below the main image, in addition to it. Order controls where each one lands relative to Content and Videos (lower number = earlier)."
+    >
       {images.length > 0 && (
-        <div className="adm-table-wrap" style={{ marginTop: 16 }}>
+        <div className="adm-table-wrap">
           <table className="adm-table">
             <thead>
               <tr>
@@ -60,7 +59,7 @@ export default function ExtraImagesPanel({
         </div>
       )}
 
-      <p className="adm-sub" style={{ marginTop: 32 }}>Add Image</p>
+      <h3 className="adm-subhead">Add Image</h3>
       <form action={createAction} className="adm-form">
         <ImageUploadField name="url" label="Image" />
         <div className="adm-field">
@@ -69,6 +68,6 @@ export default function ExtraImagesPanel({
         </div>
         <SaveButton>Add Image</SaveButton>
       </form>
-    </div>
+    </AdminSection>
   );
 }
