@@ -2073,6 +2073,9 @@ a.arv-row:hover{background:var(--bg2)}
 }
 
 .map-admin-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:20px}
+.map-toolbar-group{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding-left:14px;border-left:1px solid var(--border)}
+.map-toolbar-group:first-child{padding-left:0;border-left:none}
+.map-editor-instructions{margin-bottom:14px}
 .map-name-input{
   background:var(--bg2);border:1px solid var(--border);color:var(--text);
   font-family:var(--B);font-size:0.9rem;padding:9px 14px;outline:none;min-width:200px;

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createMapLocation, deleteMapLocation, updateMapLocationPosition } from "@/lib/actions/map";
 import { useMapPanZoom } from "@/hooks/useMapPanZoom";
 import MapPinEditPanel from "./MapPinEditPanel";
+import AdminEmptyState from "./AdminEmptyState";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 
 export default function MapEditor({
@@ -124,60 +125,80 @@ export default function MapEditor({
     }
   }
 
+  function resetView() {
+    setZoom(1);
+    const vp = viewportRef.current;
+    if (vp) {
+      vp.scrollLeft = 0;
+      vp.scrollTop = 0;
+    }
+  }
+
   if (!currentMap) {
     return (
-      <div className="adm-hint">
-        No maps exist yet. Create one in <Link href="/admin/worldbuilding/maps">Map Manager</Link> first.
-      </div>
+      <AdminEmptyState
+        label="No maps exist yet."
+        createHref="/admin/worldbuilding/maps/new"
+        createLabel="+ Create the first map"
+      />
     );
   }
 
   return (
     <section className="adm-map-workspace">
+      <p className="adm-hint map-editor-instructions">
+        Type a name, click <strong>+ Add Pin</strong>, then click the map to place it. Existing pins are draggable —
+        click one to edit it, or drag it to reposition.
+      </p>
       <div className="map-admin-toolbar">
-        <select
-          value={currentMapId ?? ""}
-          onChange={(e) => {
-            // Switching maps must never leave the previous map's selection
-            // or in-progress pin placement attached to the newly-shown map.
-            setCurrentMapId(Number(e.target.value));
-            setEditing(null);
-            setPlacing(false);
-            setNewName("");
-            setPlaceError(null);
-          }}
-        >
-          {maps.map((m) => (
-            <option key={m.id} value={m.id}>{m.title}</option>
-          ))}
-        </select>
-        <Link href="/admin/worldbuilding/maps" className="adm-exit-btn">Manage Maps</Link>
-        <input
-          type="text"
-          className="map-name-input"
-          placeholder="Location name"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-        />
-        {placing ? (
-          <>
-            <span className="adm-hint">Click the map to place &quot;{newName}&quot;…</span>
-            <button type="button" className="adm-exit-btn" onClick={() => { setPlacing(false); setPlaceError(null); }}>Cancel</button>
-          </>
-        ) : (
-          <button
-            type="button"
-            className="adm-btn"
-            disabled={!newName.trim()}
-            onClick={() => { setPlacing(true); setPlaceError(null); }}
+        <div className="map-toolbar-group">
+          <select
+            value={currentMapId ?? ""}
+            onChange={(e) => {
+              // Switching maps must never leave the previous map's selection
+              // or in-progress pin placement attached to the newly-shown map.
+              setCurrentMapId(Number(e.target.value));
+              setEditing(null);
+              setPlacing(false);
+              setNewName("");
+              setPlaceError(null);
+            }}
           >
-            + Add Pin
-          </button>
-        )}
+            {maps.map((m) => (
+              <option key={m.id} value={m.id}>{m.title}</option>
+            ))}
+          </select>
+          <Link href="/admin/worldbuilding/maps" className="adm-exit-btn">Manage Maps</Link>
+        </div>
+        <div className="map-toolbar-group">
+          <input
+            type="text"
+            className="map-name-input"
+            placeholder="Location name"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+          />
+          {placing ? (
+            <>
+              <span className="adm-hint">Click the map to place &quot;{newName}&quot;…</span>
+              <button type="button" className="adm-exit-btn" onClick={() => { setPlacing(false); setPlaceError(null); }}>Cancel</button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="adm-btn"
+              disabled={!newName.trim()}
+              onClick={() => { setPlacing(true); setPlaceError(null); }}
+            >
+              + Add Pin
+            </button>
+          )}
+        </div>
         <div className="map-controls">
-          <button type="button" onClick={() => setZoom((z) => Math.max(minZoom, +(z - 0.25).toFixed(2)))}>−</button>
+          <button type="button" onClick={() => setZoom((z) => Math.max(minZoom, +(z - 0.25).toFixed(2)))} aria-label="Zoom out">−</button>
           <span className="map-zoom-label">{Math.round(zoom * 100)}%</span>
-          <button type="button" onClick={() => setZoom((z) => Math.min(maxZoom, +(z + 0.25).toFixed(2)))}>+</button>
+          <button type="button" onClick={() => setZoom((z) => Math.min(maxZoom, +(z + 0.25).toFixed(2)))} aria-label="Zoom in">+</button>
+          <button type="button" className="adm-exit-btn" onClick={resetView}>Reset</button>
         </div>
       </div>
       {placeError && <p className="adm-error" role="alert">{placeError}</p>}

@@ -27,9 +27,17 @@ const ICON_TYPES: readonly IconType[] = ["default", "city", "character", "landma
 type ActionState = { error?: string } | undefined;
 
 function revalidateAll() {
+  // "/" (Home) reads world_maps/map_locations too (its own atlas preview) —
+  // every sibling action file that feeds Home already busts it this way
+  // (lib/actions/home.ts, settings.ts, appearance.ts, services.ts); this
+  // file was the one exception, so a new/moved pin or map showed up on
+  // /worldbuilding immediately but kept serving Home's stale cached render
+  // until something unrelated happened to revalidate "/".
+  revalidatePath("/", "layout");
   revalidatePath("/worldbuilding");
   revalidatePath("/admin/worldbuilding");
   revalidatePath("/admin/worldbuilding/maps");
+  revalidatePath("/admin/worldbuilding/map");
 }
 
 function readMapFields(formData: FormData) {

@@ -3,14 +3,13 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { siteSettings, heroButtons, homeHeroSlides, homeMapPreview, homeShowcase } from "@/db/schema";
+import { siteSettings, heroButtons, homeHeroSlides, homeShowcase } from "@/db/schema";
 import { requireAdminSession } from "@/lib/actions/guard";
 import {
   HOME_CONTENT_SECTIONS,
   HOME_CONTENT_TYPES,
   HOME_STAT_KEYS,
   replaceHomeContentSelections,
-  replaceHomeMapPreviewPins,
   replaceHomeSkills,
   setHomeCapabilities,
   setHomeMapPreview,
@@ -237,21 +236,19 @@ export async function saveHomeStats(_state: HomeAdminActionState, formData: Form
   }
 }
 
+// Home always shows every pin on the selected map's hierarchy — it is not a
+// separately curated map model (see resolveHomeMapPreview, lib/home-data.ts).
+// A per-pin selector used to exist here (home_map_preview_pins) but its
+// selections were never read by the actual Home render, only ever written —
+// dead, misleading UI that implied curation mattered when it didn't. Only
+// "which map" and "visible on Home" are real settings.
 export async function saveHomeMapPreview(_state: HomeAdminActionState, formData: FormData): Promise<HomeAdminActionState> {
   await requireAdminSession();
   try {
     const rawMapId = formData.get("mapId");
     const mapId = typeof rawMapId === "string" && rawMapId ? requiredId(rawMapId, "Map") : null;
     const isVisible = formData.get("isVisible") === "on";
-    const submittedPins = jsonArray(formData, "items").map((id) => requiredId(typeof id === "number" ? id : null, "Map pin"));
-    const [current] = await db.select({ mapId: homeMapPreview.mapId }).from(homeMapPreview).where(eq(homeMapPreview.id, 1));
-    // A map change is a two-step Admin interaction: persist the new source
-    // map and clear references belonging to the old one, then choose markers
-    // from the newly-rendered eligible list. This avoids cross-map FKs and a
-    // partial configuration when the previous map already had selections.
-    const pins = current?.mapId === mapId ? submittedPins : [];
     await setHomeMapPreview(mapId, isVisible);
-    await replaceHomeMapPreviewPins(pins);
     revalidateAll();
     return { success: "Map Preview saved." };
   } catch (err) {

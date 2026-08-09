@@ -13,9 +13,10 @@ export const ADMIN_NAV: AdminNavSection[] = [
       { href: "/admin/3d", label: "3D" },
       { href: "/admin/worldbuilding", label: "Worldbuilding" },
       {
-        href: "/admin/worldbuilding/maps",
+        href: "/admin/worldbuilding/atlas",
         label: "Map",
         children: [
+          { href: "/admin/worldbuilding/atlas", label: "Map" },
           { href: "/admin/worldbuilding/maps", label: "Map Manager" },
           { href: "/admin/worldbuilding/map", label: "Pin Manager" },
         ],
