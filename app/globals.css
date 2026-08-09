@@ -1095,11 +1095,16 @@ a.arv-row:hover{background:var(--bg2)}
    ratio once `max-width` clamps it (common for wide/cinematic crops),
    which silently defeats `object-fit` and the box ends up shorter than
    the intended fill height — letting the 2nd media item peek through.
-   Plain `height:100%` (not `calc(100% - 48px)`): a flex item's percentage
-   height resolves against the flex container's *content* box, which
-   already excludes `.wbd-media-scroll--multi`'s 24px top/bottom padding —
-   subtracting it again here double-counted it and undersized the hero box. */
-.wbd-media-img--hero,.wbd-media-video--hero{height:100%;width:100%;object-fit:contain;margin:0 auto;flex-shrink:0}
+   `height:100%` (not `calc(100% - 48px)`): a flex item's percentage height
+   resolves against the flex container's *content* box, which already
+   excludes `.wbd-media-scroll--multi`'s 24px top/bottom padding —
+   subtracting it again here double-counted it and undersized the hero box.
+   The extra `+ 8px` corrects for the flex `gap` (16px) the padding-bottom
+   (24px) doesn't actually sit next to: padding-bottom is only applied once,
+   after ALL flow content (not right after the hero), so without this the
+   hero+gap fell 8px (24 - 16) short of the visible viewport and the next
+   item's top edge peeked in before any scrolling. */
+.wbd-media-img--hero,.wbd-media-video--hero{height:calc(100% + 8px);width:100%;object-fit:contain;margin:0 auto;flex-shrink:0}
 .wbd-media-figure{margin:0;display:contents}
 .wbd-media-caption{font-family:var(--B);font-size:0.78rem;color:var(--muted);line-height:1.5;padding:2px 2px 0}
 /* richReading mode (Portfolio/Sketches/3D/Games) — content text interleaved
