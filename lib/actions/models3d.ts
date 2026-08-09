@@ -72,13 +72,13 @@ export async function createModel3DImage(modelId: number, formData: FormData) {
   } catch {
     return;
   }
-  await db.insert(model3dImages).values({ modelId, url, sortOrder: num(formData.get("sortOrder")) });
+  await db.insert(model3dImages).values({ modelId, url, caption: nullableText(formData.get("caption")), sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
 
 export async function updateModel3DImage(id: number, formData: FormData) {
   await requireAdminSession();
-  await db.update(model3dImages).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(model3dImages.id, id));
+  await db.update(model3dImages).set({ caption: nullableText(formData.get("caption")), sortOrder: num(formData.get("sortOrder")) }).where(eq(model3dImages.id, id));
   revalidateAll();
 }
 

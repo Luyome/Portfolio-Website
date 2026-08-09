@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import EmptyState from "./EmptyState";
-import GalleryModal, { GalleryItem } from "./GalleryModal";
+import MediaLightbox, { GalleryItem } from "./shared/MediaLightbox";
 import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
@@ -146,11 +146,12 @@ export default function PortfolioBrowser({
           </div>
         ))}
       </div>
-      <GalleryModal
+      <MediaLightbox
         items={galleryItems}
         index={modalIndex}
         onClose={() => setModalIndex(null)}
         onNavigate={setModalIndex}
+        richReading
       />
     </>
   );

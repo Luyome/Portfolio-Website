@@ -2,8 +2,8 @@ import type { MediaEntry } from "@/lib/group-images";
 import { toEmbedUrl } from "@/lib/video-embed";
 
 export type SeqEntry =
-  | { kind: "image"; order: number; url: string }
-  | { kind: "video"; order: number; embed: string };
+  | { kind: "image"; order: number; url: string; caption?: string | null }
+  | { kind: "video"; order: number; embed: string; caption?: string | null };
 
 /**
  * Merge-sorts an entry's extra gallery images/videos by their shared `order`
@@ -16,10 +16,11 @@ export function buildMediaSequence(item: { images?: MediaEntry[]; videos?: Media
     kind: "image",
     order: im.order,
     url: im.url,
+    caption: im.caption,
   }));
   const videoEntries: SeqEntry[] = (item.videos ?? [])
-    .map((v) => ({ order: v.order, embed: toEmbedUrl(v.url) }))
-    .filter((v): v is { order: number; embed: string } => !!v.embed)
-    .map((v) => ({ kind: "video" as const, order: v.order, embed: v.embed }));
+    .map((v) => ({ order: v.order, embed: toEmbedUrl(v.url), caption: v.caption }))
+    .filter((v): v is { order: number; embed: string; caption: string | null | undefined } => !!v.embed)
+    .map((v) => ({ kind: "video" as const, order: v.order, embed: v.embed, caption: v.caption }));
   return [...imageEntries, ...videoEntries].sort((a, b) => a.order - b.order);
 }

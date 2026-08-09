@@ -56,7 +56,7 @@ export default function WorldbuildingGrid({
                   src={w.img}
                   alt={w.title}
                   fill
-                  sizes="(max-width: 480px) 46vw, (max-width: 900px) 22vw, 180px"
+                  sizes="(max-width: 480px) 46vw, (max-width: 900px) 22vw, 200px"
                   unoptimized={!isOptimizableImageUrl(w.img)}
                 />
               </div>

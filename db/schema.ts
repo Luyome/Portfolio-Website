@@ -39,6 +39,7 @@ export const portfolioImages = pgTable("portfolio_images", {
   id: serial("id").primaryKey(),
   portfolioId: integer("portfolio_id").notNull().references(() => portfolioItems.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
+  caption: text("caption"),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
@@ -75,6 +76,7 @@ export const sketchImages = pgTable("sketch_images", {
   id: serial("id").primaryKey(),
   sketchId: integer("sketch_id").notNull().references(() => sketches.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
+  caption: text("caption"),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
@@ -111,6 +113,7 @@ export const model3dImages = pgTable("model_3d_images", {
   id: serial("id").primaryKey(),
   modelId: integer("model_id").notNull().references(() => models3d.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
+  caption: text("caption"),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
@@ -169,6 +172,7 @@ export const worldbuildingImages = pgTable("worldbuilding_images", {
   id: serial("id").primaryKey(),
   entryId: integer("entry_id").notNull().references(() => worldbuildingEntries.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
+  caption: text("caption"),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
@@ -219,6 +223,7 @@ export const gameImages = pgTable("game_images", {
   id: serial("id").primaryKey(),
   gameId: integer("game_id").notNull().references(() => games.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
+  caption: text("caption"),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 

@@ -72,13 +72,13 @@ export async function createSketchImage(sketchId: number, formData: FormData) {
   } catch {
     return;
   }
-  await db.insert(sketchImages).values({ sketchId, url, sortOrder: num(formData.get("sortOrder")) });
+  await db.insert(sketchImages).values({ sketchId, url, caption: nullableText(formData.get("caption")), sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
 
 export async function updateSketchImage(id: number, formData: FormData) {
   await requireAdminSession();
-  await db.update(sketchImages).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(sketchImages.id, id));
+  await db.update(sketchImages).set({ caption: nullableText(formData.get("caption")), sortOrder: num(formData.get("sortOrder")) }).where(eq(sketchImages.id, id));
   revalidateAll();
 }
 

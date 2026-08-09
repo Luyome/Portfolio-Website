@@ -10,7 +10,7 @@ export default function ExtraImagesPanel({
   updateAction,
   deleteAction,
 }: {
-  images: { id: number; url: string; sortOrder: number }[];
+  images: { id: number; url: string; caption?: string | null; sortOrder: number }[];
   createAction: (formData: FormData) => void | Promise<void>;
   updateAction: (id: number, formData: FormData) => void | Promise<void>;
   deleteAction: (formData: FormData) => void | Promise<void>;
@@ -18,7 +18,7 @@ export default function ExtraImagesPanel({
   return (
     <AdminSection
       title="Gallery Images"
-      description="Extra images shown stacked (with fullscreen zoom) below the main image, in addition to it. Order controls where each one lands relative to Content and Videos (lower number = earlier)."
+      description="Extra images shown stacked (with fullscreen zoom) below the main image, in addition to it. Order controls where each one lands relative to Content and Videos (lower number = earlier). Caption is an optional short line shown under the image in the lightbox."
     >
       {images.length > 0 && (
         <div className="adm-table-wrap">
@@ -26,6 +26,7 @@ export default function ExtraImagesPanel({
             <thead>
               <tr>
                 <th className="adm-col-sm">Preview</th>
+                <th>Caption</th>
                 <th className="adm-col-xs">Order</th>
                 <th className="adm-col-actions">Actions</th>
               </tr>
@@ -39,8 +40,11 @@ export default function ExtraImagesPanel({
                     <td><img src={img.url} alt="" className="adm-img-preview" style={{ maxHeight: 60 }} /></td>
                     <td>
                       <form id={formId} action={updateWithId}>
-                        <OrderPicker name="sortOrder" defaultValue={img.sortOrder} />
+                        <input type="text" name="caption" defaultValue={img.caption ?? ""} placeholder="Optional short caption" />
                       </form>
+                    </td>
+                    <td>
+                      <OrderPicker name="sortOrder" defaultValue={img.sortOrder} formId={formId} />
                     </td>
                     <td>
                       <div className="adm-actions">
@@ -62,6 +66,10 @@ export default function ExtraImagesPanel({
       <h3 className="adm-subhead">Add Image</h3>
       <form action={createAction} className="adm-form">
         <ImageUploadField name="url" label="Image" />
+        <div className="adm-field">
+          <label>Caption (optional)</label>
+          <input type="text" name="caption" placeholder="Short line shown under the image" />
+        </div>
         <div className="adm-field">
           <label>Order</label>
           <OrderPicker name="sortOrder" defaultValue={Math.min(images.length + 1, 10)} />

@@ -169,6 +169,13 @@
       "when": 1786197109498,
       "tag": "0023_link_label_options",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1786283680960,
+      "tag": "0024_complete_firelord",
+      "breakpoints": true
     }
   ]
 }

@@ -5,7 +5,7 @@ import { fieldStyle } from "@/lib/style-fields";
 import { parseContent, extractHeadings } from "@/lib/content-blocks";
 import { downloadUrl } from "@/lib/download-url";
 import { toEmbedUrl } from "@/lib/video-embed";
-import type { GalleryItem } from "@/components/GalleryModal";
+import type { GalleryItem } from "@/components/shared/MediaLightbox";
 import InlineBold from "@/components/InlineBold";
 import ImageZoomOverlay from "@/components/ImageZoomOverlay";
 import { useModalFocus } from "@/hooks/useModalFocus";

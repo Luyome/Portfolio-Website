@@ -1,5 +1,5 @@
 import type { MediaEntry } from "@/lib/group-images";
-import type { GalleryLink } from "@/components/GalleryModal";
+import type { GalleryLink } from "@/components/shared/MediaLightbox";
 import type { StylesMap } from "@/lib/style-fields";
 
 export type CategoryType = "Characters" | "Cities" | "Systems" | "Factions" | "Items" | "History";

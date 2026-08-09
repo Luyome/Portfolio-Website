@@ -959,7 +959,13 @@ a.arv-row:hover{background:var(--bg2)}
    title, keeping the gallery wall even without returning to masonry. */
 .wb-disc-grid{
   padding:0 var(--space-lg) var(--space-lg);
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px;
+  /* auto-fill (not auto-fit) with a capped track width: cards stay a fixed
+     ~150-200px regardless of how few items a filter leaves — auto-fit's
+     1fr tracks used to stretch a lone remaining card to fill the whole row,
+     which also made next/image request a much-too-small optimized variant
+     for that final rendered width (its `sizes` hint assumes ~180px) and
+     visibly upscale/blur it. */
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,200px));gap:4px;
   align-items:start;
 }
 .wb-disc-card{position:relative;overflow:hidden;background:var(--bg3);cursor:pointer;display:flex;flex-direction:column}
@@ -1023,7 +1029,13 @@ a.arv-row:hover{background:var(--bg2)}
 .tl-yr{font-family:var(--T);font-size:1rem;font-weight:600;color:var(--red);min-width:44px}
 .tl-t{font-family:var(--B);font-size:0.92rem;color:var(--text2);line-height:1.65;padding-top:1px}
 
-/* ══ GALLERY MODAL ══════════════════════ */
+/* ══ SHARED FROM THE RETIRED GALLERY MODAL ══════════════════════════════
+   Not part of the public lightbox unification — kept because other,
+   unrelated admin UI still renders with these classes: `.gm-video-embed`
+   (WorldbuildingLoreReader, untouched by this task) and `.gm-overlay`/
+   `.gm-panel`/`.gm-img-side`/`.gm-info`/`.gm-bar`/`.gm-cat-lbl`/`.gm-close`/
+   `.gm-desc` (the admin Map Pin editor and Sketch/3D preview cards). */
+.gm-video-embed{width:100%;aspect-ratio:16/9;border:none;display:block}
 .gm-overlay{
   display:none;position:fixed;inset:0;z-index:500;
   background:rgba(6,4,4,.78);
@@ -1037,74 +1049,22 @@ a.arv-row:hover{background:var(--bg2)}
   background:var(--bg2);overflow:hidden;border:1px solid var(--border);
 }
 .gm-img-side{position:relative;overflow:hidden;background:var(--bg3);min-height:0}
-.gm-img-scroll{position:relative;height:100%;overflow-y:auto}
-.gm-img-list{display:flex;flex-direction:column;gap:16px;padding:24px;padding-bottom:74px}
-.gm-img-list img{width:100%;height:auto;display:block;cursor:zoom-in;transition:opacity .18s}
-.gm-img-list img:hover{opacity:.85}
-.gm-video-embed{width:100%;aspect-ratio:16/9;border:none;display:block}
-.gm-reading{padding:40px 40px 74px}
-.gm-reading-cover{margin-bottom:32px;border:1px solid var(--border);overflow:hidden;cursor:zoom-in}
-.gm-reading-cover img{width:100%;display:block}
-.gm-reading-heading{font-family:var(--T);font-size:1.5rem;font-weight:700;color:var(--red);margin:32px 0 14px;scroll-margin-top:24px}
-.gm-reading-heading:first-of-type{margin-top:0}
-.gm-reading-p{font-family:var(--B);font-size:1rem;color:var(--text2);line-height:1.85;margin-bottom:16px}
-.gm-reading-img{width:100%;display:block;margin:20px 0;border:1px solid var(--border);cursor:zoom-in}
-.gm-reading-video{margin:20px 0}
-.gm-nav{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:2}
-.gm-nav-btn{font-family:var(--M);font-size:var(--text-label-link-size);letter-spacing:var(--text-label-link-track);padding:7px 18px;border:1px solid var(--border);color:var(--on-dark);transition:all .18s;background:rgba(10,8,8,.75)}
-.gm-nav-btn:hover{border-color:var(--red);color:var(--on-red)}
-.gm-nav-btn:disabled{opacity:.3;cursor:default}
 .gm-info{padding:40px 38px;display:flex;flex-direction:column;border-left:1px solid var(--border);overflow-y:auto}
 .gm-bar{display:flex;align-items:center;gap:10px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border)}
 .gm-cat-lbl{font-family:var(--M);font-size:0.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--red)}
 .gm-close{margin-left:auto;font-family:var(--M);font-size:0.6rem;letter-spacing:.18em;text-transform:uppercase;padding:8px 20px;border:1px solid var(--border);color:var(--muted);transition:all .18s;display:flex;align-items:center;gap:8px}
 .gm-close:hover{border-color:var(--red);color:var(--text)}
-.gm-title{font-family:var(--T);font-size:1.75rem;font-weight:700;line-height:1.15;color:var(--text);margin-bottom:18px}
-.gm-subtitle{font-family:var(--B);font-size:0.92rem;font-style:italic;color:var(--text2);margin-top:-10px;margin-bottom:18px}
-.gm-row{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid rgba(var(--red-rgb),.08);font-family:var(--B);font-size:0.92rem}
-.gm-lbl{color:var(--muted);min-width:88px;font-weight:500}
-.gm-val{color:var(--text2)}
-.gm-divider{height:1px;background:var(--border);margin:20px 0;flex-shrink:0}
-.gm-toc{display:flex;flex-direction:column;gap:2px}
-.gm-toc-link{
-  padding:9px 0 9px 14px;font-family:var(--B);font-size:0.92rem;color:var(--muted);
-  border-left:2px solid transparent;transition:all .18s;cursor:pointer;text-align:left;background:none;
-}
-.gm-toc-link:hover{color:var(--text);border-left-color:var(--red);background:var(--red-dim)}
-.gm-desc-wrap{margin-top:18px;margin-bottom:22px}
 .gm-desc{font-family:var(--B);font-size:var(--text-body-compact-size);color:var(--text2);line-height:var(--text-body-compact-line)}
-.gm-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:14px}
-.gm-tag{font-family:var(--M);font-size:0.58rem;padding:3px 10px;border:1px solid var(--border);color:var(--muted)}
-.gm-feats{margin-bottom:22px}
-.gm-feats-lbl{font-family:var(--M);font-size:0.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
-.gm-feat{font-family:var(--B);font-size:0.88rem;color:var(--text2);padding:6px 0;border-bottom:1px solid rgba(var(--red-rgb),.07)}
-.gm-feat::before{content:'→ ';color:var(--red);font-family:var(--M)}
-.gm-related{margin-bottom:22px}
-.gm-related-lbl{font-family:var(--M);font-size:0.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
-.gm-related-list{display:flex;flex-direction:column;gap:2px}
-.gm-related-card{display:flex;align-items:center;gap:10px;padding:7px 6px;border:1px solid transparent;cursor:pointer;transition:all .18s}
-.gm-related-card:hover,.gm-related-card:focus-visible{border-color:var(--red);background:var(--red-dim);outline:none}
-.gm-related-thumb{width:42px;height:42px;flex-shrink:0;overflow:hidden;background:var(--bg3)}
-.gm-related-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.gm-related-meta{min-width:0}
-.gm-related-type{font-family:var(--M);font-size:0.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
-.gm-related-title{font-family:var(--B);font-size:0.86rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gm-link-area{margin-top:auto;padding-top:22px;border-top:1px solid var(--border)}
-.gm-link-lbl{font-family:var(--M);font-size:0.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
-.gm-link-row{display:flex;gap:8px}
-.gm-link-in{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--M);font-size:0.72rem;padding:9px 14px;outline:none;letter-spacing:.04em}
-.gm-link-in:focus{border-color:rgba(var(--red-rgb),.5)}
-.gm-link-in::placeholder{color:var(--muted)}
-.gm-link-btn{padding:9px 18px;background:var(--red);color:var(--on-red);font-family:var(--M);font-size:var(--text-label-link-size);letter-spacing:var(--text-label-link-track);text-transform:uppercase;transition:background .18s}
-.gm-link-btn:hover{background:var(--red2)}
-.gm-links-list{display:flex;flex-wrap:wrap;gap:8px}
-.gm-link-chip{font-family:var(--M);font-size:0.62rem;letter-spacing:.1em;text-transform:uppercase;padding:9px 16px;background:var(--red);color:var(--on-red);transition:background .18s}
-.gm-link-chip:hover{background:var(--red2)}
+/* Mobile overrides for `.gm-panel`/`.gm-img-side` already exist further
+   down, folded into a larger shared breakpoint block (see the comment near
+   ".gm-img-side's row" below) — not duplicated here. */
 
-/* ══ WORLDBUILDING ARTWORK / ENTITY DETAIL (Task 4.4B) ══════════════════
-   Standalone viewport-scale media viewer + info rail — used for Character/
-   Location/Corporation/Technology entries and any untyped legacy entry.
-   Deliberately its own class namespace, not a GalleryModal modifier. */
+/* ══ SHARED MEDIA LIGHTBOX ══════════════════════════════════════════════
+   The one canonical "media + detail rail" viewer, used by every content
+   type (Worldbuilding, Portfolio, Sketches, 3D, Games) and the map's
+   info-only pin popups — see components/shared/MediaLightbox.tsx. Replaces
+   the previously separate GalleryModal, Worldbuilding Artwork Detail, and
+   MapZoomPanel pin-panel implementations/class namespaces. */
 .wbd-overlay{
   display:flex;position:fixed;inset:0;z-index:500;
   background:rgba(4,3,3,.94);align-items:center;justify-content:center;
@@ -1115,10 +1075,35 @@ a.arv-row:hover{background:var(--bg2)}
   width:min(96vw,1900px);height:94vh;background:var(--bg2);overflow:hidden;
 }
 .wbd-media{position:relative;overflow:hidden;background:var(--bg3);min-height:0}
-.wbd-media-scroll{position:relative;height:100%;overflow-y:auto;display:flex;flex-direction:column;gap:16px;padding:24px}
+.wbd-media-scroll{position:relative;height:100%;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+/* Exactly one media item: it sits flush against every edge of the stage,
+   no breathing-room padding at all. */
+.wbd-media-scroll--single{padding:0;gap:0}
+.wbd-media-scroll--single .wbd-media-img{width:100%;height:100%;object-fit:contain;margin:0}
+/* Two or more media items (or a rich-reading article): equal padding on
+   every side. The first (`--hero`) media element fills the scroll area's
+   visible viewport exactly, so anything after it starts below the fold and
+   only appears once the visitor scrolls, instead of visibly peeking in. */
+.wbd-media-scroll--multi{padding:24px;gap:16px}
 .wbd-media-img{width:100%;height:auto;display:block;cursor:zoom-in;transition:opacity .18s}
 .wbd-media-img:hover{opacity:.85}
 .wbd-media-video{width:100%;aspect-ratio:16/9;border:none;display:block}
+/* Declared after the base rules above so it wins the (equal-specificity)
+   cascade and actually overrides their width/height. */
+.wbd-media-img--hero,.wbd-media-video--hero{height:calc(100% - 48px);width:auto;max-width:100%;object-fit:contain;margin:0 auto}
+.wbd-media-figure{margin:0;display:contents}
+.wbd-media-caption{font-family:var(--B);font-size:0.78rem;color:var(--muted);line-height:1.5;padding:2px 2px 0}
+/* richReading mode (Portfolio/Sketches/3D/Games) — content text interleaved
+   with images/videos, ported from the retired GalleryModal's reading view. */
+.wbd-reading-cover{margin-bottom:8px;border:1px solid var(--border);overflow:hidden;cursor:zoom-in}
+.wbd-reading-cover img{width:100%;display:block}
+.wbd-reading-content{display:contents}
+.wbd-reading-heading{font-family:var(--T);font-size:1.5rem;font-weight:700;color:var(--red);margin:16px 0 0;scroll-margin-top:24px}
+.wbd-reading-heading:first-of-type{margin-top:0}
+.wbd-reading-p{font-family:var(--B);font-size:1rem;color:var(--text2);line-height:1.85;margin-bottom:0}
+.wbd-reading-img{width:100%;display:block;border:1px solid var(--border);cursor:zoom-in}
+.wbd-reading-video{margin:0}
+.wbd-reading-figure{margin:0;display:contents}
 .wbd-edge-nav{
   position:absolute;top:50%;transform:translateY(-50%);z-index:2;
   width:44px;height:44px;border-radius:999px;border:1px solid var(--border);
@@ -1140,11 +1125,22 @@ a.arv-row:hover{background:var(--bg2)}
 .wbd-meta-row{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid rgba(var(--red-rgb),.08);font-family:var(--B);font-size:0.92rem}
 .wbd-meta-lbl{color:var(--muted);min-width:88px;font-weight:500}
 .wbd-meta-val{color:var(--text2)}
+.wbd-divider{height:1px;background:var(--border);margin:20px 0;flex-shrink:0}
+.wbd-toc{display:flex;flex-direction:column;gap:2px}
+.wbd-toc-link{
+  text-align:left;font-family:var(--B);font-size:0.85rem;color:var(--text2);
+  padding:6px 10px;border-left:2px solid transparent;transition:all .18s;
+}
+.wbd-toc-link:hover{color:var(--text);border-left-color:var(--red);background:var(--red-dim)}
 .wbd-desc{font-family:var(--B);font-size:var(--text-body-compact-size);color:var(--text2);line-height:var(--text-body-compact-line);margin-top:18px}
 .wbd-body{margin-top:18px;padding-top:18px;border-top:1px solid var(--border)}
 .wbd-body-heading{font-family:var(--T);font-size:1.05rem;font-weight:700;color:var(--red);margin:18px 0 8px}
 .wbd-body-heading:first-child{margin-top:0}
 .wbd-body-p{font-family:var(--B);font-size:0.9rem;color:var(--text2);line-height:1.75;margin-bottom:12px}
+.wbd-feats{margin-top:18px}
+.wbd-feats-lbl{font-family:var(--M);font-size:0.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.wbd-feat{font-family:var(--B);font-size:0.88rem;color:var(--text2);padding:6px 0;border-bottom:1px solid rgba(var(--red-rgb),.07)}
+.wbd-feat::before{content:'→ ';color:var(--red);font-family:var(--M)}
 .wbd-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:18px}
 .wbd-tag{font-family:var(--M);font-size:0.58rem;padding:3px 10px;border:1px solid var(--border);color:var(--muted)}
 .wbd-related{margin-top:22px}
@@ -2053,24 +2049,6 @@ a.arv-row:hover{background:var(--bg2)}
   .mz-overlay .mzp-controls button{padding-inline:9px}
 }
 
-/* ══ MAP PIN DETAIL — read-only, resizes to the pin image's orientation ══ */
-.pin-panel{
-  display:flex;max-width:calc(100vw - 80px);max-height:88vh;
-  background:var(--bg2);overflow:hidden;border:1px solid var(--border);
-}
-.pin-img-side{
-  position:relative;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
-  background:var(--bg3);overflow:hidden;
-}
-.pin-img-side img{
-  display:block;width:auto;height:auto;max-width:min(70vw,800px);max-height:88vh;
-}
-.pin-info-side{width:380px;flex:0 0 380px}
-@media (max-width:820px){
-  .pin-panel{flex-direction:column;max-height:90vh;width:100%}
-  .pin-img-side img{max-width:100%;max-height:50vh}
-  .pin-info-side{width:100%;flex:1 1 auto}
-}
 
 .map-admin-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:20px}
 .map-toolbar-group{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding-left:14px;border-left:1px solid var(--border)}

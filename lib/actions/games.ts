@@ -8,7 +8,7 @@ import { games, gameLinks, gameImages, gameVideos } from "@/db/schema";
 import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseCsv, parseLines, parseLinkFields, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
-import { requiredInt, requiredText, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
+import { requiredInt, requiredText, nullableText, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
 
 type ActionState = { error?: string } | undefined;
 
@@ -109,13 +109,13 @@ export async function createGameImage(gameId: number, formData: FormData) {
   } catch {
     return;
   }
-  await db.insert(gameImages).values({ gameId, url, sortOrder: num(formData.get("sortOrder")) });
+  await db.insert(gameImages).values({ gameId, url, caption: nullableText(formData.get("caption")), sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
 
 export async function updateGameImage(id: number, formData: FormData) {
   await requireAdminSession();
-  await db.update(gameImages).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(gameImages.id, id));
+  await db.update(gameImages).set({ caption: nullableText(formData.get("caption")), sortOrder: num(formData.get("sortOrder")) }).where(eq(gameImages.id, id));
   revalidateAll();
 }
 

@@ -8,7 +8,7 @@ import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbui
 import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseCsv, parseLinkFields, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
-import { requiredId, requiredInt, requiredText, optionalUrl, oneOf, requiredUrl, safeErrorMessage, ValidationError } from "@/lib/validation";
+import { requiredId, requiredInt, requiredText, nullableText, optionalUrl, oneOf, requiredUrl, safeErrorMessage, ValidationError } from "@/lib/validation";
 import { CATEGORIES, WORLDBUILDING_ENTITY_TYPES } from "@/types/worldbuilding";
 
 type ActionState = { error?: string } | undefined;
@@ -123,13 +123,13 @@ export async function createWorldbuildingImage(entryId: number, formData: FormDa
   } catch {
     return;
   }
-  await db.insert(worldbuildingImages).values({ entryId, url, sortOrder: num(formData.get("sortOrder")) });
+  await db.insert(worldbuildingImages).values({ entryId, url, caption: nullableText(formData.get("caption")), sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
 
 export async function updateWorldbuildingImage(id: number, formData: FormData) {
   await requireAdminSession();
-  await db.update(worldbuildingImages).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(worldbuildingImages.id, id));
+  await db.update(worldbuildingImages).set({ caption: nullableText(formData.get("caption")), sortOrder: num(formData.get("sortOrder")) }).where(eq(worldbuildingImages.id, id));
   revalidateAll();
 }
 

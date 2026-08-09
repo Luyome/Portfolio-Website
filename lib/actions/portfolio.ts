@@ -9,7 +9,7 @@ import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseLinkFields } from "@/lib/form-utils";
 import { allSelectedMetadataIds, readMetadataSelections, type ResolvedMetadataSelections } from "@/lib/portfolio-metadata";
 import { readStyles } from "@/lib/style-fields";
-import { requiredInt, requiredText, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
+import { requiredInt, requiredText, nullableText, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
 
 type ActionState = { error?: string } | undefined;
 
@@ -146,13 +146,13 @@ export async function createPortfolioImage(portfolioId: number, formData: FormDa
   } catch {
     return;
   }
-  await db.insert(portfolioImages).values({ portfolioId, url, sortOrder: num(formData.get("sortOrder")) });
+  await db.insert(portfolioImages).values({ portfolioId, url, caption: nullableText(formData.get("caption")), sortOrder: num(formData.get("sortOrder")) });
   revalidateAll();
 }
 
 export async function updatePortfolioImage(id: number, formData: FormData) {
   await requireAdminSession();
-  await db.update(portfolioImages).set({ sortOrder: num(formData.get("sortOrder")) }).where(eq(portfolioImages.id, id));
+  await db.update(portfolioImages).set({ caption: nullableText(formData.get("caption")), sortOrder: num(formData.get("sortOrder")) }).where(eq(portfolioImages.id, id));
   revalidateAll();
 }
 

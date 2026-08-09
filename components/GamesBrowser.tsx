@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import GalleryModal, { GalleryItem } from "./GalleryModal";
+import MediaLightbox, { GalleryItem } from "./shared/MediaLightbox";
 import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
@@ -95,11 +95,12 @@ export default function GamesBrowser({ items, initialItemId }: { items: Game[]; 
           </div>
         ))}
       </div>
-      <GalleryModal
+      <MediaLightbox
         items={galleryItems}
         index={openIndex}
         onClose={() => setOpenIndex(null)}
         onNavigate={setOpenIndex}
+        richReading
       />
     </>
   );

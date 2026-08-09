@@ -7,6 +7,7 @@ import { useDragZoom } from "@/hooks/useDragZoom";
 import { useModalFocus } from "@/hooks/useModalFocus";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import WorldMapArtwork from "./WorldMapArtwork";
+import MediaLightbox from "./shared/MediaLightbox";
 import { MAP_ZOOM_MAX, MAP_ZOOM_MIN, getChildMaps, groupByIconType, resolvePinTarget, visibleMarkersAtZoom } from "@/lib/map-zoom";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 
@@ -25,9 +26,6 @@ function toSemanticZoom(viewerZoom: number): number {
 function iconTypeLabel(iconType: string): string {
   return iconType.length ? iconType[0].toUpperCase() + iconType.slice(1) : iconType;
 }
-
-const NO_IMAGE_SVG =
-  'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="%23151010"/><text fill="%23555" x="50%25" y="50%25" font-size="18" text-anchor="middle" dy=".35em">No Image</text></svg>';
 
 // Fullscreen pan/zoom exploration for the world map -- opened by clicking the
 // static preview in WorldbuildingAtlas. All the interactive map behavior
@@ -56,7 +54,6 @@ export default function MapZoomPanel({
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const pinPanelRef = useRef<HTMLDivElement>(null);
   const { zoom, pan, zoomBy, reset, onPointerDown, onPointerMove, onPointerUp, wasDragging, minZoom } = useDragZoom(
     { viewportRef, contentRef },
     { minZoom: EXPLORER_MIN_ZOOM, maxZoom: EXPLORER_MAX_ZOOM }
@@ -73,10 +70,9 @@ export default function MapZoomPanel({
     () => false
   );
 
-  // Focus goes to the pin-detail panel while it's open (it visually and
-  // functionally sits on top), and back to the map panel once it closes.
+  // Focus goes to the pin-detail lightbox while it's open (it owns its own
+  // focus trap — see MediaLightbox), and back to the map panel once it closes.
   useModalFocus(!pinDetail, overlayRef);
-  useModalFocus(!!pinDetail, pinPanelRef);
 
   const mapsById = useMemo(() => new Map(maps.map((m) => [m.id, m])), [maps]);
   const mapIds = useMemo(() => new Set(maps.map((m) => m.id)), [maps]);
@@ -235,30 +231,17 @@ export default function MapZoomPanel({
       </div>
 
       {pinDetail && (
-        <div
-          className="gm-overlay open"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setPinDetail(null);
-          }}
-        >
-          <div className="pin-panel" ref={pinPanelRef} role="dialog" aria-modal="true" aria-labelledby="pin-detail-title">
-            <div className="pin-img-side">
-              <img src={pinDetail.img || NO_IMAGE_SVG} alt={pinDetail.img ? pinDetail.name : ""} />
-            </div>
-            <div className="gm-info pin-info-side">
-              <div className="gm-bar">
-                <span className="gm-cat-lbl">Location</span>
-                <button type="button" className="gm-close" onClick={() => setPinDetail(null)}>✕ &nbsp; Close</button>
-              </div>
-              <div className="gm-title" id="pin-detail-title">{pinDetail.name}</div>
-              {pinDetail.info.trim() && (
-                <div className="gm-desc-wrap">
-                  <div className="gm-desc">{pinDetail.info}</div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <MediaLightbox
+          items={[{
+            img: pinDetail.img,
+            title: pinDetail.name,
+            catLabel: "Location",
+            desc: pinDetail.info.trim() || undefined,
+          }]}
+          index={0}
+          onClose={() => setPinDetail(null)}
+          onNavigate={() => {}}
+        />
       )}
     </div>,
     document.body

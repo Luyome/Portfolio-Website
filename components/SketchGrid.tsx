@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import EmptyState from "./EmptyState";
-import GalleryModal, { GalleryItem } from "./GalleryModal";
+import MediaLightbox, { GalleryItem } from "./shared/MediaLightbox";
 import { fieldStyle, remapStyles } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
@@ -132,11 +132,12 @@ export default function SketchGrid({ items, initialYear, initialItemId }: { item
           )}
         </div>
       )}
-      <GalleryModal
+      <MediaLightbox
         items={galleryItems}
         index={modalIndex}
         onClose={() => setModalIndex(null)}
         onNavigate={setModalIndex}
+        richReading
       />
     </>
   );

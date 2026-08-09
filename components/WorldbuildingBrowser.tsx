@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { GalleryItem } from "./GalleryModal";
-import WorldbuildingArtworkDetail from "./worldbuilding/WorldbuildingArtworkDetail";
+import MediaLightbox, { GalleryItem } from "./shared/MediaLightbox";
 import WorldbuildingLoreReader from "./worldbuilding/WorldbuildingLoreReader";
 import WorldbuildingAtlas from "./WorldbuildingAtlas";
 import WorldbuildingControls from "./WorldbuildingControls";
@@ -160,7 +159,7 @@ export default function WorldbuildingBrowser({
           onRelatedSelect={setOpenEntryId}
         />
       ) : (
-        <WorldbuildingArtworkDetail
+        <MediaLightbox
           items={galleryItems}
           index={openIndex}
           onClose={() => setOpenEntryId(null)}
