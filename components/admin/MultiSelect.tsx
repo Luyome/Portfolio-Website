@@ -23,6 +23,7 @@ export default function MultiSelect({
   options,
   initialSelected,
   metadataType,
+  manageHref,
   placeholder = "Search…",
   onSelectionChange,
   "aria-describedby": describedBy,
@@ -37,6 +38,8 @@ export default function MultiSelect({
   initialSelected?: MultiSelectChip[];
   /** Metadata type slug, for the empty-state "Admin → Metadata" link. */
   metadataType: string;
+  /** Empty-state manager link, defaults to the Portfolio Metadata Manager — pass an override for other metadata managers (e.g. Worldbuilding's). */
+  manageHref?: string;
   placeholder?: string;
   onSelectionChange?: (selected: MultiSelectChip[]) => void;
   "aria-describedby"?: string;
@@ -140,7 +143,7 @@ export default function MultiSelect({
       {options.length === 0 ? (
         <p className="ms-empty">
           No options yet. Add some in{" "}
-          <Link href={`/admin/metadata?type=${metadataType}`}>Admin → Metadata</Link>.
+          <Link href={manageHref ?? `/admin/metadata?type=${metadataType}`}>Admin → Metadata</Link>.
         </p>
       ) : (
         <div className="ms-input-wrap">

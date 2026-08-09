@@ -7,6 +7,7 @@ import PageHeader from "@/components/PageHeader";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { groupImagesByParent } from "@/lib/group-images";
 import { parseContentItemId } from "@/lib/content-detail-href";
+import { getActiveWbMetadataOptionsByType } from "@/lib/worldbuilding-metadata";
 
 export const metadata: Metadata = {
   title: "Worldbuilding",
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 
 export default async function WorldbuildingPage({ searchParams }: { searchParams: Promise<{ item?: string | string[]; map?: string | string[] }> }) {
   const { item, map } = await searchParams;
-  const [items, imageRows, linkRows, videoRows, relationshipRows, mapRows, locationRows, appearance] = await Promise.all([
+  const [items, imageRows, linkRows, videoRows, relationshipRows, mapRows, locationRows, appearance, wbOptions] = await Promise.all([
     db.select().from(worldbuildingEntries).orderBy(desc(worldbuildingEntries.year), asc(worldbuildingEntries.sortOrder)),
     db.select().from(worldbuildingImages).orderBy(asc(worldbuildingImages.sortOrder)),
     db.select().from(worldbuildingLinks).orderBy(asc(worldbuildingLinks.sortOrder)),
@@ -25,7 +26,9 @@ export default async function WorldbuildingPage({ searchParams }: { searchParams
     db.select().from(worldMaps).orderBy(asc(worldMaps.sortOrder)),
     db.select().from(mapLocations).orderBy(asc(mapLocations.sortOrder)),
     getPageAppearance("worldbuilding"),
+    getActiveWbMetadataOptionsByType(),
   ]);
+  const entityTypeOptions = wbOptions.wb_entity_type;
   const imagesByItem = groupImagesByParent(imageRows, (r) => r.entryId);
   const videosByItem = groupImagesByParent(videoRows, (r) => r.entryId);
   const itemsWithImages = items.map((w) => ({
@@ -43,7 +46,7 @@ export default async function WorldbuildingPage({ searchParams }: { searchParams
         title="Worldbuilding Chronicles"
         subtitle="Explore stories, lore and characters from created worlds."
       />
-      <WorldbuildingBrowser items={itemsWithImages} relationships={relationshipRows} maps={mapRows} locations={locationRows} initialItemId={parseContentItemId(item)} initialMapId={parseContentItemId(map)} />
+      <WorldbuildingBrowser items={itemsWithImages} relationships={relationshipRows} maps={mapRows} locations={locationRows} entityTypeOptions={entityTypeOptions} initialItemId={parseContentItemId(item)} initialMapId={parseContentItemId(map)} />
     </div>
   );
 }

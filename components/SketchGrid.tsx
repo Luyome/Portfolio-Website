@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import EmptyState from "./EmptyState";
 import MediaLightbox, { GalleryItem } from "./shared/MediaLightbox";
+import BlogReader from "./shared/BlogReader";
 import { fieldStyle, remapStyles } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
@@ -20,6 +21,7 @@ export type Sketch = {
   videos?: MediaEntry[];
   links?: { id: number; label: string; href: string; kind: string }[];
   colorHex: string | null;
+  displayTemplate: string;
   styles?: StylesMap;
 };
 
@@ -132,13 +134,22 @@ export default function SketchGrid({ items, initialYear, initialItemId }: { item
           )}
         </div>
       )}
-      <MediaLightbox
-        items={galleryItems}
-        index={modalIndex}
-        onClose={() => setModalIndex(null)}
-        onNavigate={setModalIndex}
-        richReading
-      />
+      {modalIndex !== null && filtered[modalIndex]?.displayTemplate === "blog" ? (
+        <BlogReader
+          items={galleryItems}
+          index={modalIndex}
+          onClose={() => setModalIndex(null)}
+          onNavigate={setModalIndex}
+        />
+      ) : (
+        <MediaLightbox
+          items={galleryItems}
+          index={modalIndex}
+          onClose={() => setModalIndex(null)}
+          onNavigate={setModalIndex}
+          richReading
+        />
+      )}
     </>
   );
 }

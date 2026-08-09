@@ -4,11 +4,11 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { games, gameLinks, gameImages, gameVideos } from "@/db/schema";
+import { DISPLAY_TEMPLATES, games, gameLinks, gameImages, gameVideos } from "@/db/schema";
 import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseCsv, parseLines, parseLinkFields, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
-import { requiredInt, requiredText, nullableText, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
+import { requiredInt, requiredText, nullableText, oneOf, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
 
 type ActionState = { error?: string } | undefined;
 
@@ -27,6 +27,7 @@ function readFields(formData: FormData) {
     // markdown/structured content is never altered, per docs/02_CONTENT_ARCHITECTURE.md.
     content: str(formData.get("content")),
     contentOrder: num(formData.get("contentOrder")),
+    displayTemplate: oneOf(formData.get("displayTemplate") || "gallery", DISPLAY_TEMPLATES, "Display Template"),
     sortOrder: num(formData.get("sortOrder")),
     styles: readStyles(formData, ["title", "status", "engine", "desc", "target"]),
   };

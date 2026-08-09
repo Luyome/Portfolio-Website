@@ -11,12 +11,15 @@ export default function WorldbuildingGrid({
   items,
   onSelect,
   hasEntries,
+  entityTypeLabels,
 }: {
   items: LoreEntry[];
   onSelect: (id: number) => void;
   /** Whether any entry exists before search/filter — distinguishes
    * "nothing published yet" from "filtered down to nothing". */
   hasEntries: boolean;
+  /** Slug→name map built from active Entity Type options (Phase 2). */
+  entityTypeLabels: Record<string, string>;
 }) {
   if (items.length === 0) {
     return hasEntries ? (
@@ -30,7 +33,7 @@ export default function WorldbuildingGrid({
     <div className="wb-disc-grid">
       <AnimatePresence initial={false}>
         {items.map((w) => {
-          const badge = resolveEntityTypeLabel(w.entityType, w.cat);
+          const badge = resolveEntityTypeLabel(w.entityType, w.cat, entityTypeLabels);
           const meta = [w.date, badge].filter(Boolean).join(" — ");
           return (
             <motion.div
@@ -56,7 +59,7 @@ export default function WorldbuildingGrid({
                   src={w.img}
                   alt={w.title}
                   fill
-                  sizes="(max-width: 480px) 46vw, (max-width: 900px) 22vw, 200px"
+                  sizes="(max-width: 480px) 46vw, (max-width: 900px) 22vw, 15vw"
                   unoptimized={!isOptimizableImageUrl(w.img)}
                 />
               </div>

@@ -12,6 +12,7 @@ import { updateWorldbuildingEntry, createWorldbuildingImage, updateWorldbuilding
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { getActiveLinkLabelOptions } from "@/lib/link-label-options";
 import { getRelatedWorldbuildingEntitySummaries } from "@/lib/worldbuilding-data";
+import { getActiveWbMetadataOptionsByType, getWorldbuildingMetadataSelections } from "@/lib/worldbuilding-metadata";
 import { requiredId } from "@/lib/validation";
 
 export default async function EditWorldbuildingEntryPage({
@@ -26,7 +27,7 @@ export default async function EditWorldbuildingEntryPage({
   } catch {
     notFound();
   }
-  const [[item], images, links, videos, appearance, labelOptions, relationships, otherEntries] = await Promise.all([
+  const [[item], images, links, videos, appearance, labelOptions, relationships, otherEntries, wbOptions, wbSelections] = await Promise.all([
     db.select().from(worldbuildingEntries).where(eq(worldbuildingEntries.id, entryId)),
     db.select().from(worldbuildingImages).where(eq(worldbuildingImages.entryId, entryId)).orderBy(asc(worldbuildingImages.sortOrder)),
     db.select().from(worldbuildingLinks).where(eq(worldbuildingLinks.entryId, entryId)).orderBy(asc(worldbuildingLinks.sortOrder)),
@@ -35,6 +36,8 @@ export default async function EditWorldbuildingEntryPage({
     getActiveLinkLabelOptions(),
     getRelatedWorldbuildingEntitySummaries(entryId),
     db.select({ id: worldbuildingEntries.id, title: worldbuildingEntries.title }).from(worldbuildingEntries).where(ne(worldbuildingEntries.id, entryId)).orderBy(asc(worldbuildingEntries.title)),
+    getActiveWbMetadataOptionsByType(),
+    getWorldbuildingMetadataSelections(entryId),
   ]);
   if (!item) notFound();
 
@@ -46,7 +49,17 @@ export default async function EditWorldbuildingEntryPage({
   return (
     <div>
       <AdminPageHeader title="Edit Worldbuilding Entry" />
-      <WorldbuildingForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
+      <WorldbuildingForm
+        action={updateWithId}
+        item={item}
+        pageVars={pageAppearanceVars(appearance)}
+        entityTypeOptions={wbOptions.wb_entity_type}
+        categoryOptions={wbOptions.wb_category}
+        chipOptions={wbOptions.wb_chip}
+        selectedEntityType={wbSelections.wb_entity_type[0]}
+        selectedCategory={wbSelections.wb_category[0]}
+        selectedChips={wbSelections.wb_chip}
+      />
       <div className="adm-editor-extras">
         <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateWorldbuildingImage} deleteAction={deleteWorldbuildingImage} />
         <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateWorldbuildingVideo} deleteAction={deleteWorldbuildingVideo} />

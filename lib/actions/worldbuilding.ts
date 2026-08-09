@@ -1,27 +1,34 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingRelationships, worldbuildingVideos } from "@/db/schema";
+import { DISPLAY_TEMPLATES, worldbuildingEntries, worldbuildingImages, worldbuildingLinks, worldbuildingMetadataOptions, worldbuildingRelationships, worldbuildingVideos } from "@/db/schema";
 import { requireAdminSession } from "@/lib/actions/guard";
-import { num, parseCsv, parseLinkFields, str } from "@/lib/form-utils";
+import { num, parseLinkFields, str } from "@/lib/form-utils";
+import { allSelectedWbMetadataIds, readWbMetadataSelections, type ResolvedWbMetadataSelections } from "@/lib/worldbuilding-metadata";
 import { readStyles } from "@/lib/style-fields";
-import { requiredId, requiredInt, requiredText, nullableText, optionalUrl, oneOf, requiredUrl, safeErrorMessage, ValidationError } from "@/lib/validation";
-import { CATEGORIES, WORLDBUILDING_ENTITY_TYPES } from "@/types/worldbuilding";
+import { requiredId, requiredInt, requiredText, nullableText, oneOf, optionalUrl, requiredUrl, safeErrorMessage, ValidationError } from "@/lib/validation";
 
 type ActionState = { error?: string } | undefined;
 
-function readFields(formData: FormData) {
+// `cat`/`entityType`/`chips` stay a compatibility mirror of the selected
+// metadata option names (`cat`, `chips`) / slug (`entityType` — the public
+// site compares this as a stable key, not a display label) until every
+// consumer reads through the junction table directly instead — mirrors
+// Portfolio's own legacy dual-write strategy (`lib/actions/portfolio.ts`).
+function readFields(formData: FormData, selections: ResolvedWbMetadataSelections) {
   return {
     year: requiredInt(formData.get("year"), "Year"),
     date: requiredText(formData.get("date"), "Display Date"),
-    cat: oneOf(formData.get("cat"), CATEGORIES, "Category"),
+    cat: selections.wb_category.names[0] ?? "",
+    entityType: selections.wb_entity_type.slugs[0] ?? null,
     title: requiredText(formData.get("title"), "Title"),
     excerpt: requiredText(formData.get("excerpt"), "Excerpt"),
-    chips: parseCsv(formData.get("chips")),
+    chips: selections.wb_chip.names,
     img: optionalUrl(formData.get("img"), "Image"),
+    displayTemplate: oneOf(formData.get("displayTemplate") || "gallery", DISPLAY_TEMPLATES, "Display Template"),
     // Rich content block — left untouched (no trim/validation) so authored
     // markdown/structured content is never altered, per docs/02_CONTENT_ARCHITECTURE.md.
     content: str(formData.get("content")),
@@ -29,14 +36,6 @@ function readFields(formData: FormData) {
     sortOrder: num(formData.get("sortOrder")),
     styles: readStyles(formData, ["title", "excerpt"]),
   };
-}
-
-// Task 4.7 owns the assignment UI. Existing edits do not post this field, so
-// omitting it preserves a type that was previously assigned.
-function readOptionalEntityType(formData: FormData) {
-  if (!formData.has("entityType")) return undefined;
-  const value = String(formData.get("entityType") ?? "").trim();
-  return value ? oneOf(value, WORLDBUILDING_ENTITY_TYPES, "Entity type") : null;
 }
 
 function revalidateAll() {
@@ -48,29 +47,72 @@ function revalidateAll() {
 export async function createWorldbuildingEntry(_prevState: ActionState, formData: FormData): Promise<ActionState> {
   await requireAdminSession();
   let fields;
-  let entityType;
+  let selections;
   try {
-    fields = readFields(formData);
-    entityType = readOptionalEntityType(formData);
+    selections = await readWbMetadataSelections(formData);
+    fields = readFields(formData, selections);
   } catch (err) {
     return { error: safeErrorMessage(err) };
   }
-  await db.insert(worldbuildingEntries).values({ ...fields, entityType: entityType ?? null });
+  const metadataIds = allSelectedWbMetadataIds(selections);
+
+  const [inserted] = await db.insert(worldbuildingEntries).values(fields).returning({ id: worldbuildingEntries.id });
+  if (metadataIds.length > 0) {
+    try {
+      await db.insert(worldbuildingMetadataOptions).values(metadataIds.map((metadataOptionId) => ({ entryId: inserted.id, metadataOptionId })));
+    } catch (err) {
+      // Same compensating-delete strategy as Portfolio's create action — the
+      // neon-http driver has no cross-statement transaction support, so if
+      // the junction insert fails, delete the just-created entry (its
+      // `onDelete: cascade` FK takes any partial junction rows with it)
+      // rather than leave an entry with no/half metadata relation behind.
+      await db.delete(worldbuildingEntries).where(eq(worldbuildingEntries.id, inserted.id));
+      throw err;
+    }
+  }
   revalidateAll();
   redirect("/admin/worldbuilding");
 }
 
 export async function updateWorldbuildingEntry(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
   await requireAdminSession();
+
+  const existingRows = await db
+    .select({ metadataOptionId: worldbuildingMetadataOptions.metadataOptionId })
+    .from(worldbuildingMetadataOptions)
+    .where(eq(worldbuildingMetadataOptions.entryId, id));
+  const existingIds = new Set(existingRows.map((r) => r.metadataOptionId));
+
   let fields;
-  let entityType;
+  let selections;
   try {
-    fields = readFields(formData);
-    entityType = readOptionalEntityType(formData);
+    selections = await readWbMetadataSelections(formData, existingIds);
+    fields = readFields(formData, selections);
   } catch (err) {
     return { error: safeErrorMessage(err) };
   }
-  await db.update(worldbuildingEntries).set({ ...fields, ...(entityType === undefined ? {} : { entityType }) }).where(eq(worldbuildingEntries.id, id));
+  const nextIds = new Set(allSelectedWbMetadataIds(selections));
+  const toRemove = [...existingIds].filter((mid) => !nextIds.has(mid));
+  const toAdd = [...nextIds].filter((mid) => !existingIds.has(mid));
+
+  const updateQuery = db.update(worldbuildingEntries).set(fields).where(eq(worldbuildingEntries.id, id));
+  const removeQuery = () =>
+    db
+      .delete(worldbuildingMetadataOptions)
+      .where(and(eq(worldbuildingMetadataOptions.entryId, id), inArray(worldbuildingMetadataOptions.metadataOptionId, toRemove)));
+  const addQuery = () =>
+    db.insert(worldbuildingMetadataOptions).values(toAdd.map((metadataOptionId) => ({ entryId: id, metadataOptionId })));
+
+  if (toRemove.length > 0 && toAdd.length > 0) {
+    await db.batch([updateQuery, removeQuery(), addQuery()]);
+  } else if (toRemove.length > 0) {
+    await db.batch([updateQuery, removeQuery()]);
+  } else if (toAdd.length > 0) {
+    await db.batch([updateQuery, addQuery()]);
+  } else {
+    await db.batch([updateQuery]);
+  }
+
   revalidateAll();
   redirect("/admin/worldbuilding");
 }

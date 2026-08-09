@@ -176,6 +176,13 @@
       "when": 1786283680960,
       "tag": "0024_complete_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1786287335996,
+      "tag": "0025_harsh_captain_cross",
+      "breakpoints": true
     }
   ]
 }

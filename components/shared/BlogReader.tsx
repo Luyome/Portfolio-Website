@@ -11,14 +11,18 @@ import ImageZoomOverlay from "@/components/ImageZoomOverlay";
 import { useModalFocus } from "@/hooks/useModalFocus";
 
 /**
- * Worldbuilding "Lore Reader" — the dedicated long-form article-reading
- * experience for canonical `entityType === "lore"` entries (Sprint 4 Task
- * 4.4B). A full dark reading surface with a centered prose column, large
- * title, small metadata line, section headings, and inline images that may
- * bleed wider than the column — matching the ArtStation Breakdown reference,
- * not the Artwork/Entity Detail viewer with text appended to its sidebar.
+ * The shared "Blog" reading experience (Phase 2) — the long-form
+ * article-reading counterpart to `MediaLightbox`'s "Gallery" template,
+ * selected per-entry via `displayTemplate` (independent of content type or
+ * taxonomy) across Worldbuilding, Portfolio, Sketches, 3D, and Games. A full
+ * dark reading surface with a centered prose column, large title, small
+ * metadata line, section headings, and inline images that may bleed wider
+ * than the column — matching the ArtStation Breakdown reference, not
+ * `MediaLightbox`'s media-stage-plus-sidebar layout. Originally built as
+ * Worldbuilding's own "Lore Reader" (Sprint 4 Task 4.4B); promoted to this
+ * shared location in Phase 2 without changing its behavior.
  */
-export default function WorldbuildingLoreReader({
+export default function BlogReader({
   items,
   index,
   onClose,

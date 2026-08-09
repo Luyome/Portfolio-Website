@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import MediaLightbox, { GalleryItem } from "./shared/MediaLightbox";
-import WorldbuildingLoreReader from "./worldbuilding/WorldbuildingLoreReader";
+import BlogReader from "./shared/BlogReader";
 import WorldbuildingAtlas from "./WorldbuildingAtlas";
 import WorldbuildingControls from "./WorldbuildingControls";
 import WorldbuildingGrid from "./WorldbuildingGrid";
@@ -21,12 +21,16 @@ export type WorldbuildingRelationshipEdge = {
   sortOrder: number;
 };
 
+/** An active `wb_entity_type` metadata option — the Phase 2 dynamic taxonomy (see `lib/worldbuilding-metadata.ts`). */
+export type WorldbuildingEntityTypeOption = { id: number; name: string; slug: string };
+
 export type WorldbuildingEntry = {
   id: number;
   year: number;
   date: string;
   cat: string;
   entityType: WorldbuildingEntityType | string | null;
+  displayTemplate: string;
   title: string;
   excerpt: string;
   chips: string[];
@@ -44,6 +48,7 @@ export default function WorldbuildingBrowser({
   relationships,
   maps,
   locations,
+  entityTypeOptions,
   initialItemId,
   initialMapId,
 }: {
@@ -51,9 +56,15 @@ export default function WorldbuildingBrowser({
   relationships: WorldbuildingRelationshipEdge[];
   maps: WorldMap[];
   locations: MapLocation[];
+  /** Active Entity Type options (Phase 2) — drives both the filter tabs and label resolution. */
+  entityTypeOptions: WorldbuildingEntityTypeOption[];
   initialItemId?: number | null;
   initialMapId?: number | null;
 }) {
+  const entityTypeLabels = useMemo(
+    () => Object.fromEntries(entityTypeOptions.map((o) => [o.slug, o.name])),
+    [entityTypeOptions]
+  );
   const [entityFilter, setEntityFilter] = useState<EntityTypeFilter>("all");
   const [search, setSearch] = useState("");
   const initialIndex = findContentItemIndex(items, initialItemId ?? null);
@@ -114,7 +125,7 @@ export default function WorldbuildingBrowser({
     images: w.images,
     videos: w.videos,
     title: w.title,
-    catLabel: resolveEntityTypeLabel(w.entityType, w.cat),
+    catLabel: resolveEntityTypeLabel(w.entityType, w.cat, entityTypeLabels),
     metaRows: [
       { label: "Year", value: String(w.year) },
       { label: "Date", value: w.date },
@@ -127,18 +138,17 @@ export default function WorldbuildingBrowser({
     related: (relatedIdsByEntry.get(w.id) ?? [])
       .map((id) => itemsById.get(id))
       .filter((r): r is WorldbuildingEntry => !!r)
-      .map((r) => ({ id: r.id, title: r.title, img: r.img, typeLabel: resolveEntityTypeLabel(r.entityType, r.cat) })),
+      .map((r) => ({ id: r.id, title: r.title, img: r.img, typeLabel: resolveEntityTypeLabel(r.entityType, r.cat, entityTypeLabels) })),
     styles: remapStyles(w.styles, { title: "title", excerpt: "desc" }),
   }));
 
   const modalIndex = openEntryId === null ? null : items.findIndex((i) => i.id === openEntryId);
   const openIndex = modalIndex === -1 ? null : modalIndex;
-  // Task 4.4B: the two Worldbuilding detail experiences are separate
-  // presentation components, chosen by real content/type — canonical
-  // entityType === "lore" opens the dedicated article reader, every other
-  // supported type (and any untyped/legacy entry, never guessed into a
-  // type) opens the media-dominant Artwork/Entity Detail viewer.
-  const isLoreOpen = openIndex !== null && items[openIndex]?.entityType === "lore";
+  // Phase 2: the display template is its own field, independent of Entity
+  // Type — an entry classified as e.g. "location" can still publish through
+  // the Lore Reader (article view) if its owner picked "blog". Previously
+  // this was hardcoded to `entityType === "lore"` (Task 4.4B).
+  const isLoreOpen = openIndex !== null && items[openIndex]?.displayTemplate === "blog";
 
   return (
     <>
@@ -148,10 +158,11 @@ export default function WorldbuildingBrowser({
         onSearchChange={setSearch}
         entityFilter={entityFilter}
         onEntityFilterChange={setEntityFilter}
+        entityTypeOptions={entityTypeOptions}
       />
-      <WorldbuildingGrid items={loreEntries} onSelect={setOpenEntryId} hasEntries={items.length > 0} />
+      <WorldbuildingGrid items={loreEntries} onSelect={setOpenEntryId} hasEntries={items.length > 0} entityTypeLabels={entityTypeLabels} />
       {isLoreOpen ? (
-        <WorldbuildingLoreReader
+        <BlogReader
           items={galleryItems}
           index={openIndex}
           onClose={() => setOpenEntryId(null)}

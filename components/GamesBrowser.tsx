@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import MediaLightbox, { GalleryItem } from "./shared/MediaLightbox";
+import BlogReader from "./shared/BlogReader";
 import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
@@ -24,6 +25,7 @@ export type Game = {
   year: number;
   content: string;
   contentOrder: number;
+  displayTemplate: string;
   links: GameLink[];
   images?: MediaEntry[];
   videos?: MediaEntry[];
@@ -95,13 +97,22 @@ export default function GamesBrowser({ items, initialItemId }: { items: Game[]; 
           </div>
         ))}
       </div>
-      <MediaLightbox
-        items={galleryItems}
-        index={openIndex}
-        onClose={() => setOpenIndex(null)}
-        onNavigate={setOpenIndex}
-        richReading
-      />
+      {openIndex !== null && items[openIndex]?.displayTemplate === "blog" ? (
+        <BlogReader
+          items={galleryItems}
+          index={openIndex}
+          onClose={() => setOpenIndex(null)}
+          onNavigate={setOpenIndex}
+        />
+      ) : (
+        <MediaLightbox
+          items={galleryItems}
+          index={openIndex}
+          onClose={() => setOpenIndex(null)}
+          onNavigate={setOpenIndex}
+          richReading
+        />
+      )}
     </>
   );
 }

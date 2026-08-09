@@ -6,18 +6,25 @@ export type CategoryType = "Characters" | "Cities" | "Systems" | "Factions" | "I
 export type CategoryFilter = CategoryType | "all";
 export type PinType = "submap" | "lore";
 
+// Legacy fixed taxonomy — superseded by the Phase 2 `wb_category` managed
+// metadata group (`lib/worldbuilding-metadata.ts`), kept only as a fallback
+// seed list and for any code path that hasn't moved off it.
 export const CATEGORIES: CategoryType[] = ["Characters", "Cities", "Systems", "Factions", "Items", "History"];
 
-// Canonical Worldbuilding taxonomy. The legacy CATEGORIES list intentionally
-// remains separate because it still powers the existing Admin category UI.
+// Phase 2: Entity Type is a fully dynamic, admin-managed taxonomy (the
+// `wb_entity_type` metadata group) rather than this fixed list — kept only
+// as the seed values a fresh install/migration starts from. `entityType` on
+// an entry is always a plain string (a metadata option's slug) from here on.
 export const WORLDBUILDING_ENTITY_TYPES = ["character", "location", "corporation", "technology", "lore"] as const;
-export type WorldbuildingEntityType = typeof WORLDBUILDING_ENTITY_TYPES[number];
-export type EntityTypeFilter = WorldbuildingEntityType | "all";
+export type WorldbuildingEntityType = string;
+export type EntityTypeFilter = string;
 
-// Display labels for the public Task 4.3 discovery-grid filter. Records with
-// no canonical entityType (legacy, unclassified) are never guessed into one
-// of these — they only ever appear under "all".
-export const ENTITY_TYPE_LABELS: Record<WorldbuildingEntityType, string> = {
+// Fallback labels for the seed slugs above — used only when no live
+// `wb_entity_type` label map is available (e.g. a call site that hasn't
+// been updated to pass one). Every current public/admin call site passes a
+// live map built from active metadata options instead (`resolveEntityTypeLabel`'s
+// second parameter), which reflects whatever an admin has renamed a slug to.
+export const ENTITY_TYPE_LABELS: Record<string, string> = {
   character: "Character",
   location: "Location",
   corporation: "Corporation",
@@ -25,11 +32,13 @@ export const ENTITY_TYPE_LABELS: Record<WorldbuildingEntityType, string> = {
   lore: "Lore",
 };
 
-/** Resolves the display label for an entry: canonical entityType label when
- * classified (Task 4.2), legacy `cat` free-text otherwise. Shared by the
- * Task 4.3 discovery grid and the Task 4.4 detail shell so both agree. */
-export function resolveEntityTypeLabel(entityType: WorldbuildingEntityType | string | null, cat: string): string {
-  return entityType && entityType in ENTITY_TYPE_LABELS ? ENTITY_TYPE_LABELS[entityType as WorldbuildingEntityType] : cat;
+/** Resolves the display label for an entry: the live Entity Type label when
+ * classified and present in `labels` (a slug→name map built from active
+ * `wb_entity_type` metadata options — falls back to the seed labels above
+ * when omitted), legacy `cat` free-text otherwise. Shared by the discovery
+ * grid and the detail shell so both agree. */
+export function resolveEntityTypeLabel(entityType: string | null, cat: string, labels: Record<string, string> = ENTITY_TYPE_LABELS): string {
+  return entityType && entityType in labels ? labels[entityType] : cat;
 }
 
 /** A related Worldbuilding entity surfaced in the Task 4.4 detail shell,

@@ -4,12 +4,12 @@ import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { portfolioItems, portfolioImages, portfolioLinks, portfolioVideos, portfolioMetadataOptions } from "@/db/schema";
+import { DISPLAY_TEMPLATES, portfolioItems, portfolioImages, portfolioLinks, portfolioVideos, portfolioMetadataOptions } from "@/db/schema";
 import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseLinkFields } from "@/lib/form-utils";
 import { allSelectedMetadataIds, readMetadataSelections, type ResolvedMetadataSelections } from "@/lib/portfolio-metadata";
 import { readStyles } from "@/lib/style-fields";
-import { requiredInt, requiredText, nullableText, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
+import { requiredInt, requiredText, nullableText, oneOf, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
 
 type ActionState = { error?: string } | undefined;
 
@@ -34,6 +34,7 @@ function readFields(formData: FormData, selections: ResolvedMetadataSelections) 
     software: selections.software.names.join(LEGACY_JOIN),
     link: optionalUrl(formData.get("link"), "External Link"),
     img: optionalUrl(formData.get("img"), "Image"),
+    displayTemplate: oneOf(formData.get("displayTemplate") || "gallery", DISPLAY_TEMPLATES, "Display Template"),
     sortOrder: num(formData.get("sortOrder")),
     styles: readStyles(formData, ["title", "desc"]),
   };

@@ -151,6 +151,12 @@ export default function PortfolioForm({
             <input name="link" defaultValue={item?.link} placeholder="https://www.artstation.com/..." />
           </Field>
           <ImageUploadField name="img" initialUrl={item?.img} onValueChange={(v) => setState((s) => ({ ...s, img: v }))} />
+          <Field id="displayTemplate" label="Display Template" required={false} hint="Gallery: media viewer. Blog: full-page article reader.">
+            <select name="displayTemplate" defaultValue={item?.displayTemplate ?? "gallery"}>
+              <option value="gallery">Gallery (media viewer)</option>
+              <option value="blog">Blog (article reader)</option>
+            </select>
+          </Field>
           <Field id="sortOrder" label="Sort Order" required={false}>
             <input name="sortOrder" type="number" defaultValue={item?.sortOrder ?? 0} />
           </Field>

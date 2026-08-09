@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import EmptyState from "./EmptyState";
 import MediaLightbox, { GalleryItem } from "./shared/MediaLightbox";
+import BlogReader from "./shared/BlogReader";
 import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
@@ -22,6 +23,7 @@ export type PortfolioItem = {
   software: string;
   link: string;
   img: string;
+  displayTemplate: string;
   images?: MediaEntry[];
   videos?: MediaEntry[];
   links?: { id: number; label: string; href: string; kind: string }[];
@@ -146,13 +148,22 @@ export default function PortfolioBrowser({
           </div>
         ))}
       </div>
-      <MediaLightbox
-        items={galleryItems}
-        index={modalIndex}
-        onClose={() => setModalIndex(null)}
-        onNavigate={setModalIndex}
-        richReading
-      />
+      {modalIndex !== null && filtered[modalIndex]?.displayTemplate === "blog" ? (
+        <BlogReader
+          items={galleryItems}
+          index={modalIndex}
+          onClose={() => setModalIndex(null)}
+          onNavigate={setModalIndex}
+        />
+      ) : (
+        <MediaLightbox
+          items={galleryItems}
+          index={modalIndex}
+          onClose={() => setModalIndex(null)}
+          onNavigate={setModalIndex}
+          richReading
+        />
+      )}
     </>
   );
 }

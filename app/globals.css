@@ -959,13 +959,16 @@ a.arv-row:hover{background:var(--bg2)}
    title, keeping the gallery wall even without returning to masonry. */
 .wb-disc-grid{
   padding:0 var(--space-lg) var(--space-lg);
-  /* auto-fill (not auto-fit) with a capped track width: cards stay a fixed
-     ~150-200px regardless of how few items a filter leaves — auto-fit's
-     1fr tracks used to stretch a lone remaining card to fill the whole row,
-     which also made next/image request a much-too-small optimized variant
-     for that final rendered width (its `sizes` hint assumes ~180px) and
-     visibly upscale/blur it. */
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,200px));gap:4px;
+  /* auto-fill (not auto-fit) so cards never stretch to fill a lone leftover
+     row (auto-fit's 1fr tracks used to blow up a lone remaining card, which
+     also made next/image request a much-too-small optimized variant for
+     that final rendered width and visibly upscale/blur it). The min track
+     is `max(150px, 1/7th of the row)`, not a flat pixel cap: at any
+     viewport width this guarantees at most 7 columns per row (an 8th
+     column would be narrower than 1/7 and can't fit), while still
+     shrinking down to 150px and wrapping to fewer columns on narrow
+     screens exactly like the previous fixed-cap version did. */
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(max(150px,calc((100% - 24px) / 7)),1fr));gap:4px;
   align-items:start;
 }
 .wb-disc-card{position:relative;overflow:hidden;background:var(--bg3);cursor:pointer;display:flex;flex-direction:column}

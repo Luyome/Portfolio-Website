@@ -10,14 +10,16 @@ import OrderPicker from "./OrderPicker";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import WorldbuildingPreviewCard from "./WorldbuildingPreviewCard";
+import MultiSelect from "./MultiSelect";
 import Field from "./Field";
 import FormError from "./FormError";
 import FormActions from "./FormActions";
 import AdminSection from "./AdminSection";
 import AdminEditorLayout from "./AdminEditorLayout";
 import type { worldbuildingEntries } from "@/db/schema";
+import { DISPLAY_TEMPLATES } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
-import { CATEGORIES, WORLDBUILDING_ENTITY_TYPES, ENTITY_TYPE_LABELS, type WorldbuildingEntityType } from "@/types/worldbuilding";
+import type { WbMetadataOptionChoice } from "@/lib/worldbuilding-metadata";
 
 type WorldbuildingRow = typeof worldbuildingEntries.$inferSelect;
 
@@ -35,15 +37,28 @@ export default function WorldbuildingForm({
   action,
   item,
   pageVars = {},
+  entityTypeOptions,
+  categoryOptions,
+  chipOptions,
+  selectedEntityType,
+  selectedCategory,
+  selectedChips,
 }: {
   action: (prevState: { error?: string } | undefined, formData: FormData) => Promise<{ error?: string } | undefined>;
   item?: WorldbuildingRow;
   pageVars?: CSSProperties;
+  /** Active options for each Phase 2 metadata-driven group — see `lib/worldbuilding-metadata.ts`. */
+  entityTypeOptions: WbMetadataOptionChoice[];
+  categoryOptions: WbMetadataOptionChoice[];
+  chipOptions: WbMetadataOptionChoice[];
+  /** This entry's current selection per group (may include an inactive option so it isn't silently dropped). */
+  selectedEntityType?: WbMetadataOptionChoice;
+  selectedCategory?: WbMetadataOptionChoice;
+  selectedChips: WbMetadataOptionChoice[];
 }) {
   const [actionState, formAction] = useActionState(action, undefined);
-  const [entityType, setEntityType] = useState<WorldbuildingEntityType | "">(
-    (item?.entityType as WorldbuildingEntityType | null) ?? ""
-  );
+  const [entityTypeId, setEntityTypeId] = useState<string>(selectedEntityType ? String(selectedEntityType.id) : "");
+  const [displayTemplate, setDisplayTemplate] = useState(item?.displayTemplate ?? "gallery");
   const [state, setState] = useState<PreviewState>({
     title: item?.title ?? "",
     cat: item?.cat ?? "",
@@ -57,7 +72,7 @@ export default function WorldbuildingForm({
   function handleFormChange(e: React.ChangeEvent<HTMLFormElement>) {
     const target = e.target as unknown as HTMLInputElement | HTMLTextAreaElement;
     const { name, value } = target;
-    if (name === "title" || name === "cat" || name === "excerpt" || name === "chips") {
+    if (name === "title" || name === "excerpt") {
       setState((s) => ({ ...s, [name]: value }));
     }
   }
@@ -94,35 +109,65 @@ export default function WorldbuildingForm({
             >
               <input name="title" defaultValue={item?.title} required />
             </Field>
-            <Field id="cat" label="Category (legacy)" required hint="Preserved for existing records — Entity Type below is the canonical Sprint 4 taxonomy.">
-              <select name="cat" defaultValue={item?.cat ?? CATEGORIES[0]} required>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+            <Field
+              id="catOptionId"
+              label="Category (legacy)"
+              required
+              hint={
+                categoryOptions.length === 0
+                  ? "No options yet — add some in Admin → Worldbuilding Metadata."
+                  : "Preserved for existing records — Entity Type below is the canonical taxonomy."
+              }
+            >
+              <select
+                name="catOptionId"
+                defaultValue={selectedCategory ? String(selectedCategory.id) : ""}
+                onChange={(e) => {
+                  const opt = categoryOptions.find((o) => String(o.id) === e.target.value);
+                  setState((s) => ({ ...s, cat: opt?.name ?? "" }));
+                }}
+                required
+              >
+                <option value="" disabled>— choose —</option>
+                {selectedCategory && !categoryOptions.some((o) => o.id === selectedCategory.id) && (
+                  <option value={selectedCategory.id}>{selectedCategory.name} (inactive)</option>
+                )}
+                {categoryOptions.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </Field>
           </div>
           <div className="adm-form-row">
             <Field
-              id="entityType"
+              id="entityTypeOptionId"
               label="Entity Type"
               required={false}
-              hint={
-                entityType === "lore"
-                  ? "Publishes through the Lore Reader (article/reading view)."
-                  : entityType
-                    ? "Publishes through the Artwork/Entity Detail view."
-                    : "Legacy/unclassified — stays valid and editable, publishes through the Artwork/Entity Detail view until a type is chosen."
-              }
+              hint="Legacy/unclassified — stays valid and editable — until a type is chosen. Options are managed in Admin → Worldbuilding Metadata."
             >
               <select
-                name="entityType"
-                value={entityType}
-                onChange={(e) => setEntityType(e.target.value as WorldbuildingEntityType | "")}
+                name="entityTypeOptionId"
+                value={entityTypeId}
+                onChange={(e) => setEntityTypeId(e.target.value)}
               >
                 <option value="">— Legacy / Unclassified —</option>
-                {WORLDBUILDING_ENTITY_TYPES.map((t) => (
-                  <option key={t} value={t}>{ENTITY_TYPE_LABELS[t]}</option>
+                {selectedEntityType && !entityTypeOptions.some((o) => o.id === selectedEntityType.id) && (
+                  <option value={selectedEntityType.id}>{selectedEntityType.name} (inactive)</option>
+                )}
+                {entityTypeOptions.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            </Field>
+            <Field
+              id="displayTemplate"
+              label="Display Template"
+              required={false}
+              hint="Gallery: media-first viewer with a side info rail. Blog: full-page long-form article reader. Independent of Entity Type — e.g. a Location can still publish as a Blog article."
+            >
+              <select name="displayTemplate" value={displayTemplate} onChange={(e) => setDisplayTemplate(e.target.value)}>
+                {DISPLAY_TEMPLATES.map((t) => (
+                  <option key={t} value={t}>{t === "gallery" ? "Gallery (media viewer)" : "Blog (article reader)"}</option>
                 ))}
               </select>
             </Field>
@@ -145,8 +190,17 @@ export default function WorldbuildingForm({
           >
             <textarea name="excerpt" defaultValue={item?.excerpt} required />
           </Field>
-          <Field id="chips" label="Chips" required={false} hint="Comma separated, e.g. Aethermoor, Lore, Cities">
-            <input name="chips" defaultValue={item?.chips.join(", ")} />
+          <Field id="chipOptionIds" label="Chips" required={false} hint="Selected from managed options — add new ones in Admin → Worldbuilding Metadata.">
+            <MultiSelect
+              id="chipOptionIds"
+              name="chipOptionIds"
+              options={chipOptions}
+              initialSelected={selectedChips}
+              metadataType="wb_chip"
+              manageHref="/admin/worldbuilding/metadata?type=wb_chip"
+              placeholder="Search chips…"
+              onSelectionChange={(selected) => setState((s) => ({ ...s, chips: selected.map((c) => c.name).join(", ") }))}
+            />
           </Field>
         </AdminSection>
 

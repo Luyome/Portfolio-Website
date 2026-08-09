@@ -30,10 +30,13 @@ export const portfolioItems = pgTable("portfolio_items", {
   software: text("software").notNull(),
   link: text("link").notNull(),
   img: text("img").notNull(),
+  displayTemplate: text("display_template").notNull().default("gallery"),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   styles: stylesColumn(),
-});
+}, (table) => [
+  check("portfolio_items_display_template_check", sql`${table.displayTemplate} in ('gallery', 'blog')`),
+]);
 
 export const portfolioImages = pgTable("portfolio_images", {
   id: serial("id").primaryKey(),
@@ -67,10 +70,13 @@ export const sketches = pgTable("sketches", {
   img: text("img"),
   link: text("link"),
   colorHex: text("color_hex"),
+  displayTemplate: text("display_template").notNull().default("gallery"),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   styles: stylesColumn(),
-});
+}, (table) => [
+  check("sketches_display_template_check", sql`${table.displayTemplate} in ('gallery', 'blog')`),
+]);
 
 export const sketchImages = pgTable("sketch_images", {
   id: serial("id").primaryKey(),
@@ -104,10 +110,13 @@ export const models3d = pgTable("models_3d", {
   img: text("img"),
   link: text("link"),
   colorHex: text("color_hex"),
+  displayTemplate: text("display_template").notNull().default("gallery"),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   styles: stylesColumn(),
-});
+}, (table) => [
+  check("models_3d_display_template_check", sql`${table.displayTemplate} in ('gallery', 'blog')`),
+]);
 
 export const model3dImages = pgTable("model_3d_images", {
   id: serial("id").primaryKey(),
@@ -133,6 +142,14 @@ export const model3dLinks = pgTable("model_3d_links", {
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
+// Task 4.7/Phase-2 `displayTemplate` — decouples the public rendering shell
+// (media-first gallery vs. long-form blog/article) from `entityType`, which
+// is a taxonomy label, not a layout choice. Plain text + app validation +
+// DB `CHECK`, matching this schema's established convention for controlled
+// string sets (see `kind` on the `*_links` tables, `pinType` on
+// `mapLocations`) rather than a pgEnum, which this schema never uses.
+export const DISPLAY_TEMPLATES = ["gallery", "blog"] as const;
+
 export const worldbuildingEntries = pgTable("worldbuilding_entries", {
   id: serial("id").primaryKey(),
   year: integer("year").notNull(),
@@ -141,6 +158,7 @@ export const worldbuildingEntries = pgTable("worldbuilding_entries", {
   // `cat` is legacy public taxonomy. Canonical Sprint 4 typing is additive so
   // ambiguous existing records remain intact until an owner classifies them.
   entityType: text("entity_type"),
+  displayTemplate: text("display_template").notNull().default("gallery"),
   title: text("title").notNull(),
   excerpt: text("excerpt").notNull(),
   chips: text("chips").array().notNull().default([]),
@@ -152,6 +170,7 @@ export const worldbuildingEntries = pgTable("worldbuilding_entries", {
   styles: stylesColumn(),
 }, (table) => [
   index("worldbuilding_entries_entity_type_idx").on(table.entityType),
+  check("worldbuilding_entries_display_template_check", sql`${table.displayTemplate} in ('gallery', 'blog')`),
 ]);
 
 export const worldbuildingRelationships = pgTable("worldbuilding_relationships", {
@@ -205,10 +224,13 @@ export const games = pgTable("games", {
   year: integer("year").notNull().default(2026),
   content: text("content").notNull().default(""),
   contentOrder: integer("content_order").notNull().default(0),
+  displayTemplate: text("display_template").notNull().default("gallery"),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   styles: stylesColumn(),
-});
+}, (table) => [
+  check("games_display_template_check", sql`${table.displayTemplate} in ('gallery', 'blog')`),
+]);
 
 export const gameLinks = pgTable("game_links", {
   id: serial("id").primaryKey(),
@@ -500,6 +522,29 @@ export const portfolioMetadataOptions = pgTable(
     uniqueIndex("portfolio_metadata_options_unique_idx").on(table.portfolioId, table.metadataOptionId),
     index("portfolio_metadata_options_portfolio_idx").on(table.portfolioId),
     index("portfolio_metadata_options_option_idx").on(table.metadataOptionId),
+  ]
+);
+
+// Phase 2 — Worldbuilding's own junction table linking an entry to any
+// number of `metadataOptions` rows, mirroring `portfolioMetadataOptions`
+// exactly (Task 2.10's pattern). Deliberately Worldbuilding-specific, not
+// polymorphic — see that table's own comment for why. Used for three
+// groups distinguished purely by the referenced option's own `type` column
+// (`wb_entity_type`, `wb_category`, `wb_chip` — see `lib/worldbuilding-metadata.ts`):
+// Entity Type and Category are single-select (at most one row per group per
+// entry, enforced at the app layer, not the schema), Chips is multi-select.
+export const worldbuildingMetadataOptions = pgTable(
+  "worldbuilding_metadata_options",
+  {
+    id: serial("id").primaryKey(),
+    entryId: integer("entry_id").notNull().references(() => worldbuildingEntries.id, { onDelete: "cascade" }),
+    metadataOptionId: integer("metadata_option_id").notNull().references(() => metadataOptions.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("worldbuilding_metadata_options_unique_idx").on(table.entryId, table.metadataOptionId),
+    index("worldbuilding_metadata_options_entry_idx").on(table.entryId),
+    index("worldbuilding_metadata_options_option_idx").on(table.metadataOptionId),
   ]
 );
 

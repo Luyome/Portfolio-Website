@@ -1,18 +1,21 @@
 "use client";
 
-import { ENTITY_TYPE_LABELS, WORLDBUILDING_ENTITY_TYPES } from "@/types/worldbuilding";
 import type { EntityTypeFilter } from "@/types/worldbuilding";
+import type { WorldbuildingEntityTypeOption } from "./WorldbuildingBrowser";
 
 export default function WorldbuildingControls({
   search,
   onSearchChange,
   entityFilter,
   onEntityFilterChange,
+  entityTypeOptions,
 }: {
   search: string;
   onSearchChange: (v: string) => void;
   entityFilter: EntityTypeFilter;
   onEntityFilterChange: (v: EntityTypeFilter) => void;
+  /** Active Entity Type options (Phase 2) — the filter tabs are built from this instead of a fixed list. */
+  entityTypeOptions: WorldbuildingEntityTypeOption[];
 }) {
   return (
     <div className="wb-ctrl">
@@ -35,15 +38,15 @@ export default function WorldbuildingControls({
         >
           All
         </button>
-        {WORLDBUILDING_ENTITY_TYPES.map((t) => (
+        {entityTypeOptions.map((t) => (
           <button
-            key={t}
+            key={t.slug}
             type="button"
-            className={`wb-pill ${entityFilter === t ? "on" : ""}`}
-            aria-pressed={entityFilter === t}
-            onClick={() => onEntityFilterChange(t)}
+            className={`wb-pill ${entityFilter === t.slug ? "on" : ""}`}
+            aria-pressed={entityFilter === t.slug}
+            onClick={() => onEntityFilterChange(t.slug)}
           >
-            {ENTITY_TYPE_LABELS[t]}
+            {t.name}
           </button>
         ))}
       </div>

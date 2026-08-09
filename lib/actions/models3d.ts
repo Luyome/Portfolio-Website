@@ -4,11 +4,11 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { models3d, model3dImages, model3dLinks, model3dVideos } from "@/db/schema";
+import { DISPLAY_TEMPLATES, models3d, model3dImages, model3dLinks, model3dVideos } from "@/db/schema";
 import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseLinkFields } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
-import { requiredInt, requiredText, optionalText, nullableText, nullableUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
+import { requiredInt, requiredText, optionalText, nullableText, nullableUrl, oneOf, requiredUrl, safeErrorMessage } from "@/lib/validation";
 
 type ActionState = { error?: string } | undefined;
 
@@ -20,6 +20,7 @@ function readFields(formData: FormData) {
     img: nullableUrl(formData.get("img"), "Image"),
     link: nullableUrl(formData.get("link"), "Link"),
     colorHex: nullableText(formData.get("colorHex")),
+    displayTemplate: oneOf(formData.get("displayTemplate") || "gallery", DISPLAY_TEMPLATES, "Display Template"),
     sortOrder: num(formData.get("sortOrder")),
     styles: readStyles(formData, ["label", "desc"]),
   };
