@@ -65,7 +65,7 @@ const WorldMapArtwork = forwardRef<HTMLDivElement, Props>(function WorldMapArtwo
     <div ref={frameRef} className={`wma-frame ${frameClassName}`} style={frameStyle}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={map.imageUrl} alt={`Map of ${map.title}`} className="wma-img" draggable={false} onLoad={(event) => setNatural({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })} />
-      {locations.map((location) => renderMarker ? renderMarker(location) : <button type="button" key={location.id} className={`map-pin map-pin-${location.pinType} map-pin-icon-${location.iconType}`} style={{ left: `${location.x}%`, top: `${location.y}%` }} onClick={() => interactive && onMarkerClick?.(location)} aria-label={location.pinType === "submap" ? `Open ${location.name} submap` : `View ${location.name}`}><span className="map-pin-dot" /><span className="map-pin-label" aria-hidden="true">{location.name}</span></button>)}
+      {locations.map((location) => renderMarker ? renderMarker(location) : <button type="button" key={location.id} className={`map-pin map-pin-${location.pinType} map-pin-icon-${location.iconType}`} style={{ left: `${location.x}%`, top: `${location.y}%` }} onPointerDown={(event) => event.stopPropagation()} onClick={() => interactive && onMarkerClick?.(location)} aria-label={location.pinType === "submap" ? `Open ${location.name} submap` : `View ${location.name}`}><span className="map-pin-dot" /><span className="map-pin-label" aria-hidden="true">{location.name}</span></button>)}
     </div>
   </div>;
 });
