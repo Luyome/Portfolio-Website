@@ -12,7 +12,7 @@ import type { MediaEntry } from "@/lib/group-images";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 import { fuzzyMatch } from "@/lib/search";
 import { resolveEntityTypeLabel } from "@/types/worldbuilding";
-import type { EntityTypeFilter, LoreEntry, WorldbuildingEntityType } from "@/types/worldbuilding";
+import type { EntityTypeFilter, LoreEntry, WorldbuildingDiscoveryMode, WorldbuildingEntityType } from "@/types/worldbuilding";
 import { findContentItemIndex } from "@/lib/content-detail-href";
 
 export type WorldbuildingRelationshipEdge = {
@@ -23,6 +23,8 @@ export type WorldbuildingRelationshipEdge = {
 
 /** An active `wb_entity_type` metadata option — the Phase 2 dynamic taxonomy (see `lib/worldbuilding-metadata.ts`). */
 export type WorldbuildingEntityTypeOption = { id: number; name: string; slug: string };
+/** An active `wb_category`/`wb_chip` metadata option — `name` is what's persisted onto an entry's legacy `cat`/`chips` fields. */
+export type WorldbuildingMetadataChoice = { id: number; name: string; slug: string };
 
 export type WorldbuildingEntry = {
   id: number;
@@ -49,6 +51,8 @@ export default function WorldbuildingBrowser({
   maps,
   locations,
   entityTypeOptions,
+  categoryOptions,
+  chipOptions,
   initialItemId,
   initialMapId,
 }: {
@@ -58,6 +62,10 @@ export default function WorldbuildingBrowser({
   locations: MapLocation[];
   /** Active Entity Type options (Phase 2) — drives both the filter tabs and label resolution. */
   entityTypeOptions: WorldbuildingEntityTypeOption[];
+  /** Active Category (legacy) options — `name` matches an entry's `cat` string 1:1 (see `WorldbuildingForm`). */
+  categoryOptions: WorldbuildingMetadataChoice[];
+  /** Active Chip options — each `name` matches an entry in the entry's `chips` array 1:1. */
+  chipOptions: WorldbuildingMetadataChoice[];
   initialItemId?: number | null;
   initialMapId?: number | null;
 }) {
@@ -65,19 +73,55 @@ export default function WorldbuildingBrowser({
     () => Object.fromEntries(entityTypeOptions.map((o) => [o.slug, o.name])),
     [entityTypeOptions]
   );
+  // Level 1 — content mode (ALL/ART/BLOG), sourced from `displayTemplate`.
+  const [mode, setMode] = useState<WorldbuildingDiscoveryMode>("all");
+  // Level 2 — secondary filters, independent of mode and of each other.
   const [entityFilter, setEntityFilter] = useState<EntityTypeFilter>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [chipFilter, setChipFilter] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const initialIndex = findContentItemIndex(items, initialItemId ?? null);
   const [openEntryId, setOpenEntryId] = useState<number | null>(() => initialIndex === null ? null : items[initialIndex].id);
+
+  const toggleChip = (name: string) =>
+    setChipFilter((prev) => (prev.includes(name) ? prev.filter((c) => c !== name) : [...prev, name]));
+
+  const filtersActive = entityFilter !== "all" || categoryFilter !== "all" || chipFilter.length > 0 || search.trim() !== "";
+  const clearFilters = () => {
+    setEntityFilter("all");
+    setCategoryFilter("all");
+    setChipFilter([]);
+    setSearch("");
+  };
+
+  // Display Template is the sole source of truth for mode membership
+  // (Part 2/53) — never `entityType`/`cat`.
+  const modeMatches = useMemo(() => {
+    const check =
+      mode === "all"
+        ? () => true
+        : mode === "art"
+        ? (w: WorldbuildingEntry) => w.displayTemplate === "gallery"
+        : (w: WorldbuildingEntry) => w.displayTemplate === "blog";
+    return check;
+  }, [mode]);
+
+  // Whether the active mode has any entries at all (ignoring secondary
+  // filters) — distinguishes "this mode is genuinely empty" from "filtered
+  // down to nothing" for the empty-state copy (Part 35/36).
+  const modeHasEntries = useMemo(() => items.some(modeMatches), [items, modeMatches]);
 
   const filtered = useMemo(
     () =>
       items.filter(
         (w) =>
+          modeMatches(w) &&
           (entityFilter === "all" || w.entityType === entityFilter) &&
+          (categoryFilter === "all" || w.cat === categoryFilter) &&
+          (chipFilter.length === 0 || chipFilter.every((c) => w.chips.includes(c))) &&
           (search.trim() === "" || fuzzyMatch(w.title, search) || fuzzyMatch(w.excerpt, search))
       ),
-    [items, entityFilter, search]
+    [items, modeMatches, entityFilter, categoryFilter, chipFilter, search]
   );
 
   const loreEntries: LoreEntry[] = filtered.map((w) => ({
@@ -154,13 +198,33 @@ export default function WorldbuildingBrowser({
     <>
       {maps.length > 0 && <WorldbuildingAtlas maps={maps} locations={locations} onOpenLore={setOpenEntryId} initialMapId={initialMapId} />}
       <WorldbuildingControls
+        mode={mode}
+        onModeChange={setMode}
         search={search}
         onSearchChange={setSearch}
         entityFilter={entityFilter}
         onEntityFilterChange={setEntityFilter}
         entityTypeOptions={entityTypeOptions}
-      />
-      <WorldbuildingGrid items={loreEntries} onSelect={setOpenEntryId} hasEntries={items.length > 0} entityTypeLabels={entityTypeLabels} />
+        categoryFilter={categoryFilter}
+        onCategoryFilterChange={setCategoryFilter}
+        categoryOptions={categoryOptions}
+        chipFilter={chipFilter}
+        onChipToggle={toggleChip}
+        chipOptions={chipOptions}
+        filtersActive={filtersActive}
+        onClearFilters={clearFilters}
+        resultCount={filtered.length}
+      >
+        <WorldbuildingGrid
+          items={loreEntries}
+          onSelect={setOpenEntryId}
+          mode={mode}
+          hasEntries={modeHasEntries}
+          filtersActive={filtersActive}
+          onClearFilters={clearFilters}
+          entityTypeLabels={entityTypeLabels}
+        />
+      </WorldbuildingControls>
       {isLoreOpen ? (
         <BlogReader
           items={galleryItems}
