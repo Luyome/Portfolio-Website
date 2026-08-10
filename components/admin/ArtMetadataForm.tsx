@@ -24,7 +24,8 @@ export default function ArtMetadataForm({
   cancelHref?: string;
 }) {
   const [actionState, formAction] = useActionState(action, undefined);
-  const [isActive, setIsActive] = useState(item?.isActive ?? true);
+  const [activeOn2d, setActiveOn2d] = useState(item?.activeOn2d ?? true);
+  const [activeOn3d, setActiveOn3d] = useState(item?.activeOn3d ?? true);
 
   return (
     <form action={formAction} className="adm-form">
@@ -41,18 +42,33 @@ export default function ArtMetadataForm({
         <label>Sort Order</label>
         <NumberPicker name="sortOrder" defaultValue={item?.sortOrder ?? 0} />
       </div>
-      <div className="adm-field">
-        <label>Status</label>
-        <input type="hidden" name="isActive" value={isActive ? "on" : "off"} />
-        <button
-          type="button"
-          className={`adm-toggle-btn ${isActive ? "on" : ""}`}
-          aria-pressed={isActive}
-          onClick={() => setIsActive((v) => !v)}
-        >
-          <span className="adm-toggle-dot" />
-          {isActive ? "Active" : "Inactive"}
-        </button>
+      <div className="adm-form-row">
+        <div className="adm-field">
+          <label>Status on 2D</label>
+          <input type="hidden" name="activeOn2d" value={activeOn2d ? "on" : "off"} />
+          <button
+            type="button"
+            className={`adm-toggle-btn ${activeOn2d ? "on" : ""}`}
+            aria-pressed={activeOn2d}
+            onClick={() => setActiveOn2d((v) => !v)}
+          >
+            <span className="adm-toggle-dot" />
+            {activeOn2d ? "Active" : "Inactive"}
+          </button>
+        </div>
+        <div className="adm-field">
+          <label>Status on 3D</label>
+          <input type="hidden" name="activeOn3d" value={activeOn3d ? "on" : "off"} />
+          <button
+            type="button"
+            className={`adm-toggle-btn ${activeOn3d ? "on" : ""}`}
+            aria-pressed={activeOn3d}
+            onClick={() => setActiveOn3d((v) => !v)}
+          >
+            <span className="adm-toggle-dot" />
+            {activeOn3d ? "Active" : "Inactive"}
+          </button>
+        </div>
       </div>
 
       <FormActions cancelHref={cancelHref} />

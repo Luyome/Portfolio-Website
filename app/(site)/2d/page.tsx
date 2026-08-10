@@ -27,7 +27,7 @@ export default async function TwoDPage({
     db.select().from(sketchLinks).orderBy(asc(sketchLinks.sortOrder)),
     db.select().from(sketchVideos).orderBy(asc(sketchVideos.sortOrder)),
     getPageAppearance("2d"),
-    getActiveArtMetadataOptions(),
+    getActiveArtMetadataOptions("2d"),
     db
       .select({ sketchId: sketchMetadataOptions.sketchId, id: metadataOptions.id, name: metadataOptions.name, slug: metadataOptions.slug })
       .from(sketchMetadataOptions)

@@ -2,7 +2,7 @@ import { asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { metadataOptions, sketchMetadataOptions, model3dMetadataOptions } from "@/db/schema";
 import { ValidationError } from "@/lib/validation";
-import { ART_METADATA_TYPES, ART_METADATA_TYPE_LABELS, ART_METADATA_FIELD_NAME, isArtMetadataType, type ArtMetadataType } from "@/lib/art-metadata-shared";
+import { ART_METADATA_TYPES, ART_METADATA_TYPE_LABELS, ART_METADATA_FIELD_NAME, isArtMetadataType, type ArtMetadataType, type ArtPage } from "@/lib/art-metadata-shared";
 
 // 2D (Sketches) and 3D's own controlled-metadata layer — mirrors
 // `lib/worldbuilding-metadata.ts`'s shape and conventions, scoped to the
@@ -13,7 +13,7 @@ import { ART_METADATA_TYPES, ART_METADATA_TYPE_LABELS, ART_METADATA_FIELD_NAME, 
 // Client-safe constants/labels/types live in `lib/art-metadata-shared.ts`
 // (no `db` import there) — re-exported here so server-side imports of this
 // module keep the same shape as `lib/worldbuilding-metadata.ts`.
-export { ART_METADATA_TYPES, ART_METADATA_TYPE_LABELS, ART_METADATA_FIELD_NAME, isArtMetadataType, type ArtMetadataType };
+export { ART_METADATA_TYPES, ART_METADATA_TYPE_LABELS, ART_METADATA_FIELD_NAME, isArtMetadataType, type ArtMetadataType, type ArtPage };
 
 export type ArtMetadataOptionRow = typeof metadataOptions.$inferSelect;
 
@@ -24,14 +24,23 @@ function toChoice(row: ArtMetadataOptionRow): ArtMetadataOptionChoice {
   return { id: row.id, name: row.name, slug: row.slug, isActive: row.isActive };
 }
 
-/** Every active category — the shared list both the 2D and 3D pages/forms draw from, sorted for consistent display. */
-export async function getActiveArtMetadataOptions(): Promise<ArtMetadataOptionChoice[]> {
+function isActiveOnPage(row: ArtMetadataOptionRow, page: ArtPage): boolean {
+  return row.isActive && (page === "2d" ? row.activeOn2d : row.activeOn3d);
+}
+
+/**
+ * Every category active on the given page — 2D and 3D each get their own
+ * filtered view of the one shared list, since a category can be enabled on
+ * one page and disabled on the other (e.g. "Character" shown on 2D, hidden
+ * on 3D).
+ */
+export async function getActiveArtMetadataOptions(page: ArtPage): Promise<ArtMetadataOptionChoice[]> {
   const rows = await db
     .select()
     .from(metadataOptions)
     .where(eq(metadataOptions.type, "art_category"))
     .orderBy(asc(metadataOptions.sortOrder), asc(metadataOptions.name), asc(metadataOptions.id));
-  return rows.filter((r) => r.isActive).map(toChoice);
+  return rows.filter((r) => isActiveOnPage(r, page)).map(toChoice);
 }
 
 /** A sketch's currently selected category — includes inactive so the edit form doesn't silently drop a previously-selected option. */
@@ -59,10 +68,11 @@ export async function getModel3DCategorySelection(modelId: number): Promise<ArtM
  * FormData. Returns `null` when left blank — a category assignment is not
  * required (existing sketches/3D items pre-date this taxonomy). The
  * submitted id is verified to exist, belong to `art_category`, and (unless
- * already selected before this edit) be active.
+ * already selected before this edit) be active on the given page.
  */
 export async function readArtCategorySelection(
   formData: FormData,
+  page: ArtPage,
   previouslySelectedId?: number | null
 ): Promise<ArtMetadataOptionChoice | null> {
   const raw = formData.get(ART_METADATA_FIELD_NAME);
@@ -75,8 +85,8 @@ export async function readArtCategorySelection(
   if (!row || row.type !== "art_category") {
     throw new ValidationError(`${ART_METADATA_TYPE_LABELS.art_category} selection no longer exists.`);
   }
-  if (!row.isActive && row.id !== previouslySelectedId) {
-    throw new ValidationError(`${ART_METADATA_TYPE_LABELS.art_category} selection is no longer available.`);
+  if (!isActiveOnPage(row, page) && row.id !== previouslySelectedId) {
+    throw new ValidationError(`${ART_METADATA_TYPE_LABELS.art_category} selection is no longer available on this page.`);
   }
   return toChoice(row);
 }

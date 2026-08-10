@@ -41,7 +41,7 @@ export async function createModel3D(_prevState: ActionState, formData: FormData)
   let category;
   try {
     fields = readFields(formData);
-    category = await readArtCategorySelection(formData);
+    category = await readArtCategorySelection(formData, "3d");
   } catch (err) {
     return { error: safeErrorMessage(err) };
   }
@@ -71,7 +71,7 @@ export async function updateModel3D(id: number, _prevState: ActionState, formDat
   let category;
   try {
     fields = readFields(formData);
-    category = await readArtCategorySelection(formData, existing?.metadataOptionId ?? null);
+    category = await readArtCategorySelection(formData, "3d", existing?.metadataOptionId ?? null);
   } catch (err) {
     return { error: safeErrorMessage(err) };
   }

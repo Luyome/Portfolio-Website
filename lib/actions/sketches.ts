@@ -41,7 +41,7 @@ export async function createSketch(_prevState: ActionState, formData: FormData):
   let category;
   try {
     fields = readFields(formData);
-    category = await readArtCategorySelection(formData);
+    category = await readArtCategorySelection(formData, "2d");
   } catch (err) {
     return { error: safeErrorMessage(err) };
   }
@@ -71,7 +71,7 @@ export async function updateSketch(id: number, _prevState: ActionState, formData
   let category;
   try {
     fields = readFields(formData);
-    category = await readArtCategorySelection(formData, existing?.metadataOptionId ?? null);
+    category = await readArtCategorySelection(formData, "2d", existing?.metadataOptionId ?? null);
   } catch (err) {
     return { error: safeErrorMessage(err) };
   }

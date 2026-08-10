@@ -5,7 +5,8 @@ import { metadataOptions } from "@/db/schema";
 import {
   createArtMetadataOption,
   updateArtMetadataOption,
-  toggleArtMetadataOptionActive,
+  toggleArtMetadataOptionActiveOn2d,
+  toggleArtMetadataOptionActiveOn3d,
   updateArtMetadataOptionSortOrder,
   deleteArtMetadataOption,
 } from "@/lib/actions/art-metadata";
@@ -56,7 +57,8 @@ export default async function AdminArtMetadataPage({
               <tr>
                 <th>Name</th>
                 <th className="adm-col-md">Slug</th>
-                <th className="adm-col-sm">Status</th>
+                <th className="adm-col-sm">Status (2D)</th>
+                <th className="adm-col-sm">Status (3D)</th>
                 <th className="adm-col-xs">Order</th>
                 <th className="adm-col-xs">Usage</th>
                 <th className="adm-col-actions">Actions</th>
@@ -70,11 +72,20 @@ export default async function AdminArtMetadataPage({
                     <td>{item.name}</td>
                     <td>{item.slug}</td>
                     <td>
-                      <form action={toggleArtMetadataOptionActive}>
+                      <form action={toggleArtMetadataOptionActiveOn2d}>
                         <input type="hidden" name="id" value={item.id} />
-                        <button type="submit" className={`adm-toggle-btn ${item.isActive ? "on" : ""}`} aria-pressed={item.isActive}>
+                        <button type="submit" className={`adm-toggle-btn ${item.activeOn2d ? "on" : ""}`} aria-pressed={item.activeOn2d}>
                           <span className="adm-toggle-dot" />
-                          {item.isActive ? "Active" : "Inactive"}
+                          {item.activeOn2d ? "Active" : "Inactive"}
+                        </button>
+                      </form>
+                    </td>
+                    <td>
+                      <form action={toggleArtMetadataOptionActiveOn3d}>
+                        <input type="hidden" name="id" value={item.id} />
+                        <button type="submit" className={`adm-toggle-btn ${item.activeOn3d ? "on" : ""}`} aria-pressed={item.activeOn3d}>
+                          <span className="adm-toggle-dot" />
+                          {item.activeOn3d ? "Active" : "Inactive"}
                         </button>
                       </form>
                     </td>

@@ -7,7 +7,7 @@ import { getActiveArtMetadataOptions } from "@/lib/art-metadata";
 export default async function New2DPage() {
   const [appearance, categoryOptions] = await Promise.all([
     getPageAppearance("2d"),
-    getActiveArtMetadataOptions(),
+    getActiveArtMetadataOptions("2d"),
   ]);
 
   return (

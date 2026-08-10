@@ -27,7 +27,7 @@ export default async function Model3DPage({
     db.select().from(model3dLinks).orderBy(asc(model3dLinks.sortOrder)),
     db.select().from(model3dVideos).orderBy(asc(model3dVideos.sortOrder)),
     getPageAppearance("3d"),
-    getActiveArtMetadataOptions(),
+    getActiveArtMetadataOptions("3d"),
     db
       .select({ modelId: model3dMetadataOptions.modelId, id: metadataOptions.id, name: metadataOptions.name, slug: metadataOptions.slug })
       .from(model3dMetadataOptions)

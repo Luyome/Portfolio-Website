@@ -32,7 +32,7 @@ export default async function EditModel3DPage({
     db.select().from(model3dVideos).where(eq(model3dVideos.modelId, modelId)).orderBy(asc(model3dVideos.sortOrder)),
     getPageAppearance("3d"),
     getActiveLinkLabelOptions(),
-    getActiveArtMetadataOptions(),
+    getActiveArtMetadataOptions("3d"),
     getModel3DCategorySelection(modelId),
   ]);
   if (!item) notFound();

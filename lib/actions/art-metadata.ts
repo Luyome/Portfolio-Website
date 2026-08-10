@@ -32,7 +32,8 @@ function readFields(formData: FormData, type: ArtMetadataType) {
     name,
     slug,
     sortOrder: num(formData.get("sortOrder")),
-    isActive: formData.get("isActive") === "on",
+    activeOn2d: formData.get("activeOn2d") === "on",
+    activeOn3d: formData.get("activeOn3d") === "on",
   };
 }
 
@@ -89,7 +90,7 @@ export async function updateArtMetadataOption(id: number, _prevState: ActionStat
   redirect("/admin/art/metadata");
 }
 
-export async function toggleArtMetadataOptionActive(formData: FormData) {
+export async function toggleArtMetadataOptionActiveOn2d(formData: FormData) {
   await requireAdminSession();
   let id: number;
   try {
@@ -97,9 +98,23 @@ export async function toggleArtMetadataOptionActive(formData: FormData) {
   } catch {
     return;
   }
-  const [existing] = await db.select({ isActive: metadataOptions.isActive }).from(metadataOptions).where(eq(metadataOptions.id, id));
+  const [existing] = await db.select({ activeOn2d: metadataOptions.activeOn2d }).from(metadataOptions).where(eq(metadataOptions.id, id));
   if (!existing) return;
-  await db.update(metadataOptions).set({ isActive: !existing.isActive, updatedAt: new Date() }).where(eq(metadataOptions.id, id));
+  await db.update(metadataOptions).set({ activeOn2d: !existing.activeOn2d, updatedAt: new Date() }).where(eq(metadataOptions.id, id));
+  revalidateAll();
+}
+
+export async function toggleArtMetadataOptionActiveOn3d(formData: FormData) {
+  await requireAdminSession();
+  let id: number;
+  try {
+    id = requiredId(formData.get("id"), "Category");
+  } catch {
+    return;
+  }
+  const [existing] = await db.select({ activeOn3d: metadataOptions.activeOn3d }).from(metadataOptions).where(eq(metadataOptions.id, id));
+  if (!existing) return;
+  await db.update(metadataOptions).set({ activeOn3d: !existing.activeOn3d, updatedAt: new Date() }).where(eq(metadataOptions.id, id));
   revalidateAll();
 }
 

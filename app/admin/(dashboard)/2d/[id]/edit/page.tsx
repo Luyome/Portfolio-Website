@@ -32,7 +32,7 @@ export default async function Edit2DPage({
     db.select().from(sketchVideos).where(eq(sketchVideos.sketchId, sketchId)).orderBy(asc(sketchVideos.sortOrder)),
     getPageAppearance("2d"),
     getActiveLinkLabelOptions(),
-    getActiveArtMetadataOptions(),
+    getActiveArtMetadataOptions("2d"),
     getSketchCategorySelection(sketchId),
   ]);
   if (!item) notFound();

@@ -7,7 +7,7 @@ import { getActiveArtMetadataOptions } from "@/lib/art-metadata";
 export default async function NewModel3DPage() {
   const [appearance, categoryOptions] = await Promise.all([
     getPageAppearance("3d"),
-    getActiveArtMetadataOptions(),
+    getActiveArtMetadataOptions("3d"),
   ]);
 
   return (

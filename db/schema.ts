@@ -496,6 +496,12 @@ export const metadataOptions = pgTable(
     websiteUrl: text("website_url"),
     sortOrder: integer("sort_order").notNull().default(0),
     isActive: boolean("is_active").notNull().default(true),
+    // Per-page active flags — only meaningful for `type: "art_category"`
+    // (2D/3D's shared taxonomy), `null`/unused for every other type. Lets
+    // the same category (e.g. "Character") be shown on the 2D filter/form
+    // while hidden on 3D's, without needing two separate category lists.
+    activeOn2d: boolean("active_on_2d").notNull().default(true),
+    activeOn3d: boolean("active_on_3d").notNull().default(true),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
