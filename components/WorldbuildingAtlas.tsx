@@ -28,7 +28,6 @@ export default function WorldbuildingAtlas({ maps, locations, onOpenLore, initia
 
   if (!rootMap) return <div className="wa-empty">No map has been configured yet.</div>;
   return <div className="wa-wrap">
-    <div className="wa-topbar"><nav className="wa-breadcrumb"><span className="wa-crumb-current">{rootMap.title}</span></nav></div>
     <div className="wa-viewport wa-viewport-static" role="button" tabIndex={0} onClick={() => setExplorer({ mapId: rootMap.id, pinId: null })} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setExplorer({ mapId: rootMap.id, pinId: null }); } }}>
       <WorldMapArtwork map={rootMap} locations={pins} className="wma-preview" renderMarker={(location) => <button type="button" key={location.id} className={`map-pin map-pin-${location.pinType} map-pin-icon-${location.iconType}`} style={{ left: `${location.x}%`, top: `${location.y}%` }} onClick={(event) => { event.stopPropagation(); openPin(location); }} aria-label={location.pinType === "submap" ? `Open ${location.name} submap` : `View ${location.name}`}><span className="map-pin-dot" /><span className="map-pin-label" aria-hidden="true">{location.name}</span></button>} />
       <span className="wa-static-hint">Click to explore</span>
