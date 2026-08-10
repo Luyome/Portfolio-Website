@@ -16,7 +16,7 @@ type SiteSettings = {
 
 const WORK_LINKS: { href: string; label: string }[] = [
   { href: "/portfolio", label: "Portfolio" },
-  { href: "/sketches", label: "Sketches" },
+  { href: "/2d", label: "2D" },
   { href: "/3d", label: "3D" },
   { href: "/games", label: "Games" },
   { href: "/archive", label: "Archive by Year" },

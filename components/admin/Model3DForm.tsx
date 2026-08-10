@@ -14,6 +14,7 @@ import AdminSection from "./AdminSection";
 import AdminEditorLayout from "./AdminEditorLayout";
 import type { models3d } from "@/db/schema";
 import type { StylesMap, FieldStyle } from "@/lib/style-fields";
+import type { ArtMetadataOptionChoice } from "@/lib/art-metadata";
 
 type Model3DRow = typeof models3d.$inferSelect;
 
@@ -29,10 +30,14 @@ export default function Model3DForm({
   action,
   item,
   pageVars = {},
+  categoryOptions = [],
+  selectedCategory,
 }: {
   action: (prevState: { error?: string } | undefined, formData: FormData) => Promise<{ error?: string } | undefined>;
   item?: Model3DRow;
   pageVars?: CSSProperties;
+  categoryOptions?: ArtMetadataOptionChoice[];
+  selectedCategory?: ArtMetadataOptionChoice;
 }) {
   const [actionState, formAction] = useActionState(action, undefined);
   const [state, setState] = useState<PreviewState>({
@@ -88,6 +93,22 @@ export default function Model3DForm({
               <DatePicker id="date" name="date" defaultValue={item?.date} />
             </div>
           </div>
+          <Field
+            id="artCategoryOptionId"
+            label="Category"
+            required={false}
+            hint={categoryOptions.length === 0 ? "No categories yet — add some in Admin → 2D & 3D Categories." : undefined}
+          >
+            <select name="artCategoryOptionId" defaultValue={selectedCategory ? String(selectedCategory.id) : ""}>
+              <option value="">— none —</option>
+              {selectedCategory && !categoryOptions.some((o) => o.id === selectedCategory.id) && (
+                <option value={selectedCategory.id}>{selectedCategory.name} (inactive)</option>
+              )}
+              {categoryOptions.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </Field>
           <Field
             id="desc"
             label="Description"

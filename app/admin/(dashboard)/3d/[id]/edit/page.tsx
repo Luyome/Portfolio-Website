@@ -10,6 +10,7 @@ import ExtraVideosPanel from "@/components/admin/ExtraVideosPanel";
 import { updateModel3D, createModel3DImage, updateModel3DImage, deleteModel3DImage, createModel3DLink, updateModel3DLink, deleteModel3DLink, createModel3DVideo, updateModel3DVideo, deleteModel3DVideo } from "@/lib/actions/models3d";
 import { getPageAppearance, pageAppearanceVars } from "@/lib/page-appearance";
 import { getActiveLinkLabelOptions } from "@/lib/link-label-options";
+import { getActiveArtMetadataOptions, getModel3DCategorySelection } from "@/lib/art-metadata";
 import { requiredId } from "@/lib/validation";
 
 export default async function EditModel3DPage({
@@ -24,13 +25,15 @@ export default async function EditModel3DPage({
   } catch {
     notFound();
   }
-  const [[item], images, links, videos, appearance, labelOptions] = await Promise.all([
+  const [[item], images, links, videos, appearance, labelOptions, categoryOptions, selectedCategory] = await Promise.all([
     db.select().from(models3d).where(eq(models3d.id, modelId)),
     db.select().from(model3dImages).where(eq(model3dImages.modelId, modelId)).orderBy(asc(model3dImages.sortOrder)),
     db.select().from(model3dLinks).where(eq(model3dLinks.modelId, modelId)).orderBy(asc(model3dLinks.sortOrder)),
     db.select().from(model3dVideos).where(eq(model3dVideos.modelId, modelId)).orderBy(asc(model3dVideos.sortOrder)),
     getPageAppearance("3d"),
     getActiveLinkLabelOptions(),
+    getActiveArtMetadataOptions(),
+    getModel3DCategorySelection(modelId),
   ]);
   if (!item) notFound();
 
@@ -42,7 +45,13 @@ export default async function EditModel3DPage({
   return (
     <div>
       <AdminPageHeader title="Edit 3D Model" />
-      <Model3DForm action={updateWithId} item={item} pageVars={pageAppearanceVars(appearance)} />
+      <Model3DForm
+        action={updateWithId}
+        item={item}
+        pageVars={pageAppearanceVars(appearance)}
+        categoryOptions={categoryOptions}
+        selectedCategory={selectedCategory}
+      />
       <div className="adm-editor-extras">
         <ExtraImagesPanel images={images} createAction={createImageWithId} updateAction={updateModel3DImage} deleteAction={deleteModel3DImage} />
         <ExtraVideosPanel videos={videos} createAction={createVideoWithId} updateAction={updateModel3DVideo} deleteAction={deleteModel3DVideo} />

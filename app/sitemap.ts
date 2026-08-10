@@ -13,7 +13,7 @@ import { siteUrl } from "@/lib/site-metadata";
 const PUBLIC_ROUTES = [
   "/",
   "/portfolio",
-  "/sketches",
+  "/2d",
   "/3d",
   "/games",
   "/worldbuilding",

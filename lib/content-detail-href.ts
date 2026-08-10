@@ -2,7 +2,7 @@ export type PublicContentType = "portfolio" | "sketch" | "model3d" | "worldbuild
 
 const CONTENT_INDEX_PATH: Record<PublicContentType, string> = {
   portfolio: "/portfolio",
-  sketch: "/sketches",
+  sketch: "/2d",
   model3d: "/3d",
   worldbuilding: "/worldbuilding",
   game: "/games",

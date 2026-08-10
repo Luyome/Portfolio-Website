@@ -79,7 +79,7 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   const sections: SectionCount[] = [
     { label: "Portfolio", href: "/admin/portfolio", count: portfolio.length },
-    { label: "Sketches", href: "/admin/sketches", count: sketchRows.length },
+    { label: "2D", href: "/admin/2d", count: sketchRows.length },
     { label: "3D Models", href: "/admin/3d", count: model3dRows.length },
     { label: "Worldbuilding", href: "/admin/worldbuilding", count: worldbuilding.length },
     { label: "Games", href: "/admin/games", count: gameRows.length },
@@ -108,7 +108,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       .map((p) => ({ label: "Portfolio", detail: `Item #${p.id} is missing a title`, href: `/admin/portfolio/${p.id}/edit` })),
     ...sketchRows
       .filter((s) => !s.label.trim())
-      .map((s) => ({ label: "Sketches", detail: `Item #${s.id} is missing a title`, href: `/admin/sketches/${s.id}/edit` })),
+      .map((s) => ({ label: "2D", detail: `Item #${s.id} is missing a title`, href: `/admin/2d/${s.id}/edit` })),
     ...model3dRows
       .filter((m) => !m.label.trim())
       .map((m) => ({ label: "3D Models", detail: `Item #${m.id} is missing a title`, href: `/admin/3d/${m.id}/edit` })),
@@ -130,7 +130,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   const primaryCandidates = [
     { label: "Portfolio Item", href: "/admin/portfolio/new", count: portfolio.length },
     { label: "Worldbuilding Entry", href: "/admin/worldbuilding/new", count: worldbuilding.length },
-    { label: "Sketch", href: "/admin/sketches/new", count: sketchRows.length },
+    { label: "2D Item", href: "/admin/2d/new", count: sketchRows.length },
     { label: "3D Model", href: "/admin/3d/new", count: model3dRows.length },
     { label: "Game", href: "/admin/games/new", count: gameRows.length },
     { label: "Map", href: "/admin/worldbuilding/maps/new", count: mapRows.length },
@@ -194,7 +194,7 @@ export async function getRecentContent(limit = 8): Promise<RecentItem[]> {
 
   const items: RecentItem[] = [
     ...portfolio.map((p) => ({ type: "Portfolio", title: p.title, href: `/admin/portfolio/${p.id}/edit`, createdAt: p.createdAt.toISOString() })),
-    ...sketchRows.map((s) => ({ type: "Sketch", title: s.title, href: `/admin/sketches/${s.id}/edit`, createdAt: s.createdAt.toISOString() })),
+    ...sketchRows.map((s) => ({ type: "2D", title: s.title, href: `/admin/2d/${s.id}/edit`, createdAt: s.createdAt.toISOString() })),
     ...model3dRows.map((m) => ({ type: "3D Model", title: m.title, href: `/admin/3d/${m.id}/edit`, createdAt: m.createdAt.toISOString() })),
     ...worldbuilding.map((w) => ({ type: "Worldbuilding", title: w.title, href: `/admin/worldbuilding/${w.id}/edit`, createdAt: w.createdAt.toISOString() })),
     ...gameRows.map((g) => ({ type: "Game", title: g.title, href: `/admin/games/${g.id}/edit`, createdAt: g.createdAt.toISOString() })),

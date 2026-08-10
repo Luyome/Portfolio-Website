@@ -4,10 +4,11 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { DISPLAY_TEMPLATES, models3d, model3dImages, model3dLinks, model3dVideos } from "@/db/schema";
+import { DISPLAY_TEMPLATES, models3d, model3dImages, model3dLinks, model3dVideos, model3dMetadataOptions } from "@/db/schema";
 import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseLinkFields } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
+import { readArtCategorySelection } from "@/lib/art-metadata";
 import { requiredDate, requiredText, optionalText, nullableText, nullableUrl, oneOf, requiredUrl, safeErrorMessage } from "@/lib/validation";
 
 type ActionState = { error?: string } | undefined;
@@ -37,25 +38,60 @@ function revalidateAll() {
 export async function createModel3D(_prevState: ActionState, formData: FormData): Promise<ActionState> {
   await requireAdminSession();
   let fields;
+  let category;
   try {
     fields = readFields(formData);
+    category = await readArtCategorySelection(formData);
   } catch (err) {
     return { error: safeErrorMessage(err) };
   }
-  await db.insert(models3d).values(fields);
+  const [inserted] = await db.insert(models3d).values(fields).returning({ id: models3d.id });
+  if (category) {
+    try {
+      await db.insert(model3dMetadataOptions).values({ modelId: inserted.id, metadataOptionId: category.id });
+    } catch (err) {
+      // Same compensating-delete strategy as Worldbuilding's create action —
+      // the neon-http driver has no cross-statement transaction support.
+      await db.delete(models3d).where(eq(models3d.id, inserted.id));
+      throw err;
+    }
+  }
   revalidateAll();
   redirect("/admin/3d");
 }
 
 export async function updateModel3D(id: number, _prevState: ActionState, formData: FormData): Promise<ActionState> {
   await requireAdminSession();
+  const [existing] = await db
+    .select({ metadataOptionId: model3dMetadataOptions.metadataOptionId })
+    .from(model3dMetadataOptions)
+    .where(eq(model3dMetadataOptions.modelId, id));
+
   let fields;
+  let category;
   try {
     fields = readFields(formData);
+    category = await readArtCategorySelection(formData, existing?.metadataOptionId ?? null);
   } catch (err) {
     return { error: safeErrorMessage(err) };
   }
-  await db.update(models3d).set(fields).where(eq(models3d.id, id));
+
+  const updateQuery = db.update(models3d).set(fields).where(eq(models3d.id, id));
+  const removeQuery = () => db.delete(model3dMetadataOptions).where(eq(model3dMetadataOptions.modelId, id));
+  const addQuery = () => db.insert(model3dMetadataOptions).values({ modelId: id, metadataOptionId: category!.id });
+
+  if (existing && (!category || category.id !== existing.metadataOptionId)) {
+    if (category) {
+      await db.batch([updateQuery, removeQuery(), addQuery()]);
+    } else {
+      await db.batch([updateQuery, removeQuery()]);
+    }
+  } else if (!existing && category) {
+    await db.batch([updateQuery, addQuery()]);
+  } else {
+    await db.batch([updateQuery]);
+  }
+
   revalidateAll();
   redirect("/admin/3d");
 }

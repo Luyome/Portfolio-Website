@@ -8,7 +8,7 @@ import { getSiteSettings } from "@/lib/site-settings";
 
 const QUICK_ACTIONS = [
   { label: "New Portfolio Item", href: "/admin/portfolio/new" },
-  { label: "New Sketch", href: "/admin/sketches/new" },
+  { label: "New 2D Item", href: "/admin/2d/new" },
   { label: "New 3D Model", href: "/admin/3d/new" },
   { label: "New Game", href: "/admin/games/new" },
   { label: "New Worldbuilding Entry", href: "/admin/worldbuilding/new" },

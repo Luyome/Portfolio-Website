@@ -10,6 +10,8 @@ import type { MediaEntry } from "@/lib/group-images";
 import { resolveYearParam, yearOptions } from "@/lib/search";
 import { findContentItemIndex } from "@/lib/content-detail-href";
 
+export type SketchCategory = { id: number; name: string; slug: string };
+
 export type Sketch = {
   id: number;
   year: number;
@@ -23,15 +25,34 @@ export type Sketch = {
   colorHex: string | null;
   displayTemplate: string;
   styles?: StylesMap;
+  category?: SketchCategory | null;
 };
 
-export default function SketchGrid({ items, initialYear, initialItemId }: { items: Sketch[]; initialYear?: string; initialItemId?: number | null }) {
+export default function SketchGrid({
+  items,
+  categories,
+  initialYear,
+  initialCategory,
+  initialItemId,
+}: {
+  items: Sketch[];
+  /** Every active category, admin-sorted — always shown even if currently unused, so the filter reflects the full managed taxonomy. */
+  categories: SketchCategory[];
+  initialYear?: string;
+  initialCategory?: string;
+  initialItemId?: number | null;
+}) {
   const years = useMemo(() => yearOptions(items, (s) => s.year), [items]);
   const [year, setYear] = useState<string>(() => resolveYearParam(initialYear, years));
+  const [category, setCategory] = useState<string>(() =>
+    initialCategory && categories.some((c) => c.slug === initialCategory) ? initialCategory : "all"
+  );
   const [modalIndex, setModalIndex] = useState<number | null>(() => findContentItemIndex(items, initialItemId ?? null));
 
 
-  const filtered = items.filter((s) => year === "all" || String(s.year) === year);
+  const filtered = items.filter(
+    (s) => (year === "all" || String(s.year) === year) && (category === "all" || s.category?.slug === category)
+  );
 
   const galleryItems: GalleryItem[] = filtered.map((s) => ({
     img: s.img,
@@ -49,6 +70,24 @@ export default function SketchGrid({ items, initialYear, initialItemId }: { item
   return (
     <>
       <div className="sk-ctrl">
+        {categories.length > 0 && (
+          <div className="cat-row">
+            <button type="button" className={`yr-btn ${category === "all" ? "on" : ""}`} aria-pressed={category === "all"} onClick={() => setCategory("all")}>
+              All
+            </button>
+            {categories.map((c) => (
+              <button
+                key={c.slug}
+                type="button"
+                className={`yr-btn ${category === c.slug ? "on" : ""}`}
+                aria-pressed={category === c.slug}
+                onClick={() => setCategory(c.slug)}
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="year-row">
           {years.map((y) => (
             <button

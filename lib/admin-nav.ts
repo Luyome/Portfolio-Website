@@ -9,7 +9,7 @@ export const ADMIN_NAV: AdminNavSection[] = [
     items: [
       { href: "/admin/home", label: "Home" },
       { href: "/admin/portfolio", label: "Portfolio" },
-      { href: "/admin/sketches", label: "Sketches" },
+      { href: "/admin/2d", label: "2D" },
       { href: "/admin/3d", label: "3D" },
       { href: "/admin/worldbuilding", label: "Worldbuilding" },
       {
@@ -31,6 +31,7 @@ export const ADMIN_NAV: AdminNavSection[] = [
       { href: "/admin/archive", label: "Archive" },
       { href: "/admin/metadata", label: "Metadata" },
       { href: "/admin/worldbuilding/metadata", label: "Worldbuilding Metadata" },
+      { href: "/admin/art/metadata", label: "2D & 3D Categories" },
       { href: "/admin/link-labels", label: "Link Labels" },
     ],
   },

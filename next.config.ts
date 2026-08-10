@@ -6,7 +6,10 @@ const nextConfig: NextConfig = {
   // using `.next`; the default remains unchanged for every normal command.
   distDir: process.env.NEXT_DIST_DIR || ".next",
   async redirects() {
-    return [{ source: "/cv", destination: "/about", permanent: true }];
+    return [
+      { source: "/cv", destination: "/about", permanent: true },
+      { source: "/sketches", destination: "/2d", permanent: true },
+    ];
   },
   images: {
     // The only remote media host in use: Vercel Blob (see @vercel/blob usage

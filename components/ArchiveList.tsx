@@ -6,7 +6,7 @@ import EmptyState from "./EmptyState";
 import { yearOptions } from "@/lib/search";
 import { isOptimizableImageUrl } from "@/lib/image-host";
 
-export type ArchiveItemType = "Portfolio" | "Sketches" | "3D" | "Worldbuilding" | "Games";
+export type ArchiveItemType = "Portfolio" | "2D" | "3D" | "Worldbuilding" | "Games";
 
 export type ArchiveItem = {
   id: string;
@@ -20,7 +20,7 @@ export type ArchiveItem = {
   href: string;
 };
 
-const TYPES: ArchiveItemType[] = ["Portfolio", "Sketches", "3D", "Worldbuilding", "Games"];
+const TYPES: ArchiveItemType[] = ["Portfolio", "2D", "3D", "Worldbuilding", "Games"];
 
 export default function ArchiveList({ items, categories }: { items: ArchiveItem[]; categories: string[] }) {
   const [year, setYear] = useState("all");

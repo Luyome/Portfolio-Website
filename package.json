@@ -13,6 +13,7 @@
     "db:seed:demo": "tsx db/seed.ts",
     "db:backfill-portfolio-metadata": "tsx scripts/backfill-portfolio-metadata.ts",
     "db:backfill-worldbuilding-metadata": "tsx scripts/backfill-worldbuilding-metadata.ts",
+    "db:seed:art-metadata": "tsx scripts/seed-art-metadata.ts",
     "qa:responsive": "node scripts/responsive-qa.mjs",
     "typecheck": "tsc --noEmit"
   },

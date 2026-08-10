@@ -8,7 +8,7 @@ import { hexToRgbTriplet } from "./color";
 export const PAGE_KEYS = [
   "home",
   "portfolio",
-  "sketches",
+  "2d",
   "3d",
   "worldbuilding",
   "games",
@@ -22,7 +22,7 @@ export type PageKey = (typeof PAGE_KEYS)[number];
 export const PAGE_LABELS: Record<PageKey, string> = {
   home: "Home",
   portfolio: "Portfolio",
-  sketches: "Sketches",
+  "2d": "2D",
   "3d": "3D",
   worldbuilding: "Worldbuilding",
   games: "Games",

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 const PAGE_OPTIONS = [
   { label: "Home", href: "/" },
   { label: "Portfolio", href: "/portfolio" },
-  { label: "Sketches", href: "/sketches" },
+  { label: "2D", href: "/2d" },
   { label: "3D", href: "/3d" },
   { label: "Worldbuilding", href: "/worldbuilding" },
   { label: "Games", href: "/games" },

@@ -37,13 +37,13 @@ export default async function ArchivePage() {
     })),
     ...sk.map((s) => ({
       id: `sketch-${s.id}`,
-      type: "Sketches" as const,
+      type: "2D" as const,
       title: s.label,
       cat: "Sketch",
       year: s.year,
       date: s.date,
       img: s.img ?? "",
-      href: `/sketches?year=${s.year}`,
+      href: `/2d?year=${s.year}`,
     })),
     ...m3.map((m) => ({
       id: `3d-${m.id}`,

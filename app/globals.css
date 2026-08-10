@@ -884,6 +884,13 @@ a.arv-row:hover{background:var(--bg2)}
    auto-fill/minmax formula as Worldbuilding, just capped at 5 columns
    instead of 6 per this system's own column-count rule. */
 .sk-ctrl{padding:var(--space-md) var(--space-xl);border-bottom:1px solid var(--border)}
+/* Category filter reuses .yr-btn's look (same tab style as the year row
+   below it) rather than .cat-btn's small-pill style, so both filters read
+   as one consistent control group; the shared .cat-row wrapper's own
+   gap is overridden here to match .year-row's gap:0 (spacing comes from
+   each .yr-btn's own right padding), with a margin-bottom taking the place
+   of .port-ctrl's flex gap since .sk-ctrl isn't a flex container. */
+.sk-ctrl .cat-row{gap:0;margin-bottom:14px}
 .sk-grid{
   padding:20px var(--space-xl) var(--space-2xl);
   display:grid;

@@ -552,6 +552,42 @@ export const worldbuildingMetadataOptions = pgTable(
   ]
 );
 
+// 2D (Sketches) and 3D's shared controlled-category taxonomy — the same
+// `metadataOptions` pattern as above (`type: "art_category"`), one junction
+// table per content type since that's this project's established
+// convention (see comment on `portfolioMetadataOptions`), but both tables
+// reference the same `metadataOptions` rows so 2D and 3D share exactly one
+// admin-managed category list instead of each having its own.
+export const sketchMetadataOptions = pgTable(
+  "sketch_metadata_options",
+  {
+    id: serial("id").primaryKey(),
+    sketchId: integer("sketch_id").notNull().references(() => sketches.id, { onDelete: "cascade" }),
+    metadataOptionId: integer("metadata_option_id").notNull().references(() => metadataOptions.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("sketch_metadata_options_unique_idx").on(table.sketchId, table.metadataOptionId),
+    index("sketch_metadata_options_sketch_idx").on(table.sketchId),
+    index("sketch_metadata_options_option_idx").on(table.metadataOptionId),
+  ]
+);
+
+export const model3dMetadataOptions = pgTable(
+  "model_3d_metadata_options",
+  {
+    id: serial("id").primaryKey(),
+    modelId: integer("model_id").notNull().references(() => models3d.id, { onDelete: "cascade" }),
+    metadataOptionId: integer("metadata_option_id").notNull().references(() => metadataOptions.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("model_3d_metadata_options_unique_idx").on(table.modelId, table.metadataOptionId),
+    index("model_3d_metadata_options_model_idx").on(table.modelId),
+    index("model_3d_metadata_options_option_idx").on(table.metadataOptionId),
+  ]
+);
+
 // Task 4.7 — controlled Link Label options, shared by every *_links table
 // (Portfolio/Sketches/3D/Games/Worldbuilding). Replaces the previous
 // free-text Label input with a database-backed picker, mirroring the

@@ -5,7 +5,7 @@ import { findContentItemIndex, parseContentItemId, resolveContentDetailHref } fr
 test("eligible content families resolve to exact item deep links, never category indexes", () => {
   const cases = [
     ["portfolio", 11, "/portfolio?item=11"],
-    ["sketch", 12, "/sketches?item=12"],
+    ["sketch", 12, "/2d?item=12"],
     ["model3d", 13, "/3d?item=13"],
     ["worldbuilding", 14, "/worldbuilding?item=14"],
     ["game", 15, "/games?item=15"],

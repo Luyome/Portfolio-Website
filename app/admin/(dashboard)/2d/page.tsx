@@ -9,18 +9,18 @@ import ResizableTh from "@/components/admin/ResizableTh";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
-export default async function AdminSketchesListPage() {
+export default async function Admin2DListPage() {
   const items = await db.select().from(sketches).orderBy(desc(sketches.date), asc(sketches.sortOrder), asc(sketches.id));
 
   return (
     <div>
       <AdminPageHeader
-        title="Sketches"
+        title="2D"
         description={`${items.length} item(s)`}
-        action={<Link href="/admin/sketches/new" className="adm-btn">+ New Sketch</Link>}
+        action={<Link href="/admin/2d/new" className="adm-btn">+ New 2D Item</Link>}
       />
       {items.length === 0 ? (
-        <AdminEmptyState label="No sketches yet." />
+        <AdminEmptyState label="No 2D items yet." />
       ) : (
         <div className="adm-table-wrap" style={{ marginTop: 24 }}>
           <table className="adm-table">
@@ -38,7 +38,7 @@ export default async function AdminSketchesListPage() {
                   <td>{formatDisplayDate(item.date)}</td>
                   <td>
                     <div className="adm-actions">
-                      <Link href={`/admin/sketches/${item.id}/edit`}>Edit</Link>
+                      <Link href={`/admin/2d/${item.id}/edit`}>Edit</Link>
                       <form action={deleteSketch}>
                         <input type="hidden" name="id" value={item.id} />
                         <DeleteButton confirmText={`Delete "${item.label}"?`} />
