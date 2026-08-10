@@ -3,7 +3,6 @@
 import { useActionState, useState } from "react";
 import type { CSSProperties } from "react";
 import ImageUploadField from "./ImageUploadField";
-import YearPicker from "./YearPicker";
 import DatePicker from "./DatePicker";
 import ContentEditor from "./ContentEditor";
 import OrderPicker from "./OrderPicker";
@@ -174,11 +173,7 @@ export default function WorldbuildingForm({
           </div>
           <div className="adm-form-row">
             <div className="adm-field">
-              <label htmlFor="year">Year</label>
-              <YearPicker id="year" name="year" defaultValue={item?.year} />
-            </div>
-            <div className="adm-field">
-              <label htmlFor="date">Display Date</label>
+              <label htmlFor="date">Date</label>
               <DatePicker id="date" name="date" defaultValue={item?.date} onValueChange={(v) => setState((s) => ({ ...s, date: v }))} />
             </div>
           </div>

@@ -9,7 +9,7 @@ import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseLinkFields } from "@/lib/form-utils";
 import { allSelectedMetadataIds, readMetadataSelections, type ResolvedMetadataSelections } from "@/lib/portfolio-metadata";
 import { readStyles } from "@/lib/style-fields";
-import { requiredInt, requiredText, nullableText, oneOf, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
+import { requiredDate, requiredText, nullableText, oneOf, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
 
 type ActionState = { error?: string } | undefined;
 
@@ -24,10 +24,12 @@ type ActionState = { error?: string } | undefined;
 const LEGACY_JOIN = ", ";
 
 function readFields(formData: FormData, selections: ResolvedMetadataSelections) {
+  const { iso: date, year } = requiredDate(formData.get("date"), "Date");
   return {
     title: requiredText(formData.get("title"), "Title"),
     cat: requiredText(formData.get("cat"), "Category"),
-    year: requiredInt(formData.get("year"), "Year"),
+    year,
+    date,
     desc: requiredText(formData.get("desc"), "Description"),
     tags: selections.tag.names,
     medium: selections.medium.names.join(LEGACY_JOIN),

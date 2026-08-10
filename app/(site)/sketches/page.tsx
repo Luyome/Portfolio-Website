@@ -21,7 +21,7 @@ export default async function SketchesPage({
 }) {
   const { year, item } = await searchParams;
   const [items, imageRows, linkRows, videoRows, appearance] = await Promise.all([
-    db.select().from(sketches).orderBy(desc(sketches.year), asc(sketches.sortOrder)),
+    db.select().from(sketches).orderBy(desc(sketches.date), asc(sketches.sortOrder)),
     db.select().from(sketchImages).orderBy(asc(sketchImages.sortOrder)),
     db.select().from(sketchLinks).orderBy(asc(sketchLinks.sortOrder)),
     db.select().from(sketchVideos).orderBy(asc(sketchVideos.sortOrder)),

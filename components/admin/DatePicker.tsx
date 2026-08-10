@@ -2,21 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MIN_YEAR, MAX_YEAR, clampYear } from "./YearPicker";
+import { parseIsoDate, formatIsoDate, formatDisplayDate } from "@/lib/date-format";
+
+export { formatDisplayDate };
 
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function parseDisplayDate(s?: string): { y: number; m: number; d: number } | null {
-  if (!s) return null;
-  const match = s.match(/^([A-Za-z]{3,9})\s+(\d{1,2}),\s+(\d{4})$/);
-  if (!match) return null;
-  const mi = MONTH_NAMES.findIndex((mn) => mn.toLowerCase() === match[1].slice(0, 3).toLowerCase());
-  if (mi === -1) return null;
-  return { y: Number(match[3]), m: mi, d: Number(match[2]) };
-}
-
-function formatDisplayDate(y: number, m: number, d: number) {
-  return `${MONTH_NAMES[m]} ${d}, ${y}`;
-}
 
 function daysInMonth(y: number, m: number) {
   return new Date(y, m + 1, 0).getDate();
@@ -33,9 +23,9 @@ export default function DatePicker({
   defaultValue?: string;
   onValueChange?: (value: string) => void;
 }) {
-  const parsed = parseDisplayDate(defaultValue);
+  const parsed = parseIsoDate(defaultValue);
   const today = new Date();
-  const fallback = formatDisplayDate(today.getFullYear(), today.getMonth(), today.getDate());
+  const fallback = formatIsoDate(today.getFullYear(), today.getMonth(), today.getDate());
   const [value, setValueState] = useState(defaultValue || fallback);
 
   function setValue(v: string) {
@@ -56,7 +46,7 @@ export default function DatePicker({
   }, []);
 
   function pickDay(d: number) {
-    setValue(formatDisplayDate(viewYear, viewMonth, d));
+    setValue(formatIsoDate(viewYear, viewMonth, d));
     setOpen(false);
   }
 
@@ -82,13 +72,13 @@ export default function DatePicker({
 
   const numDays = daysInMonth(viewYear, viewMonth);
   const firstWeekday = new Date(viewYear, viewMonth, 1).getDay();
-  const selected = parseDisplayDate(value);
+  const selected = parseIsoDate(value);
 
   return (
     <div className="dp" ref={ref}>
       <input type="hidden" name={name} value={value} readOnly />
       <button type="button" id={id} className="dp-trigger" onClick={() => setOpen((o) => !o)}>
-        {value}
+        {formatDisplayDate(value)}
       </button>
       {open && (
         <div className="dp-panel">

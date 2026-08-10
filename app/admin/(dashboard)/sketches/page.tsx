@@ -3,13 +3,14 @@ import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { sketches } from "@/db/schema";
 import { deleteSketch } from "@/lib/actions/sketches";
+import { formatDisplayDate } from "@/lib/date-format";
 import DeleteButton from "@/components/admin/DeleteButton";
 import ResizableTh from "@/components/admin/ResizableTh";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminSketchesListPage() {
-  const items = await db.select().from(sketches).orderBy(desc(sketches.year), asc(sketches.sortOrder), asc(sketches.id));
+  const items = await db.select().from(sketches).orderBy(desc(sketches.date), asc(sketches.sortOrder), asc(sketches.id));
 
   return (
     <div>
@@ -26,7 +27,7 @@ export default async function AdminSketchesListPage() {
             <thead>
               <tr>
                 <ResizableTh>Label</ResizableTh>
-                <ResizableTh width={100}>Year</ResizableTh>
+                <ResizableTh width={120}>Date</ResizableTh>
                 <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
@@ -34,7 +35,7 @@ export default async function AdminSketchesListPage() {
               {items.map((item) => (
                 <tr key={item.id}>
                   <td>{item.label}</td>
-                  <td>{item.year}</td>
+                  <td>{formatDisplayDate(item.date)}</td>
                   <td>
                     <div className="adm-actions">
                       <Link href={`/admin/sketches/${item.id}/edit`}>Edit</Link>

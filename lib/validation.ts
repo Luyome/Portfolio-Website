@@ -39,6 +39,24 @@ export function requiredInt(value: FormDataEntryValue | null, field: string): nu
   return n;
 }
 
+/**
+ * Required calendar date — the `DatePicker` hidden input's ISO `YYYY-MM-DD`
+ * value. Returns both the ISO string (stored in the real `date` column) and
+ * its year (kept in sync on the legacy `year` column that Archive/filter
+ * code still reads).
+ */
+export function requiredDate(value: FormDataEntryValue | null, field: string): { iso: string; year: number } {
+  const trimmed = raw(value).trim();
+  const match = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) throw new ValidationError(`${field} must be a valid date.`);
+  const [, y, m, d] = match;
+  const parsed = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d)));
+  if (parsed.getUTCFullYear() !== Number(y) || parsed.getUTCMonth() !== Number(m) - 1 || parsed.getUTCDate() !== Number(d)) {
+    throw new ValidationError(`${field} must be a valid date.`);
+  }
+  return { iso: trimmed, year: Number(y) };
+}
+
 /** Positive integer identifier — a required foreign key or primary key input. */
 export function requiredId(value: FormDataEntryValue | null | number, field: string): number {
   const n = typeof value === "number" ? value : Number(raw(value));

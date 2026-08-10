@@ -21,7 +21,7 @@ export default async function PortfolioPage({
 }) {
   const { year, item } = await searchParams;
   const [items, imageRows, linkRows, videoRows, appearance] = await Promise.all([
-    db.select().from(portfolioItems).orderBy(desc(portfolioItems.year), asc(portfolioItems.sortOrder)),
+    db.select().from(portfolioItems).orderBy(desc(portfolioItems.date), asc(portfolioItems.sortOrder)),
     db.select().from(portfolioImages).orderBy(asc(portfolioImages.sortOrder)),
     db.select().from(portfolioLinks).orderBy(asc(portfolioLinks.sortOrder)),
     db.select().from(portfolioVideos).orderBy(asc(portfolioVideos.sortOrder)),

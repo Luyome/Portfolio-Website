@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import type { CSSProperties } from "react";
 import ImageUploadField from "./ImageUploadField";
-import YearPicker from "./YearPicker";
+import DatePicker from "./DatePicker";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import PortfolioPreviewCard from "./PortfolioPreviewCard";
@@ -112,8 +112,13 @@ export default function PortfolioForm({
             </Field>
           </div>
           <div className="adm-field">
-            <label htmlFor="year">Year</label>
-            <YearPicker id="year" name="year" defaultValue={item?.year} onValueChange={(v) => setState((s) => ({ ...s, year: v }))} />
+            <label htmlFor="date">Date</label>
+            <DatePicker
+              id="date"
+              name="date"
+              defaultValue={item?.date}
+              onValueChange={(v) => setState((s) => ({ ...s, year: Number(v.slice(0, 4)) || s.year }))}
+            />
           </div>
           <Field
             id="desc"

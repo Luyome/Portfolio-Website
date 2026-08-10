@@ -21,7 +21,7 @@ export default async function Model3DPage({
 }) {
   const { year, item } = await searchParams;
   const [items, imageRows, linkRows, videoRows, appearance] = await Promise.all([
-    db.select().from(models3d).orderBy(desc(models3d.year), asc(models3d.sortOrder)),
+    db.select().from(models3d).orderBy(desc(models3d.date), asc(models3d.sortOrder)),
     db.select().from(model3dImages).orderBy(asc(model3dImages.sortOrder)),
     db.select().from(model3dLinks).orderBy(asc(model3dLinks.sortOrder)),
     db.select().from(model3dVideos).orderBy(asc(model3dVideos.sortOrder)),

@@ -11,6 +11,7 @@ import type { StylesMap } from "@/lib/style-fields";
 import type { MediaEntry } from "@/lib/group-images";
 import type { MapLocation, WorldMap } from "@/lib/map-types";
 import { fuzzyMatch } from "@/lib/search";
+import { formatDisplayDate } from "@/lib/date-format";
 import { resolveEntityTypeLabel } from "@/types/worldbuilding";
 import type { EntityTypeFilter, LoreEntry, WorldbuildingDiscoveryMode, WorldbuildingEntityType } from "@/types/worldbuilding";
 import { findContentItemIndex } from "@/lib/content-detail-href";
@@ -171,8 +172,7 @@ export default function WorldbuildingBrowser({
     title: w.title,
     catLabel: resolveEntityTypeLabel(w.entityType, w.cat, entityTypeLabels),
     metaRows: [
-      { label: "Year", value: String(w.year) },
-      { label: "Date", value: w.date },
+      { label: "Date", value: formatDisplayDate(w.date) },
     ],
     desc: w.excerpt,
     content: w.content,

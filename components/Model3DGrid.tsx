@@ -106,7 +106,7 @@ export default function Model3DGrid({ items, initialYear, initialItemId }: { ite
                 }}
                 style={{
                   background: s.colorHex ?? "#151010",
-                  minHeight: 160,
+                  aspectRatio: "1",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",

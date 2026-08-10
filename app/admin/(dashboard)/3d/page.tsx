@@ -3,13 +3,14 @@ import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { models3d } from "@/db/schema";
 import { deleteModel3D } from "@/lib/actions/models3d";
+import { formatDisplayDate } from "@/lib/date-format";
 import DeleteButton from "@/components/admin/DeleteButton";
 import ResizableTh from "@/components/admin/ResizableTh";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminModel3DListPage() {
-  const items = await db.select().from(models3d).orderBy(desc(models3d.year), asc(models3d.sortOrder), asc(models3d.id));
+  const items = await db.select().from(models3d).orderBy(desc(models3d.date), asc(models3d.sortOrder), asc(models3d.id));
 
   return (
     <div>
@@ -26,7 +27,7 @@ export default async function AdminModel3DListPage() {
             <thead>
               <tr>
                 <ResizableTh>Label</ResizableTh>
-                <ResizableTh width={100}>Year</ResizableTh>
+                <ResizableTh width={120}>Date</ResizableTh>
                 <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
@@ -34,7 +35,7 @@ export default async function AdminModel3DListPage() {
               {items.map((item) => (
                 <tr key={item.id}>
                   <td>{item.label}</td>
-                  <td>{item.year}</td>
+                  <td>{formatDisplayDate(item.date)}</td>
                   <td>
                     <div className="adm-actions">
                       <Link href={`/admin/3d/${item.id}/edit`}>Edit</Link>

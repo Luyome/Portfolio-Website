@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { fieldStyle } from "@/lib/style-fields";
 import type { StylesMap } from "@/lib/style-fields";
+import { formatDisplayDate } from "@/lib/date-format";
 
 export type WorldbuildingPreviewState = {
   title: string;
@@ -27,7 +28,7 @@ export default function WorldbuildingPreviewCard({
         <div className="wb-card">
           <div className="wb-card-img">
             {state.img ? <img src={state.img} alt={state.title} /> : null}
-            <div className="wb-card-date">{state.date}</div>
+            <div className="wb-card-date">{formatDisplayDate(state.date)}</div>
           </div>
           <div className="wb-card-body">
             <span className="wb-card-cat">{state.cat}</span>

@@ -183,6 +183,13 @@
       "when": 1786287335996,
       "tag": "0025_harsh_captain_cross",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1786369429344,
+      "tag": "0026_complete_firedrake",
+      "breakpoints": true
     }
   ]
 }

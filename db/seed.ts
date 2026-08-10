@@ -43,7 +43,7 @@ async function seed() {
 
   await db.insert(portfolioItems).values([
     {
-      title: "Crimson Warrior", cat: "Gameplay Design", year: 2026,
+      title: "Crimson Warrior", cat: "Gameplay Design", year: 2026, date: "2026-02-01",
       desc: "Full game-ready character. High-poly sculpt in ZBrush (68k), baked to 4k maps. Substance Painter textures. Rigged and exported for Unreal Engine 5.",
       tags: ["ZBrush", "Substance", "Game Ready", "UE5 Ready"],
       medium: "3D Character", software: "ZBrush, Blender, Substance Painter",
@@ -52,7 +52,7 @@ async function seed() {
       sortOrder: 0,
     },
     {
-      title: "Azure Mage", cat: "Character Design", year: 2026,
+      title: "Azure Mage", cat: "Character Design", year: 2026, date: "2026-01-15",
       desc: "Character design from concept sketch to final 3D. Focus on cloth simulation and layered material design for the robe system.",
       tags: ["Modeling", "Rigging", "Cloth Sim"],
       medium: "3D Character", software: "Maya, ZBrush, Marvelous Designer",
@@ -61,7 +61,7 @@ async function seed() {
       sortOrder: 1,
     },
     {
-      title: "Shadow Assassin", cat: "Gameplay Design", year: 2025,
+      title: "Shadow Assassin", cat: "Gameplay Design", year: 2025, date: "2025-11-01",
       desc: "Stealth-archetype character. Modular armor system designed for in-game customization. Custom skin shader in Unreal 5.",
       tags: ["Modeling", "Animation", "Modular", "Game Ready"],
       medium: "3D Character", software: "ZBrush, Maya, Unreal Engine 5",
@@ -70,7 +70,7 @@ async function seed() {
       sortOrder: 2,
     },
     {
-      title: "Sakura Knight", cat: "Character Design", year: 2025,
+      title: "Sakura Knight", cat: "Character Design", year: 2025, date: "2025-08-01",
       desc: "Fantasy warrior combining Japanese armor aesthetics with a stylized Western silhouette.",
       tags: ["3D Modeling", "Concept Art", "Fantasy"],
       medium: "Concept + 3D", software: "Procreate, ZBrush, Blender",
@@ -79,7 +79,7 @@ async function seed() {
       sortOrder: 3,
     },
     {
-      title: "Neon Hero", cat: "Level Design", year: 2025,
+      title: "Neon Hero", cat: "Level Design", year: 2025, date: "2025-05-01",
       desc: "Cyberpunk environment layout study. Level flow, pacing and landmark design for a vertical city district in Unreal Engine 5.",
       tags: ["Level Design", "UE5", "Environment", "Layout"],
       medium: "Level Design", software: "Unreal Engine 5, Blender",
@@ -90,14 +90,14 @@ async function seed() {
   ]);
 
   await db.insert(sketches).values([
-    { year: 2026, label: "2026.02 — figure study", desc: "Anatomy and proportion study. Morning session.", img: null, colorHex: "#151010", sortOrder: 0 },
-    { year: 2026, label: "2026.02 — loose form", desc: "Gestural lines, no reference.", img: null, colorHex: "#0e1218", sortOrder: 1 },
-    { year: 2026, label: "2026.01 — environment", desc: "Quick environment thumbnail.", img: null, colorHex: "#10140e", sortOrder: 2 },
-    { year: 2026, label: "2026.03 — quick sketch", desc: "Quick warm-up sketch.", img: null, colorHex: "#151518", sortOrder: 3 },
-    { year: 2025, label: "2025.11 — anatomy", desc: "30-day anatomy challenge, day 11.", img: null, colorHex: "#181010", sortOrder: 4 },
-    { year: 2025, label: "2025.04 — gesture", desc: "5-minute gesture session.", img: null, colorHex: "#0e0e18", sortOrder: 5 },
-    { year: 2025, label: "2025.03 — doodle", desc: "Random doodle between classes.", img: null, colorHex: "#14100e", sortOrder: 6 },
-    { year: 2025, label: "2025.08 — creature", desc: "Creature concept, no ref.", img: null, colorHex: "#0e1818", sortOrder: 7 },
+    { year: 2026, date: "2026-02-10", label: "2026.02 — figure study", desc: "Anatomy and proportion study. Morning session.", img: null, colorHex: "#151010", sortOrder: 0 },
+    { year: 2026, date: "2026-02-05", label: "2026.02 — loose form", desc: "Gestural lines, no reference.", img: null, colorHex: "#0e1218", sortOrder: 1 },
+    { year: 2026, date: "2026-01-20", label: "2026.01 — environment", desc: "Quick environment thumbnail.", img: null, colorHex: "#10140e", sortOrder: 2 },
+    { year: 2026, date: "2026-03-01", label: "2026.03 — quick sketch", desc: "Quick warm-up sketch.", img: null, colorHex: "#151518", sortOrder: 3 },
+    { year: 2025, date: "2025-11-11", label: "2025.11 — anatomy", desc: "30-day anatomy challenge, day 11.", img: null, colorHex: "#181010", sortOrder: 4 },
+    { year: 2025, date: "2025-04-01", label: "2025.04 — gesture", desc: "5-minute gesture session.", img: null, colorHex: "#0e0e18", sortOrder: 5 },
+    { year: 2025, date: "2025-03-01", label: "2025.03 — doodle", desc: "Random doodle between classes.", img: null, colorHex: "#14100e", sortOrder: 6 },
+    { year: 2025, date: "2025-08-01", label: "2025.08 — creature", desc: "Creature concept, no ref.", img: null, colorHex: "#0e1818", sortOrder: 7 },
   ]);
 
   await db.insert(worldbuildingEntries).values([

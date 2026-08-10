@@ -8,13 +8,15 @@ import { DISPLAY_TEMPLATES, models3d, model3dImages, model3dLinks, model3dVideos
 import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseLinkFields } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
-import { requiredInt, requiredText, optionalText, nullableText, nullableUrl, oneOf, requiredUrl, safeErrorMessage } from "@/lib/validation";
+import { requiredDate, requiredText, optionalText, nullableText, nullableUrl, oneOf, requiredUrl, safeErrorMessage } from "@/lib/validation";
 
 type ActionState = { error?: string } | undefined;
 
 function readFields(formData: FormData) {
+  const { iso: date, year } = requiredDate(formData.get("date"), "Date");
   return {
-    year: requiredInt(formData.get("year"), "Year"),
+    year,
+    date,
     label: requiredText(formData.get("label"), "Label"),
     desc: optionalText(formData.get("desc")),
     img: nullableUrl(formData.get("img"), "Image"),

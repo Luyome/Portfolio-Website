@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { asc } from "drizzle-orm";
+import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { games, gameLinks, gameImages, gameVideos } from "@/db/schema";
 import GamesBrowser from "@/components/GamesBrowser";
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default async function GamesPage({ searchParams }: { searchParams: Promise<{ item?: string | string[] }> }) {
   const { item } = await searchParams;
   const [rows, linkRows, imageRows, videoRows, appearance] = await Promise.all([
-    db.select().from(games).orderBy(asc(games.sortOrder)),
+    db.select().from(games).orderBy(desc(games.date), asc(games.sortOrder)),
     db.select().from(gameLinks).orderBy(asc(gameLinks.sortOrder)),
     db.select().from(gameImages).orderBy(asc(gameImages.sortOrder)),
     db.select().from(gameVideos).orderBy(asc(gameVideos.sortOrder)),

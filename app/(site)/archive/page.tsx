@@ -31,6 +31,7 @@ export default async function ArchivePage() {
       title: p.title,
       cat: p.cat,
       year: p.year,
+      date: p.date,
       img: p.img,
       href: `/portfolio?year=${p.year}`,
     })),
@@ -40,6 +41,7 @@ export default async function ArchivePage() {
       title: s.label,
       cat: "Sketch",
       year: s.year,
+      date: s.date,
       img: s.img ?? "",
       href: `/sketches?year=${s.year}`,
     })),
@@ -49,6 +51,7 @@ export default async function ArchivePage() {
       title: m.label,
       cat: "3D",
       year: m.year,
+      date: m.date,
       img: m.img ?? "",
       href: `/3d?year=${m.year}`,
     })),
@@ -58,6 +61,7 @@ export default async function ArchivePage() {
       title: w.title,
       cat: w.cat,
       year: w.year,
+      date: w.date,
       img: w.img,
       href: "/worldbuilding",
     })),
@@ -67,10 +71,11 @@ export default async function ArchivePage() {
       title: g.title,
       cat: g.status,
       year: g.year,
+      date: g.date,
       img: g.img,
       href: "/games",
     })),
-  ].sort((a, b) => b.year - a.year);
+  ].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 
   return (
     <div className="page" style={pageAppearanceVars(appearance)}>

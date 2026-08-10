@@ -1,15 +1,16 @@
 import Link from "next/link";
-import { asc } from "drizzle-orm";
+import { desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { games } from "@/db/schema";
 import { deleteGame } from "@/lib/actions/games";
+import { formatDisplayDate } from "@/lib/date-format";
 import DeleteButton from "@/components/admin/DeleteButton";
 import ResizableTh from "@/components/admin/ResizableTh";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 export default async function AdminGamesListPage() {
-  const items = await db.select().from(games).orderBy(asc(games.sortOrder), asc(games.id));
+  const items = await db.select().from(games).orderBy(desc(games.date), asc(games.sortOrder), asc(games.id));
 
   return (
     <div>
@@ -27,6 +28,7 @@ export default async function AdminGamesListPage() {
               <tr>
                 <ResizableTh>Title</ResizableTh>
                 <ResizableTh width={130}>Status</ResizableTh>
+                <ResizableTh width={120}>Date</ResizableTh>
                 <th className="adm-col-actions">Actions</th>
               </tr>
             </thead>
@@ -35,6 +37,7 @@ export default async function AdminGamesListPage() {
                 <tr key={item.id}>
                   <td>{item.title}</td>
                   <td>{item.status}</td>
+                  <td>{formatDisplayDate(item.date)}</td>
                   <td>
                     <div className="adm-actions">
                       <Link href={`/admin/games/${item.id}/edit`}>Edit</Link>

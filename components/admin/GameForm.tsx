@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import type { CSSProperties } from "react";
 import ImageUploadField from "./ImageUploadField";
-import YearPicker from "./YearPicker";
+import DatePicker from "./DatePicker";
 import ContentEditor from "./ContentEditor";
 import OrderPicker from "./OrderPicker";
 import FieldStyleControls from "./FieldStyleControls";
@@ -110,8 +110,8 @@ export default function GameForm({
               <input name="engine" defaultValue={item?.engine} required placeholder="Unreal Engine 5" />
             </Field>
             <div className="adm-field">
-              <label htmlFor="year">Year</label>
-              <YearPicker id="year" name="year" defaultValue={item?.year} />
+              <label htmlFor="date">Date</label>
+              <DatePicker id="date" name="date" defaultValue={item?.date} />
             </div>
           </div>
           <Field

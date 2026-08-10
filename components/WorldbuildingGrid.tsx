@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import EmptyState from "./EmptyState";
+import { formatDisplayDate } from "@/lib/date-format";
 import { isOptimizableImageUrl } from "@/lib/image-host";
 import { resolveEntityTypeLabel } from "@/types/worldbuilding";
 import type { LoreEntry, WorldbuildingDiscoveryMode } from "@/types/worldbuilding";
@@ -60,7 +61,7 @@ export default function WorldbuildingGrid({
       <AnimatePresence initial={false}>
         {items.map((w) => {
           const badge = resolveEntityTypeLabel(w.entityType, w.cat, entityTypeLabels);
-          const meta = [w.date, badge].filter(Boolean).join(" — ");
+          const meta = [formatDisplayDate(w.date), badge].filter(Boolean).join(" — ");
           return (
             <motion.div
               layout

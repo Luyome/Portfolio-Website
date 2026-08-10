@@ -106,7 +106,7 @@ export default function SketchGrid({ items, initialYear, initialItemId }: { item
                 }}
                 style={{
                   background: s.colorHex ?? "#151010",
-                  minHeight: 160,
+                  aspectRatio: "1",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",

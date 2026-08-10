@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, serial, integer, text, timestamp, doublePrecision, jsonb, boolean, uniqueIndex, index, check, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, text, timestamp, date, doublePrecision, jsonb, boolean, uniqueIndex, index, check, type AnyPgColumn } from "drizzle-orm/pg-core";
 
 export type ThemedColor = { dark?: string; light?: string };
 export type FieldStyle = { color?: ThemedColor; fontSize?: string };
@@ -24,6 +24,7 @@ export const portfolioItems = pgTable("portfolio_items", {
   title: text("title").notNull(),
   cat: text("cat").notNull(),
   year: integer("year").notNull(),
+  date: date("date").notNull(),
   desc: text("desc").notNull(),
   tags: text("tags").array().notNull().default([]),
   medium: text("medium").notNull(),
@@ -65,6 +66,7 @@ export const portfolioLinks = pgTable("portfolio_links", {
 export const sketches = pgTable("sketches", {
   id: serial("id").primaryKey(),
   year: integer("year").notNull(),
+  date: date("date").notNull(),
   label: text("label").notNull(),
   desc: text("desc").notNull().default(""),
   img: text("img"),
@@ -105,6 +107,7 @@ export const sketchLinks = pgTable("sketch_links", {
 export const models3d = pgTable("models_3d", {
   id: serial("id").primaryKey(),
   year: integer("year").notNull(),
+  date: date("date").notNull(),
   label: text("label").notNull(),
   desc: text("desc").notNull().default(""),
   img: text("img"),
@@ -153,7 +156,7 @@ export const DISPLAY_TEMPLATES = ["gallery", "blog"] as const;
 export const worldbuildingEntries = pgTable("worldbuilding_entries", {
   id: serial("id").primaryKey(),
   year: integer("year").notNull(),
-  date: text("date").notNull(),
+  date: date("date").notNull(),
   cat: text("cat").notNull(),
   // `cat` is legacy public taxonomy. Canonical Sprint 4 typing is additive so
   // ambiguous existing records remain intact until an owner classifies them.
@@ -222,6 +225,7 @@ export const games = pgTable("games", {
   target: text("target").notNull(),
   img: text("img").notNull(),
   year: integer("year").notNull().default(2026),
+  date: date("date").notNull().defaultNow(),
   content: text("content").notNull().default(""),
   contentOrder: integer("content_order").notNull().default(0),
   displayTemplate: text("display_template").notNull().default("gallery"),

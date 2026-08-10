@@ -14,6 +14,8 @@ export type ArchiveItem = {
   title: string;
   cat: string;
   year: number;
+  /** ISO `YYYY-MM-DD` — the item's canonical date, already sorted newest-first by the caller. */
+  date: string;
   img: string;
   href: string;
 };

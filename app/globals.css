@@ -876,19 +876,24 @@ a.arv-row:hover{background:var(--bg2)}
 .pi-link{display:inline-flex;align-items:center;gap:8px;font-family:var(--M);font-size:var(--text-label-link-size);letter-spacing:var(--text-label-link-track);text-transform:uppercase;color:var(--red);border-bottom:1px solid rgba(var(--red-rgb),.3);padding-bottom:2px;width:fit-content;transition:color .18s}
 .pi-link:hover{color:var(--red2)}
 
-/* ══ SKETCHES — grid ══════════════════════ */
+/* ══ SKETCHES / 3D — grid ══════════════════════ */
+/* Uniform-cell grid shared by Sketches and 3D, mirroring Worldbuilding's
+   discovery grid (.wb-disc-grid/.wb-disc-card/.wb-disc-media above) so
+   differently-sized source images no longer distort row heights — each cell
+   is a fixed aspect-ratio square, image cropped via object-fit:cover. Same
+   auto-fill/minmax formula as Worldbuilding, just capped at 5 columns
+   instead of 6 per this system's own column-count rule. */
 .sk-ctrl{padding:var(--space-md) var(--space-xl);border-bottom:1px solid var(--border)}
 .sk-grid{
   padding:20px var(--space-xl) var(--space-2xl);
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(auto-fill,minmax(max(150px,calc((100% - 16px) / 5)),1fr));
   gap:4px;
-  align-items:start;
 }
-.sk-item{cursor:pointer;background:var(--bg3);display:flex;flex-direction:column;min-width:0}
-.sk-thumb{overflow:hidden;position:relative}
+.sk-item{position:relative;overflow:hidden;cursor:pointer;background:var(--bg3);display:flex;flex-direction:column;min-width:0}
+.sk-thumb{position:relative;width:100%;aspect-ratio:1;overflow:hidden;flex:none}
 .sk-thumb img{
-  width:100%;height:auto;display:block;
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
   transition:filter .3s,transform .4s;filter:saturate(.8) brightness(.85);
 }
 .sk-item:hover .sk-thumb img{filter:saturate(1.05) brightness(1);transform:scale(1.04)}
@@ -2295,7 +2300,7 @@ a.arv-row:hover{background:var(--bg2)}
   .hcar-dots{left:var(--space-md);bottom:24px}
   .narr-grid{grid-template-columns:1fr;gap:28px}
   .narr-frame{aspect-ratio:16/10}
-  .sk-grid{grid-template-columns:repeat(2,1fr)}
+  .sk-grid{grid-template-columns:repeat(auto-fit,minmax(min(150px,44vw),1fr))}
   .home-narrative{padding-left:var(--space-md);padding-right:var(--space-md)}
   .sc-heading,.sc-track{padding-left:var(--space-md);padding-right:var(--space-md)}
   .sc-item{width:200px;height:135px}

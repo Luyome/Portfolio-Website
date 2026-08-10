@@ -9,7 +9,7 @@ import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseLinkFields, str } from "@/lib/form-utils";
 import { allSelectedWbMetadataIds, readWbMetadataSelections, type ResolvedWbMetadataSelections } from "@/lib/worldbuilding-metadata";
 import { readStyles } from "@/lib/style-fields";
-import { requiredId, requiredInt, requiredText, nullableText, oneOf, optionalUrl, requiredUrl, safeErrorMessage, ValidationError } from "@/lib/validation";
+import { requiredId, requiredDate, requiredText, nullableText, oneOf, optionalUrl, requiredUrl, safeErrorMessage, ValidationError } from "@/lib/validation";
 
 type ActionState = { error?: string } | undefined;
 
@@ -19,9 +19,10 @@ type ActionState = { error?: string } | undefined;
 // consumer reads through the junction table directly instead — mirrors
 // Portfolio's own legacy dual-write strategy (`lib/actions/portfolio.ts`).
 function readFields(formData: FormData, selections: ResolvedWbMetadataSelections) {
+  const { iso: date, year } = requiredDate(formData.get("date"), "Date");
   return {
-    year: requiredInt(formData.get("year"), "Year"),
-    date: requiredText(formData.get("date"), "Display Date"),
+    year,
+    date,
     cat: selections.wb_category.names[0] ?? "",
     entityType: selections.wb_entity_type.slugs[0] ?? null,
     title: requiredText(formData.get("title"), "Title"),

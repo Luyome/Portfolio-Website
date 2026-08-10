@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default async function WorldbuildingPage({ searchParams }: { searchParams: Promise<{ item?: string | string[]; map?: string | string[] }> }) {
   const { item, map } = await searchParams;
   const [items, imageRows, linkRows, videoRows, relationshipRows, mapRows, locationRows, appearance, wbOptions] = await Promise.all([
-    db.select().from(worldbuildingEntries).orderBy(desc(worldbuildingEntries.year), asc(worldbuildingEntries.sortOrder)),
+    db.select().from(worldbuildingEntries).orderBy(desc(worldbuildingEntries.date), asc(worldbuildingEntries.sortOrder)),
     db.select().from(worldbuildingImages).orderBy(asc(worldbuildingImages.sortOrder)),
     db.select().from(worldbuildingLinks).orderBy(asc(worldbuildingLinks.sortOrder)),
     db.select().from(worldbuildingVideos).orderBy(asc(worldbuildingVideos.sortOrder)),

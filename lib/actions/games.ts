@@ -8,11 +8,12 @@ import { DISPLAY_TEMPLATES, games, gameLinks, gameImages, gameVideos } from "@/d
 import { requireAdminSession } from "@/lib/actions/guard";
 import { num, parseCsv, parseLines, parseLinkFields, str } from "@/lib/form-utils";
 import { readStyles } from "@/lib/style-fields";
-import { requiredInt, requiredText, nullableText, oneOf, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
+import { requiredDate, requiredText, nullableText, oneOf, optionalUrl, requiredUrl, safeErrorMessage } from "@/lib/validation";
 
 type ActionState = { error?: string } | undefined;
 
 function readFields(formData: FormData) {
+  const { iso: date, year } = requiredDate(formData.get("date"), "Date");
   return {
     title: requiredText(formData.get("title"), "Title"),
     status: requiredText(formData.get("status"), "Status"),
@@ -22,7 +23,8 @@ function readFields(formData: FormData) {
     feats: parseLines(formData.get("feats")),
     target: requiredText(formData.get("target"), "Target"),
     img: optionalUrl(formData.get("img"), "Image"),
-    year: requiredInt(formData.get("year"), "Year"),
+    year,
+    date,
     // Rich content block — left untouched (no trim/validation) so authored
     // markdown/structured content is never altered, per docs/02_CONTENT_ARCHITECTURE.md.
     content: str(formData.get("content")),

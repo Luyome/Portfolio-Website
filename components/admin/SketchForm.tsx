@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import type { CSSProperties } from "react";
 import ImageUploadField from "./ImageUploadField";
-import YearPicker from "./YearPicker";
+import DatePicker from "./DatePicker";
 import FieldStyleControls from "./FieldStyleControls";
 import PreviewToggle from "./PreviewToggle";
 import SketchPreviewCard from "./SketchPreviewCard";
@@ -84,8 +84,8 @@ export default function SketchForm({
               <input name="label" defaultValue={item?.label} required placeholder="2026.02 — figure study" />
             </Field>
             <div className="adm-field">
-              <label htmlFor="year">Year</label>
-              <YearPicker id="year" name="year" defaultValue={item?.year} />
+              <label htmlFor="date">Date</label>
+              <DatePicker id="date" name="date" defaultValue={item?.date} />
             </div>
           </div>
           <Field
