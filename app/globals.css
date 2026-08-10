@@ -921,7 +921,18 @@ a.arv-row:hover{background:var(--bg2)}
 /* ══ WORLDBUILDING — discovery shell: mode tabs + filter rail + results
    (Worldbuilding Discovery Rework) ══════════════════ */
 .wb-discovery{margin:0 var(--space-lg) var(--space-lg)}
-.wb-mode-row{display:flex;gap:6px;margin-bottom:16px}
+/* Combined header row: mode tabs (left) + Krupni Chronicles title (right),
+   sharing the same 250px rail / flex-1 results column split as .wb-body
+   below so the two rows stay aligned (map-first layout rework). */
+.wb-header-row{display:flex;align-items:flex-end;gap:28px;margin-bottom:14px}
+.wb-header-left{flex:none;width:250px}
+.wb-header-right{flex:1;min-width:0}
+.wb-header-title{
+  font-family:var(--T);font-size:clamp(1.5rem,2vw,2rem);font-weight:var(--text-heading-weight);
+  font-style:italic;line-height:1.2;color:var(--red);margin:0;
+}
+.wb-header-subtitle{font-family:var(--M);font-size:0.68rem;letter-spacing:.1em;color:var(--muted);margin:4px 0 0}
+.wb-mode-row{display:flex;gap:6px}
 .wb-mode-btn{
   font-family:var(--M);font-size:0.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
   padding:9px 22px;border:1px solid var(--border);color:var(--muted);background:transparent;transition:all .18s;
@@ -966,6 +977,8 @@ a.arv-row:hover{background:var(--bg2)}
 .wb-result-count{font-family:var(--M);font-size:0.62rem;letter-spacing:.08em;color:var(--muted)}
 
 @media (max-width:900px){
+  .wb-header-row{flex-direction:column;align-items:flex-start;gap:10px}
+  .wb-header-left{width:auto}
   .wb-rail-toggle{display:inline-flex}
   .wb-body{flex-direction:column;gap:14px}
   .wb-rail{
@@ -2026,7 +2039,19 @@ a.arv-row:hover{background:var(--bg2)}
    nothing sits flush against the sidebar or the browser edge. Bottom
    padding keeps a visible gap between the map and the codex/controls
    section below instead of the two backgrounds touching edge-to-edge. */
-.wa-wrap{padding:24px var(--space-xl) 28px}
+.wa-wrap{padding:16px var(--space-xl) 20px}
+/* Map-first layout: the page now opens directly on the map, so its preview
+   is capped a bit narrower than full-bleed (~8%) -- aspect-ratio drives the
+   height too, so this reads as "slightly more compact" without cropping,
+   stretching, or touching the shared .wa-viewport rule Home also uses. */
+.wa-wrap .wa-viewport{max-width:92%;margin-inline:auto}
+/* On the map-first page the hint should already read as present (not only
+   on hover) since the map is the page's opening beat, kept subtle via low
+   default opacity and a small bump on hover/focus. Scoped to .wa-wrap only
+   -- Home's preview keeps its original hover-to-reveal behaviour. */
+.wa-wrap .wa-static-hint{opacity:.8}
+.wa-wrap .wa-viewport-static:hover .wa-static-hint,
+.wa-wrap .wa-viewport-static:focus-visible .wa-static-hint{opacity:1}
 .wa-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:8px}
 .wa-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;font-family:var(--M);font-size:0.72rem}
 .wa-crumb-item{display:flex;align-items:center}

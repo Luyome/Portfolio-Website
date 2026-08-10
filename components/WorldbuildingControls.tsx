@@ -52,19 +52,27 @@ export default function WorldbuildingControls({
 
   return (
     <div className="wb-discovery">
-      <div className="wb-mode-row" role="tablist" aria-label="Content mode">
-        {MODES.map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            role="tab"
-            aria-selected={mode === m.id}
-            className={`wb-mode-btn ${mode === m.id ? "on" : ""}`}
-            onClick={() => onModeChange(m.id)}
-          >
-            {m.label}
-          </button>
-        ))}
+      <div className="wb-header-row">
+        <div className="wb-header-left">
+          <div className="wb-mode-row" role="tablist" aria-label="Content mode">
+            {MODES.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                role="tab"
+                aria-selected={mode === m.id}
+                className={`wb-mode-btn ${mode === m.id ? "on" : ""}`}
+                onClick={() => onModeChange(m.id)}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="wb-header-right">
+          <h2 className="wb-header-title">Krupni Chronicles</h2>
+          <p className="wb-header-subtitle">Lore / Stories / Art / Characters / Worlds</p>
+        </div>
       </div>
 
       <button
