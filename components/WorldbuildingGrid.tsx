@@ -5,27 +5,53 @@ import Image from "next/image";
 import EmptyState from "./EmptyState";
 import { isOptimizableImageUrl } from "@/lib/image-host";
 import { resolveEntityTypeLabel } from "@/types/worldbuilding";
-import type { LoreEntry } from "@/types/worldbuilding";
+import type { LoreEntry, WorldbuildingDiscoveryMode } from "@/types/worldbuilding";
+
+const EMPTY_COPY: Record<WorldbuildingDiscoveryMode, { published: string; filtered: string }> = {
+  all: { published: "No worldbuilding entries have been published yet.", filtered: "No Worldbuilding entries match these filters." },
+  art: { published: "No artwork has been published yet.", filtered: "No artwork matches these filters." },
+  blog: { published: "No blog entries have been published yet.", filtered: "No blog entries match these filters." },
+};
 
 export default function WorldbuildingGrid({
   items,
   onSelect,
+  mode,
   hasEntries,
+  filtersActive,
+  onClearFilters,
   entityTypeLabels,
 }: {
   items: LoreEntry[];
   onSelect: (id: number) => void;
-  /** Whether any entry exists before search/filter — distinguishes
-   * "nothing published yet" from "filtered down to nothing". */
+  /** Active content mode — only used to pick the right empty-state copy and
+   * whether a Blog excerpt renders under each card. */
+  mode: WorldbuildingDiscoveryMode;
+  /** Whether the active mode has any entries at all, ignoring secondary
+   * filters — distinguishes "nothing published in this mode" from
+   * "filtered down to nothing". */
   hasEntries: boolean;
+  filtersActive: boolean;
+  onClearFilters: () => void;
   /** Slug→name map built from active Entity Type options (Phase 2). */
   entityTypeLabels: Record<string, string>;
 }) {
+  const copy = EMPTY_COPY[mode];
+
   if (items.length === 0) {
     return hasEntries ? (
-      <EmptyState title="No entries match this filter." />
+      <EmptyState
+        title={copy.filtered}
+        action={
+          filtersActive ? (
+            <button type="button" className="wb-clear-btn" onClick={onClearFilters}>
+              Clear Filters
+            </button>
+          ) : undefined
+        }
+      />
     ) : (
-      <EmptyState title="No worldbuilding entries have been published yet." />
+      <EmptyState title={copy.published} />
     );
   }
 
@@ -59,7 +85,7 @@ export default function WorldbuildingGrid({
                   src={w.img}
                   alt={w.title}
                   fill
-                  sizes="(max-width: 480px) 46vw, (max-width: 900px) 22vw, 15vw"
+                  sizes="(max-width: 480px) 46vw, (max-width: 900px) 24vw, 16vw"
                   quality={90}
                   unoptimized={!isOptimizableImageUrl(w.img)}
                 />
@@ -67,6 +93,10 @@ export default function WorldbuildingGrid({
               <div className="wb-disc-caption">
                 {meta && <div className="wb-disc-cap-meta">{meta}</div>}
                 <div className="wb-disc-cap-title">{w.title}</div>
+                {/* Blog-only excerpt (Part 8) — real `excerpt` field, never
+                    shown in ALL/ART so the two card types stay visually
+                    unified there. */}
+                {mode === "blog" && w.excerpt && <div className="wb-disc-cap-excerpt">{w.excerpt}</div>}
               </div>
             </motion.div>
           );

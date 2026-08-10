@@ -909,7 +909,7 @@ a.arv-row:hover{background:var(--bg2)}
 }
 .wb-ctrl-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .wb-search{
-  flex:1;min-width:200px;background:transparent;border:1px solid var(--border);color:var(--text);
+  width:100%;background:transparent;border:1px solid var(--border);color:var(--text);
   font-family:var(--B);font-size:0.82rem;padding:7px 12px;outline:none;transition:border-color .18s;
 }
 .wb-search:focus{border-color:rgba(var(--red-rgb),.5)}
@@ -917,6 +917,63 @@ a.arv-row:hover{background:var(--bg2)}
 .wb-pill{font-family:var(--M);font-size:0.58rem;letter-spacing:.16em;text-transform:uppercase;padding:5px 14px;border:1px solid var(--border);color:var(--muted);border-radius:999px;transition:all .18s}
 .wb-pill:hover{color:var(--text);border-color:rgba(var(--red-rgb),.4)}
 .wb-pill.on{background:var(--red);color:var(--on-red);border-color:var(--red)}
+
+/* ══ WORLDBUILDING — discovery shell: mode tabs + filter rail + results
+   (Worldbuilding Discovery Rework) ══════════════════ */
+.wb-discovery{margin:0 var(--space-lg) var(--space-lg)}
+.wb-mode-row{display:flex;gap:6px;margin-bottom:16px}
+.wb-mode-btn{
+  font-family:var(--M);font-size:0.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  padding:9px 22px;border:1px solid var(--border);color:var(--muted);background:transparent;transition:all .18s;
+}
+.wb-mode-btn:hover{color:var(--text);border-color:rgba(var(--red-rgb),.4)}
+.wb-mode-btn.on{background:var(--red);color:var(--on-red);border-color:var(--red)}
+.wb-mode-btn:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+
+.wb-rail-toggle{
+  display:none;align-items:center;gap:8px;margin-bottom:12px;
+  font-family:var(--M);font-size:0.62rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:8px 14px;border:1px solid var(--border);color:var(--text2);background:transparent;
+}
+.wb-rail-toggle-dot{width:6px;height:6px;border-radius:50%;background:var(--red)}
+
+.wb-body{display:flex;align-items:flex-start;gap:28px}
+.wb-rail{
+  flex:none;width:250px;display:flex;flex-direction:column;gap:20px;
+  position:sticky;top:calc(var(--nh,76px) + 20px);max-height:calc(100vh - var(--nh,76px) - 40px);overflow-y:auto;
+}
+.wb-rail-group{display:flex;flex-direction:column;gap:8px}
+.wb-rail-label{font-family:var(--M);font-size:0.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.wb-rail-select{
+  width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);
+  font-family:var(--B);font-size:0.8rem;padding:7px 10px;outline:none;transition:border-color .18s;
+}
+.wb-rail-select:focus-visible{border-color:rgba(var(--red-rgb),.5)}
+.wb-chip-list{display:flex;flex-wrap:wrap;gap:6px;max-height:170px;overflow-y:auto}
+.wb-chip-btn{
+  font-family:var(--M);font-size:0.56rem;letter-spacing:.06em;padding:4px 11px;border-radius:999px;
+  border:1px solid var(--border);color:var(--muted);background:transparent;transition:all .18s;
+}
+.wb-chip-btn:hover{color:var(--text);border-color:rgba(var(--red-rgb),.4)}
+.wb-chip-btn.on{background:var(--red-dim);color:var(--red);border-color:rgba(var(--red-rgb),.4)}
+.wb-clear-btn{
+  align-self:flex-start;font-family:var(--M);font-size:0.6rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--red2);padding:4px 0;background:none;border:none;cursor:pointer;
+}
+.wb-clear-btn:hover{color:var(--red)}
+
+.wb-results{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.wb-result-count{font-family:var(--M);font-size:0.62rem;letter-spacing:.08em;color:var(--muted)}
+
+@media (max-width:900px){
+  .wb-rail-toggle{display:inline-flex}
+  .wb-body{flex-direction:column;gap:14px}
+  .wb-rail{
+    display:none;position:static;width:100%;max-height:none;overflow:visible;
+    padding:14px;background:var(--bg2);border:1px solid var(--border);
+  }
+  .wb-rail.open{display:flex}
+}
 
 /* ══ WORLDBUILDING — legacy card (Admin preview only; public listing
    now uses .wb-disc-grid below) ══════════════════ */
@@ -958,17 +1015,21 @@ a.arv-row:hover{background:var(--bg2)}
    deliberately outside that square and contains just the metadata and
    title, keeping the gallery wall even without returning to masonry. */
 .wb-disc-grid{
-  padding:0 var(--space-lg) var(--space-lg);
+  /* No horizontal padding of its own — it lives inside .wb-results, and
+     .wb-discovery's own margin already provides the page-edge inset shared
+     by the mode row and filter rail, so this stays edge-flush with them. */
+  padding:0 0 var(--space-lg);
   /* auto-fill (not auto-fit) so cards never stretch to fill a lone leftover
      row (auto-fit's 1fr tracks used to blow up a lone remaining card, which
      also made next/image request a much-too-small optimized variant for
      that final rendered width and visibly upscale/blur it). The min track
-     is `max(150px, 1/7th of the row)`, not a flat pixel cap: at any
-     viewport width this guarantees at most 7 columns per row (an 8th
-     column would be narrower than 1/7 and can't fit), while still
-     shrinking down to 150px and wrapping to fewer columns on narrow
+     is `max(150px, 1/6th of the row)`, not a flat pixel cap: at any
+     viewport width this guarantees at most 6 columns per row (a 7th
+     column would be narrower than 1/6 and can't fit — Worldbuilding
+     Discovery Rework's max-6-columns rule, shared by ALL/ART/BLOG), while
+     still shrinking down to 150px and wrapping to fewer columns on narrow
      screens exactly like the previous fixed-cap version did. */
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(max(150px,calc((100% - 24px) / 7)),1fr));gap:4px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(max(150px,calc((100% - 20px) / 6)),1fr));gap:4px;
   align-items:start;
 }
 .wb-disc-card{position:relative;overflow:hidden;background:var(--bg3);cursor:pointer;display:flex;flex-direction:column}
@@ -986,15 +1047,22 @@ a.arv-row:hover{background:var(--bg2)}
 }
 .wb-disc-cap-title{
   font-family:var(--B);font-size:0.74rem;font-weight:600;color:var(--text);line-height:1.3;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
+/* Blog-only excerpt (Part 8/51) — same card width/image geometry as
+   ALL/ART, just this extra clamped preview line block underneath. */
+.wb-disc-cap-excerpt{
+  font-family:var(--B);font-size:0.68rem;color:var(--text2);line-height:1.5;margin-top:2px;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+
+.empty-state-action{margin-top:14px}
 
 @media (max-width:640px){
   .wb-disc-grid{
-    padding-left:var(--space-md);padding-right:var(--space-md);
     grid-template-columns:repeat(auto-fit,minmax(min(150px,44vw),1fr));
   }
-  .wb-ctrl{margin-left:var(--space-md);margin-right:var(--space-md)}
+  .wb-discovery{margin-left:var(--space-md);margin-right:var(--space-md)}
 }
 
 /* ══ GAMES ══════════════════════════════ */
@@ -2140,11 +2208,11 @@ a.arv-row:hover{background:var(--bg2)}
 }
 @media(max-width:1060px){
   :root{--asw:220px}
-  .ph,.port-list,.port-ctrl,.sk-ctrl,.sk-grid,.wb-grid,.wb-disc-grid,
+  .ph,.port-list,.port-ctrl,.sk-ctrl,.sk-grid,.wb-grid,
   .games-wrap,.about-wrap,.arv-wrap,.home-hero,.home-contact,
   .home-narrative,.adm-wrap,.map-wrap{padding-left:var(--space-lg);padding-right:var(--space-lg)}
   .wa-wrap{padding-left:var(--space-lg);padding-right:var(--space-lg)}
-  .wb-ctrl{margin-left:var(--space-lg);margin-right:var(--space-lg)}
+  .wb-discovery{margin-left:var(--space-lg);margin-right:var(--space-lg)}
   .sc-heading,.sc-track{padding-left:var(--space-lg);padding-right:var(--space-lg)}
   .narr-grid{gap:36px}
 }

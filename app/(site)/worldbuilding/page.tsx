@@ -29,6 +29,8 @@ export default async function WorldbuildingPage({ searchParams }: { searchParams
     getActiveWbMetadataOptionsByType(),
   ]);
   const entityTypeOptions = wbOptions.wb_entity_type;
+  const categoryOptions = wbOptions.wb_category;
+  const chipOptions = wbOptions.wb_chip;
   const imagesByItem = groupImagesByParent(imageRows, (r) => r.entryId);
   const videosByItem = groupImagesByParent(videoRows, (r) => r.entryId);
   const itemsWithImages = items.map((w) => ({
@@ -46,7 +48,17 @@ export default async function WorldbuildingPage({ searchParams }: { searchParams
         title="Worldbuilding Chronicles"
         subtitle="Explore stories, lore and characters from created worlds."
       />
-      <WorldbuildingBrowser items={itemsWithImages} relationships={relationshipRows} maps={mapRows} locations={locationRows} entityTypeOptions={entityTypeOptions} initialItemId={parseContentItemId(item)} initialMapId={parseContentItemId(map)} />
+      <WorldbuildingBrowser
+        items={itemsWithImages}
+        relationships={relationshipRows}
+        maps={mapRows}
+        locations={locationRows}
+        entityTypeOptions={entityTypeOptions}
+        categoryOptions={categoryOptions}
+        chipOptions={chipOptions}
+        initialItemId={parseContentItemId(item)}
+        initialMapId={parseContentItemId(map)}
+      />
     </div>
   );
 }

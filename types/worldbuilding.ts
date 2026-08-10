@@ -6,6 +6,11 @@ export type CategoryType = "Characters" | "Cities" | "Systems" | "Factions" | "I
 export type CategoryFilter = CategoryType | "all";
 export type PinType = "submap" | "lore";
 
+/** Public discovery top-level content mode — driven by the persisted
+ * `displayTemplate` field, never by `entityType`/category (see
+ * `WorldbuildingBrowser`'s mode filtering). */
+export type WorldbuildingDiscoveryMode = "all" | "art" | "blog";
+
 // Legacy fixed taxonomy — superseded by the Phase 2 `wb_category` managed
 // metadata group (`lib/worldbuilding-metadata.ts`), kept only as a fallback
 // seed list and for any code path that hasn't moved off it.
