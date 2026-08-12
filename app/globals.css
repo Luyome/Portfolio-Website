@@ -148,6 +148,12 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .hn-link.on{color:#fff}
 .hn-link.on::after{content:"";position:absolute;left:14px;right:14px;bottom:5px;height:1px;background:var(--red)}
 .hn-socials{padding-left:clamp(12px,1.5vw,24px);border-left:1px solid var(--border)}
+/* Always mounted (see components/Header.tsx) so next/link can prefetch every
+   Work destination ahead of a click; visibility is purely CSS-driven, opened
+   state adds .open. */
+.hn-dropdown-wrap{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s ease}
+.hn-dropdown-wrap.open{opacity:1;visibility:visible;pointer-events:auto}
+@media(prefers-reduced-motion:reduce){.hn-dropdown-wrap{transition:none}}
 .hn-dropdown-panel{
   background:var(--bg2);border:1px solid var(--border);min-width:190px;
   display:flex;flex-direction:column;padding:8px;
@@ -177,10 +183,18 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
 .hn-burger.open span:nth-child(1){top:11px;transform:rotate(45deg)}
 .hn-burger.open span:nth-child(2){opacity:0}
 .hn-burger.open span:nth-child(3){top:11px;transform:rotate(-45deg)}
+/* Always mounted (see components/Header.tsx) so next/link can prefetch every
+   destination ahead of a tap; absolutely positioned (relative to .site-header,
+   itself position:fixed) so the hidden state adds no height to the fixed
+   header — only .open reveals it, same technique as .hn-dropdown-wrap. */
 .hn-mobile-panel{
   display:flex;flex-direction:column;padding:8px var(--space-md) 28px;
   background:var(--bg2);border-top:1px solid var(--border);
+  position:absolute;top:100%;left:0;right:0;max-height:calc(100vh - 76px);overflow-y:auto;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s ease;
 }
+.hn-mobile-panel.open{opacity:1;visibility:visible;pointer-events:auto}
+@media(prefers-reduced-motion:reduce){.hn-mobile-panel{transition:none}}
 .hn-mobile-link{
   font-family:var(--S);font-size:1.05rem;color:var(--text2);padding:12px 0;
   border-bottom:1px solid rgba(var(--red-rgb),.07);
@@ -1109,6 +1123,19 @@ a.arv-row:hover{background:var(--bg2)}
 .gr-tag{font-family:var(--M);font-size:0.6rem;padding:5px 14px;border:1px solid var(--border);color:var(--text2);letter-spacing:.1em}
 .gr-btn{font-family:var(--M);font-size:0.62rem;letter-spacing:.15em;text-transform:uppercase;padding:12px 26px;border:1px solid var(--border);color:var(--muted);transition:all .18s}
 .game-row:hover .gr-btn{background:var(--red);border-color:var(--red);color:var(--on-red)}
+
+/* ══ LOADING SKELETONS (Work sub-page loading.tsx — streamed instantly on
+   navigation while the real data resolves; deliberately simple pulse blocks,
+   not pixel-exact replicas of each page's real grid/list, so the shell adds
+   no per-page maintenance burden as those layouts evolve) ══════════════ */
+.qk-skel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,44vw),1fr));gap:4px;padding:0 var(--space-xl) 100px}
+.qk-skel-tile{aspect-ratio:1;background:var(--bg3)}
+.qk-skel-rows{padding:52px var(--space-xl) 100px;display:flex;flex-direction:column;gap:60px}
+.qk-skel-row{height:340px;background:var(--bg3)}
+.qk-skel-tile,.qk-skel-row{position:relative;overflow:hidden}
+.qk-skel-tile::after,.qk-skel-row::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--border),transparent);animation:qkPulse 1.6s ease-in-out infinite}
+@keyframes qkPulse{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+@media(prefers-reduced-motion:reduce){.qk-skel-tile::after,.qk-skel-row::after{animation:none;display:none}}
 
 /* ══ ABOUT ══════════════════════════════ */
 .about-wrap{padding:52px var(--space-xl) var(--space-2xl)}

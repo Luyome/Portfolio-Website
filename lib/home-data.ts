@@ -347,7 +347,10 @@ export function resolveHomeLatestDispatches(
     .slice(0, HOME_SECTION_LIMITS.latest_dispatch);
 }
 
-async function getHomeContentSelections(): Promise<ResolvedHomeContent[]> {
+// cache()-wrapped (not just a plain async function) because both
+// getHomeFeaturedWorks and getHomeData call it independently in the same
+// Home render — without this, its 5-table join ran twice per request.
+const getHomeContentSelections = cache(async (): Promise<ResolvedHomeContent[]> => {
   const rows = await db
     .select({
       selection: homeContentSelections,
@@ -374,7 +377,7 @@ async function getHomeContentSelections(): Promise<ResolvedHomeContent[]> {
     if (row.game) return [{ ...base, type: "game", contentId: row.game.id, title: row.game.title, summary: row.game.summary, image: row.game.image || null, href: resolveContentDetailHref("game", row.game.id)!, createdAt: row.game.createdAt }];
     return [];
   });
-}
+});
 
 /** Focused public read for Task 3.5; avoids resolving later Home sections. */
 export const getHomeFeaturedWorks = cache(async () => {

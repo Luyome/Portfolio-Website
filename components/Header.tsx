@@ -100,23 +100,27 @@ export default function Header({ settings }: { settings: SiteSettings }) {
             >
               Work
             </button>
-            {workOpen && (
-              <div className="absolute left-0 top-full pt-2">
-                <div className="hn-dropdown-panel" id="hn-work-panel">
-                  {WORK_LINKS.map((l) => (
-                    <Link
-                      key={l.href}
-                      href={l.href}
-                      className={`hn-dropdown-link ${isActive(l.href) ? "on" : ""}`}
-                      aria-current={isActive(l.href) ? "page" : undefined}
-                      onClick={() => setWorkOpen(false)}
-                    >
-                      {l.label}
-                    </Link>
-                  ))}
-                </div>
+            {/* Always mounted (visibility toggled via .open, not conditional
+                render) so next/link's default viewport-based prefetch for
+                every Work destination starts as soon as the header mounts
+                instead of only at hover/tap time — see docs/08_ROADMAP.md's
+                navigation-latency optimization entry. */}
+            <div className={`absolute left-0 top-full pt-2 hn-dropdown-wrap ${workOpen ? "open" : ""}`}>
+              <div className="hn-dropdown-panel" id="hn-work-panel" aria-hidden={!workOpen} inert={!workOpen}>
+                {WORK_LINKS.map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className={`hn-dropdown-link ${isActive(l.href) ? "on" : ""}`}
+                    aria-current={isActive(l.href) ? "page" : undefined}
+                    onClick={() => setWorkOpen(false)}
+                    tabIndex={workOpen ? undefined : -1}
+                  >
+                    {l.label}
+                  </Link>
+                ))}
               </div>
-            )}
+            </div>
           </div>
           <Link
             href="/worldbuilding"
@@ -179,76 +183,89 @@ export default function Header({ settings }: { settings: SiteSettings }) {
         </button>
       </div>
 
-      {mobileOpen && (
-        <nav className="hn-mobile-panel md:hidden" id="hn-mobile-nav" aria-label="Mobile">
+      {/* Always mounted (visibility toggled via .open, not conditional
+          render) so next/link's default viewport-based prefetch for every
+          Work destination starts as soon as the header mounts instead of
+          only once the mobile menu is opened — see docs/08_ROADMAP.md's
+          navigation-latency optimization entry. */}
+      <nav
+        className={`hn-mobile-panel md:hidden ${mobileOpen ? "open" : ""}`}
+        id="hn-mobile-nav"
+        aria-label="Mobile"
+        aria-hidden={!mobileOpen}
+        inert={!mobileOpen}
+      >
+        <Link
+          href="/"
+          onClick={() => setMobileOpen(false)}
+          className={`hn-mobile-link ${isActive("/") ? "on" : ""}`}
+          aria-current={isActive("/") ? "page" : undefined}
+          tabIndex={mobileOpen ? undefined : -1}
+        >
+          Home
+        </Link>
+        <div className="hn-mobile-group-label">Work</div>
+        {WORK_LINKS.map((l) => (
           <Link
-            href="/"
+            key={l.href}
+            href={l.href}
             onClick={() => setMobileOpen(false)}
-            className={`hn-mobile-link ${isActive("/") ? "on" : ""}`}
-            aria-current={isActive("/") ? "page" : undefined}
+            className={`hn-mobile-link sub ${isActive(l.href) ? "on" : ""}`}
+            aria-current={isActive(l.href) ? "page" : undefined}
+            tabIndex={mobileOpen ? undefined : -1}
           >
-            Home
+            {l.label}
           </Link>
-          <div className="hn-mobile-group-label">Work</div>
-          {WORK_LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              onClick={() => setMobileOpen(false)}
-              className={`hn-mobile-link sub ${isActive(l.href) ? "on" : ""}`}
-              aria-current={isActive(l.href) ? "page" : undefined}
-            >
-              {l.label}
-            </Link>
-          ))}
-          <Link
-            href="/worldbuilding"
-            onClick={() => setMobileOpen(false)}
-            className={`hn-mobile-link ${isActive("/worldbuilding") ? "on" : ""}`}
-            aria-current={isActive("/worldbuilding") ? "page" : undefined}
-          >
-            Worldbuilding
+        ))}
+        <Link
+          href="/worldbuilding"
+          onClick={() => setMobileOpen(false)}
+          className={`hn-mobile-link ${isActive("/worldbuilding") ? "on" : ""}`}
+          aria-current={isActive("/worldbuilding") ? "page" : undefined}
+          tabIndex={mobileOpen ? undefined : -1}
+        >
+          Worldbuilding
+        </Link>
+        <Link
+          href="/about"
+          onClick={() => setMobileOpen(false)}
+          className={`hn-mobile-link ${isActive("/about") ? "on" : ""}`}
+          aria-current={isActive("/about") ? "page" : undefined}
+          tabIndex={mobileOpen ? undefined : -1}
+        >
+          About &amp; Credentials
+        </Link>
+        <div className="hn-mobile-social">
+          {settings.artstationUrl && (
+            <a href={settings.artstationUrl} target="_blank" rel="noreferrer" aria-label="ArtStation" tabIndex={mobileOpen ? undefined : -1}>
+              <ArtStationIcon />
+            </a>
+          )}
+          {settings.twitterUrl && (
+            <a href={settings.twitterUrl} target="_blank" rel="noreferrer" aria-label="Twitter / X" tabIndex={mobileOpen ? undefined : -1}>
+              <TwitterIcon />
+            </a>
+          )}
+          {settings.linkedinUrl && (
+            <a href={settings.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn" tabIndex={mobileOpen ? undefined : -1}>
+              <LinkedInIcon />
+            </a>
+          )}
+          {settings.instagramUrl && (
+            <a href={settings.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram" tabIndex={mobileOpen ? undefined : -1}>
+              <InstagramIcon />
+            </a>
+          )}
+          {settings.githubUrl && (
+            <a href={settings.githubUrl} target="_blank" rel="noreferrer" aria-label="GitHub" tabIndex={mobileOpen ? undefined : -1}>
+              <GithubIcon />
+            </a>
+          )}
+          <Link href="/admin" onClick={() => setMobileOpen(false)} tabIndex={mobileOpen ? undefined : -1}>
+            Admin Login
           </Link>
-          <Link
-            href="/about"
-            onClick={() => setMobileOpen(false)}
-            className={`hn-mobile-link ${isActive("/about") ? "on" : ""}`}
-            aria-current={isActive("/about") ? "page" : undefined}
-          >
-            About &amp; Credentials
-          </Link>
-          <div className="hn-mobile-social">
-            {settings.artstationUrl && (
-              <a href={settings.artstationUrl} target="_blank" rel="noreferrer" aria-label="ArtStation">
-                <ArtStationIcon />
-              </a>
-            )}
-            {settings.twitterUrl && (
-              <a href={settings.twitterUrl} target="_blank" rel="noreferrer" aria-label="Twitter / X">
-                <TwitterIcon />
-              </a>
-            )}
-            {settings.linkedinUrl && (
-              <a href={settings.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn">
-                <LinkedInIcon />
-              </a>
-            )}
-            {settings.instagramUrl && (
-              <a href={settings.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram">
-                <InstagramIcon />
-              </a>
-            )}
-            {settings.githubUrl && (
-              <a href={settings.githubUrl} target="_blank" rel="noreferrer" aria-label="GitHub">
-                <GithubIcon />
-              </a>
-            )}
-            <Link href="/admin" onClick={() => setMobileOpen(false)}>
-              Admin Login
-            </Link>
-          </div>
-        </nav>
-      )}
+        </div>
+      </nav>
     </header>
   );
 }
