@@ -17,10 +17,10 @@
   --on-dark: #c7b7ab;
   --on-dark2: #8f7d75;
   --asw:     260px;
-  --T: 'Playfair Display', Georgia, serif;
-  --B: 'Lora', Georgia, serif;
+  --T: 'Archivo', 'Segoe UI', sans-serif;
+  --B: 'Archivo', 'Segoe UI', sans-serif;
   --M: 'Space Mono', monospace;
-  --J: 'Noto Serif JP', serif;
+  --J: 'Noto Sans JP', 'Yu Gothic', sans-serif;
   --S: 'Archivo', 'Segoe UI', sans-serif;
   --SJ: 'Noto Sans JP', 'Yu Gothic', sans-serif;
 }
@@ -251,7 +251,6 @@ button{cursor:pointer;background:none;border:none;font-family:inherit;color:inhe
   display:flex;align-items:center;justify-content:center;
   min-height:100vh;flex-direction:column;
   position:relative;overflow:hidden;
-  --T:var(--S);--B:var(--S);--J:var(--SJ);
 }
 .home-hero-band{position:relative;width:100%;min-height:max(620px,94svh);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#171012;border-bottom:1px solid rgba(var(--red-rgb),.2)}
 .home-bg-image{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(1.45) saturate(.92);pointer-events:none;z-index:0}
