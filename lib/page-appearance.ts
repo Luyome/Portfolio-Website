@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { cache } from "react";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { pageAppearance } from "@/db/schema";
@@ -35,10 +36,14 @@ export type PageAppearanceRow = typeof pageAppearance.$inferSelect;
 
 const PAGE_COLOR_KEYS: PageColorKey[] = ["bg", "bg2", "bg3", "text", "text2", "accent"];
 
-export async function getPageAppearance(page: PageKey): Promise<PageAppearanceRow | null> {
+// cache()-wrapped for intra-request dedupe consistency with the rest of
+// lib/ (lib/site-settings.ts, lib/home-data.ts) — no route calls this twice
+// today, but it's a one-line, zero-behavior-change safeguard against a
+// future caller doing so.
+export const getPageAppearance = cache(async (page: PageKey): Promise<PageAppearanceRow | null> => {
   const [row] = await db.select().from(pageAppearance).where(eq(pageAppearance.page, page));
   return row ?? null;
-}
+});
 
 export function pageAppearanceVars(row: PageAppearanceRow | null | undefined): CSSProperties {
   if (!row) return {};

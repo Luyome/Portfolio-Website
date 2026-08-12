@@ -20,11 +20,14 @@ export default async function PortfolioPage({
   searchParams: Promise<{ year?: string; item?: string | string[] }>;
 }) {
   const { year, item } = await searchParams;
-  const [items, imageRows, linkRows, videoRows, appearance] = await Promise.all([
-    db.select().from(portfolioItems).orderBy(desc(portfolioItems.date), asc(portfolioItems.sortOrder)),
-    db.select().from(portfolioImages).orderBy(asc(portfolioImages.sortOrder)),
-    db.select().from(portfolioLinks).orderBy(asc(portfolioLinks.sortOrder)),
-    db.select().from(portfolioVideos).orderBy(asc(portfolioVideos.sortOrder)),
+  // See app/(site)/2d/page.tsx for why this is db.batch()'d.
+  const [[items, imageRows, linkRows, videoRows], appearance] = await Promise.all([
+    db.batch([
+      db.select().from(portfolioItems).orderBy(desc(portfolioItems.date), asc(portfolioItems.sortOrder)),
+      db.select().from(portfolioImages).orderBy(asc(portfolioImages.sortOrder)),
+      db.select().from(portfolioLinks).orderBy(asc(portfolioLinks.sortOrder)),
+      db.select().from(portfolioVideos).orderBy(asc(portfolioVideos.sortOrder)),
+    ]),
     getPageAppearance("portfolio"),
   ]);
   const imagesByItem = groupImagesByParent(imageRows, (r) => r.portfolioId);

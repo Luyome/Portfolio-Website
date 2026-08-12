@@ -16,14 +16,17 @@ export const metadata: Metadata = {
 
 export default async function WorldbuildingPage({ searchParams }: { searchParams: Promise<{ item?: string | string[]; map?: string | string[] }> }) {
   const { item, map } = await searchParams;
-  const [items, imageRows, linkRows, videoRows, relationshipRows, mapRows, locationRows, appearance, wbOptions] = await Promise.all([
-    db.select().from(worldbuildingEntries).orderBy(desc(worldbuildingEntries.date), asc(worldbuildingEntries.sortOrder)),
-    db.select().from(worldbuildingImages).orderBy(asc(worldbuildingImages.sortOrder)),
-    db.select().from(worldbuildingLinks).orderBy(asc(worldbuildingLinks.sortOrder)),
-    db.select().from(worldbuildingVideos).orderBy(asc(worldbuildingVideos.sortOrder)),
-    db.select().from(worldbuildingRelationships).orderBy(asc(worldbuildingRelationships.sortOrder)),
-    db.select().from(worldMaps).orderBy(asc(worldMaps.sortOrder)),
-    db.select().from(mapLocations).orderBy(asc(mapLocations.sortOrder)),
+  // See app/(site)/2d/page.tsx for why this is db.batch()'d.
+  const [[items, imageRows, linkRows, videoRows, relationshipRows, mapRows, locationRows], appearance, wbOptions] = await Promise.all([
+    db.batch([
+      db.select().from(worldbuildingEntries).orderBy(desc(worldbuildingEntries.date), asc(worldbuildingEntries.sortOrder)),
+      db.select().from(worldbuildingImages).orderBy(asc(worldbuildingImages.sortOrder)),
+      db.select().from(worldbuildingLinks).orderBy(asc(worldbuildingLinks.sortOrder)),
+      db.select().from(worldbuildingVideos).orderBy(asc(worldbuildingVideos.sortOrder)),
+      db.select().from(worldbuildingRelationships).orderBy(asc(worldbuildingRelationships.sortOrder)),
+      db.select().from(worldMaps).orderBy(asc(worldMaps.sortOrder)),
+      db.select().from(mapLocations).orderBy(asc(mapLocations.sortOrder)),
+    ]),
     getPageAppearance("worldbuilding"),
     getActiveWbMetadataOptionsByType(),
   ]);

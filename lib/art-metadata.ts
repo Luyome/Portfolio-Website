@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { metadataOptions, sketchMetadataOptions, model3dMetadataOptions } from "@/db/schema";
@@ -34,14 +35,16 @@ function isActiveOnPage(row: ArtMetadataOptionRow, page: ArtPage): boolean {
  * one page and disabled on the other (e.g. "Character" shown on 2D, hidden
  * on 3D).
  */
-export async function getActiveArtMetadataOptions(page: ArtPage): Promise<ArtMetadataOptionChoice[]> {
+// cache()-wrapped for intra-request dedupe consistency with the rest of
+// lib/ — see lib/page-appearance.ts's getPageAppearance for the same note.
+export const getActiveArtMetadataOptions = cache(async (page: ArtPage): Promise<ArtMetadataOptionChoice[]> => {
   const rows = await db
     .select()
     .from(metadataOptions)
     .where(eq(metadataOptions.type, "art_category"))
     .orderBy(asc(metadataOptions.sortOrder), asc(metadataOptions.name), asc(metadataOptions.id));
   return rows.filter((r) => isActiveOnPage(r, page)).map(toChoice);
-}
+});
 
 /** A sketch's currently selected category — includes inactive so the edit form doesn't silently drop a previously-selected option. */
 export async function getSketchCategorySelection(sketchId: number): Promise<ArtMetadataOptionChoice | undefined> {

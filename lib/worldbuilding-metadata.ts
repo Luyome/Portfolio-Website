@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { metadataOptions, worldbuildingMetadataOptions } from "@/db/schema";
@@ -25,7 +26,9 @@ function toChoice(row: WbMetadataOptionRow): WbMetadataOptionChoice {
 }
 
 /** Active options for all three Worldbuilding metadata groups, grouped — one query. */
-export async function getActiveWbMetadataOptionsByType(): Promise<Record<WbMetadataType, WbMetadataOptionChoice[]>> {
+// cache()-wrapped for intra-request dedupe consistency with the rest of
+// lib/ — see lib/page-appearance.ts's getPageAppearance for the same note.
+export const getActiveWbMetadataOptionsByType = cache(async (): Promise<Record<WbMetadataType, WbMetadataOptionChoice[]>> => {
   const rows = await db
     .select()
     .from(metadataOptions)
@@ -40,7 +43,7 @@ export async function getActiveWbMetadataOptionsByType(): Promise<Record<WbMetad
     if (isWbMetadataType(row.type)) grouped[row.type].push(toChoice(row));
   }
   return grouped;
-}
+});
 
 /** A Worldbuilding entry's currently selected options, grouped by type — includes inactive ones so the edit form doesn't silently drop a previously-selected option. */
 export async function getWorldbuildingMetadataSelections(entryId: number): Promise<Record<WbMetadataType, WbMetadataOptionChoice[]>> {

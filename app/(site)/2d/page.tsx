@@ -21,17 +21,24 @@ export default async function TwoDPage({
   searchParams: Promise<{ year?: string; category?: string; item?: string | string[] }>;
 }) {
   const { year, category, item } = await searchParams;
-  const [items, imageRows, linkRows, videoRows, appearance, categories, categoryRows] = await Promise.all([
-    db.select().from(sketches).orderBy(desc(sketches.date), asc(sketches.sortOrder)),
-    db.select().from(sketchImages).orderBy(asc(sketchImages.sortOrder)),
-    db.select().from(sketchLinks).orderBy(asc(sketchLinks.sortOrder)),
-    db.select().from(sketchVideos).orderBy(asc(sketchVideos.sortOrder)),
+  // The 4 sketch-table reads + the category join are batched into a single
+  // neon-http HTTP round-trip (db.batch(), the same driver-level primitive
+  // already used for writes in lib/actions/*.ts) instead of 5 separate
+  // requests; appearance/categories stay their own parallel calls since
+  // they're driven by cache()-wrapped helper functions, not raw queries.
+  const [[items, imageRows, linkRows, videoRows, categoryRows], appearance, categories] = await Promise.all([
+    db.batch([
+      db.select().from(sketches).orderBy(desc(sketches.date), asc(sketches.sortOrder)),
+      db.select().from(sketchImages).orderBy(asc(sketchImages.sortOrder)),
+      db.select().from(sketchLinks).orderBy(asc(sketchLinks.sortOrder)),
+      db.select().from(sketchVideos).orderBy(asc(sketchVideos.sortOrder)),
+      db
+        .select({ sketchId: sketchMetadataOptions.sketchId, id: metadataOptions.id, name: metadataOptions.name, slug: metadataOptions.slug })
+        .from(sketchMetadataOptions)
+        .innerJoin(metadataOptions, eq(sketchMetadataOptions.metadataOptionId, metadataOptions.id)),
+    ]),
     getPageAppearance("2d"),
     getActiveArtMetadataOptions("2d"),
-    db
-      .select({ sketchId: sketchMetadataOptions.sketchId, id: metadataOptions.id, name: metadataOptions.name, slug: metadataOptions.slug })
-      .from(sketchMetadataOptions)
-      .innerJoin(metadataOptions, eq(sketchMetadataOptions.metadataOptionId, metadataOptions.id)),
   ]);
   const imagesByItem = groupImagesByParent(imageRows, (r) => r.sketchId);
   const videosByItem = groupImagesByParent(videoRows, (r) => r.sketchId);

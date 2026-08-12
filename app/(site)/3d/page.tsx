@@ -21,17 +21,21 @@ export default async function Model3DPage({
   searchParams: Promise<{ year?: string; category?: string; item?: string | string[] }>;
 }) {
   const { year, category, item } = await searchParams;
-  const [items, imageRows, linkRows, videoRows, appearance, categories, categoryRows] = await Promise.all([
-    db.select().from(models3d).orderBy(desc(models3d.date), asc(models3d.sortOrder)),
-    db.select().from(model3dImages).orderBy(asc(model3dImages.sortOrder)),
-    db.select().from(model3dLinks).orderBy(asc(model3dLinks.sortOrder)),
-    db.select().from(model3dVideos).orderBy(asc(model3dVideos.sortOrder)),
+  // See app/(site)/2d/page.tsx for why this is db.batch()'d — same pattern,
+  // same driver-level round-trip reduction, mirrored 1:1 for the 3D tables.
+  const [[items, imageRows, linkRows, videoRows, categoryRows], appearance, categories] = await Promise.all([
+    db.batch([
+      db.select().from(models3d).orderBy(desc(models3d.date), asc(models3d.sortOrder)),
+      db.select().from(model3dImages).orderBy(asc(model3dImages.sortOrder)),
+      db.select().from(model3dLinks).orderBy(asc(model3dLinks.sortOrder)),
+      db.select().from(model3dVideos).orderBy(asc(model3dVideos.sortOrder)),
+      db
+        .select({ modelId: model3dMetadataOptions.modelId, id: metadataOptions.id, name: metadataOptions.name, slug: metadataOptions.slug })
+        .from(model3dMetadataOptions)
+        .innerJoin(metadataOptions, eq(model3dMetadataOptions.metadataOptionId, metadataOptions.id)),
+    ]),
     getPageAppearance("3d"),
     getActiveArtMetadataOptions("3d"),
-    db
-      .select({ modelId: model3dMetadataOptions.modelId, id: metadataOptions.id, name: metadataOptions.name, slug: metadataOptions.slug })
-      .from(model3dMetadataOptions)
-      .innerJoin(metadataOptions, eq(model3dMetadataOptions.metadataOptionId, metadataOptions.id)),
   ]);
   const imagesByItem = groupImagesByParent(imageRows, (r) => r.modelId);
   const videosByItem = groupImagesByParent(videoRows, (r) => r.modelId);

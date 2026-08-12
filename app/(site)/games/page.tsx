@@ -16,11 +16,14 @@ export const metadata: Metadata = {
 
 export default async function GamesPage({ searchParams }: { searchParams: Promise<{ item?: string | string[] }> }) {
   const { item } = await searchParams;
-  const [rows, linkRows, imageRows, videoRows, appearance] = await Promise.all([
-    db.select().from(games).orderBy(desc(games.date), asc(games.sortOrder)),
-    db.select().from(gameLinks).orderBy(asc(gameLinks.sortOrder)),
-    db.select().from(gameImages).orderBy(asc(gameImages.sortOrder)),
-    db.select().from(gameVideos).orderBy(asc(gameVideos.sortOrder)),
+  // See app/(site)/2d/page.tsx for why this is db.batch()'d.
+  const [[rows, linkRows, imageRows, videoRows], appearance] = await Promise.all([
+    db.batch([
+      db.select().from(games).orderBy(desc(games.date), asc(games.sortOrder)),
+      db.select().from(gameLinks).orderBy(asc(gameLinks.sortOrder)),
+      db.select().from(gameImages).orderBy(asc(gameImages.sortOrder)),
+      db.select().from(gameVideos).orderBy(asc(gameVideos.sortOrder)),
+    ]),
     getPageAppearance("games"),
   ]);
   const imagesByGame = groupImagesByParent(imageRows, (r) => r.gameId);
